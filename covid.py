@@ -9,29 +9,35 @@ from hashlib import sha256
 # change this to the district id you need. These are for TCR & EKM
 district_ids = [303, 307]
 
-URL = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByDistrict?district_id={0}&date={1}&vaccine=COVISHIELD"
+URL = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByDistrict?district_id={0}&date={1}&vaccine={2}"
 BOOKING_URL = "https://cdn-api.co-vin.in/api/v2/appointment/schedule"
+BENEFICIARIES_URL = "https://cdn-api.co-vin.in/api/v2/appointment/beneficiaries"
 
-BOOKING_REQUEST = {
-    "beneficiaries": ["8138634614897", "1256868718565"], 
-    "slot": "12:00PM-01:00PM", 
+BOOKING_REQUEST_TEMPLATE = {
+    "beneficiaries": [], 
+    "slot": "", 
     "dose": 2
     }
 
 
-def check_calendar(bearer_token):
-    HEADER = {"Authorization": f"Bearer {bearer_token}"}
+def display_table(dict_list):
+    header = ['idx'] + list(dict_list[0].keys())
+    rows =  [[idx + 1] + list(x.values()) for idx, x in enumerate(dict_list)]
+    print(tabulate.tabulate(rows, header, tablefmt='grid'))
 
+class TimeoutExpired(Exception):
+    pass
+
+
+def check_calendar(request_header, vaccine_type, minimum_slots):
     try:
         print('===================================================================================')
         today = datetime.datetime.today()
         
         options = []
         for district_id in district_ids:
-            resp = requests.get(URL.format(
-                                            district_id, 
-                                            (today + datetime.timedelta(days=1)).strftime("%d-%m-%Y")), 
-                                            headers=HEADER)
+            resp = requests.get(URL.format(district_id, (today + datetime.timedelta(days=1)).strftime("%d-%m-%Y"), vaccine_type), 
+                                headers=request_header)
             
             if resp.status_code == 401:
                 print('TOKEN INVALID')
@@ -39,14 +45,14 @@ def check_calendar(bearer_token):
 
             elif resp.status_code == 200:
                 resp = resp.json()
-                print(f"Response at {today.strftime('%Y-%m-%d %H:%M:%S')} for {district_id}: {len(resp['centers'])}")
+                print(f"Responses at {today.strftime('%Y-%m-%d %H:%M:%S')} for dist. {district_id} for {vaccine_type}: {len(resp['centers'])}")
 
-                if len(resp['centers']) > 0:
+                if len(resp['centers']) >= 0:
                     for center in resp['centers']:
                         print(f"######### :::: {center['district_name']}")
                         out = {}
                         for session in center['sessions']:
-                            if session['available_capacity'] > 10:
+                            if session['available_capacity'] >= minimum_slots:
                                 out['name'] = center['name']
                                 out['district'] = center['district_name']
                                 out['center_id'] = center['center_id']
@@ -73,14 +79,11 @@ def check_calendar(bearer_token):
         winsound.Beep(1000, 2000)
 
 
-def schedule_appointment(bearer_token, details):
-    HEADER = {"Authorization": f"Bearer {bearer_token}"}
-
+def book_appointment(request_header, details):
     try:
         print('================================= ATTEMPTING BOOKING ==================================================')
-        today = datetime.datetime.today()
         
-        resp = requests.post(BOOKING_URL, headers=HEADER, json=details)
+        resp = requests.post(BOOKING_URL, headers=request_header, json=details)
         print(f'Booking Response Code: {resp.status_code}')
         print(f'Booking Response : {resp.text}')
 
@@ -100,10 +103,6 @@ def schedule_appointment(bearer_token, details):
         winsound.Beep(1000, 2000)
 
 
-class TimeoutExpired(Exception):
-    pass
-
-
 def input_with_timeout(prompt, timeout, timer=time.monotonic):
     sys.stdout.write(prompt)
     sys.stdout.flush()
@@ -118,9 +117,9 @@ def input_with_timeout(prompt, timeout, timer=time.monotonic):
     raise TimeoutExpired
 
 
-def check_and_book(bearer_token):
+def check_and_book(request_header, vaccine_type, beneficiaries, minimum_slots):
     try:
-        options = check_calendar(bearer_token)
+        options = check_calendar(request_header, vaccine_type, minimum_slots)
 
         if isinstance(options, bool):
             return False
@@ -133,30 +132,61 @@ def check_and_book(bearer_token):
                 item.pop('center_id', None)
                 cleaned_options_for_display.append(item)
 
-            header = ['id'] + list(cleaned_options_for_display[0].keys())
-            rows =  [[idx + 1] + list(x.values()) for idx, x in enumerate(cleaned_options_for_display)]
-
-            print(tabulate.tabulate(rows, header, tablefmt='grid'))
+            display_table(cleaned_options_for_display)
+            choice = input_with_timeout('----------> \nWait 10 seconds for updated options OR \n----------> \nEnter Choice e.g: 1.4 for (1st center 4th slot): ', 10)
 
         else:
-            print("No viable options")
+            print("No viable options. Waiting for next update.")
+            time.sleep(15)
+            choice = '.'
         
-        choice = input_with_timeout('Enter Choice: ', 10)
     
     except TimeoutExpired:
-        time.sleep(5)
+        time.sleep(15)
         return True
     
     else:
-        choice = choice.split('.')
-        print(f'============> Got {choice}')
-        new_req = copy.deepcopy(BOOKING_REQUEST)
-        new_req['center_id'] = options[int(choice[0])-1]['center_id']
-        new_req['session_id'] = options[int(choice[0])-1]['session_id']
-        new_req['slot'] = options[int(choice[0])-1]['slots'][int(choice[1])-1]
-        print(f'Booking with info: {new_req}')
+        if choice == '.':
+            return True
+        else:
+            choice = choice.split('.')
+            print(f'============> Got {choice}')
+            new_req = copy.deepcopy(BOOKING_REQUEST_TEMPLATE)
+            new_req['beneficiaries'] = beneficiaries
+            new_req['center_id'] = options[int(choice[0]) - 1]['center_id']
+            new_req['session_id'] = options[int(choice[0]) - 1]['session_id']
+            new_req['slot'] = options[int(choice[0]) - 1]['slots'][int(choice[1]) - 1]
+            print(f'Booking with info: {new_req}')
 
-        return schedule_appointment(bearer_token, new_req)
+            return book_appointment(request_header, new_req)
+
+
+def get_beneficiaries(request_header):
+    beneficiaries = requests.get(BENEFICIARIES_URL, headers=request_header)
+
+    if beneficiaries.status_code == 200:
+        beneficiaries = beneficiaries.json()['beneficiaries']
+        
+        refined_beneficiaries = []
+        for beneficiary in beneficiaries:
+            tmp = {}
+            tmp['beneficiary_reference_id'] = beneficiary['beneficiary_reference_id']
+            tmp['name'] = beneficiary['name']
+            tmp['vaccine'] = beneficiary['vaccine']
+            tmp['status'] = beneficiary['vaccination_status']
+            refined_beneficiaries.append(tmp)
+        
+        display_table(refined_beneficiaries)
+        reqd_beneficiaries = input('Enter comma separated index numbers of beneficiaries to book for : ')
+        beneficiary_idx = [int(idx) -1 for idx in reqd_beneficiaries.split(',')]
+        reqd_beneficiaries = [(item['beneficiary_reference_id'], item['vaccine']) for idx, item in enumerate(refined_beneficiaries) if idx in beneficiary_idx]
+        return reqd_beneficiaries
+
+    else:
+        print('Unable to fetch beneficiaries')
+        print(beneficiaries.status_code)
+        print(beneficiaries.text)
+        sys.exit(1)
 
 
 def generate_token_OTP(mobile):
@@ -183,11 +213,11 @@ def generate_token_OTP(mobile):
     
     print(f'Token Generated: {token}')
     return token
-
+    
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--mobile', help='Pass the mobile to generate OTP')
+    parser.add_argument('--mobile', help='Pass the registered mobile to generate OTP')
     parser.add_argument('--token', help='Pass token directly')
     args = parser.parse_args()
 
@@ -197,10 +227,18 @@ def main():
         token = args.token
     elif args.mobile:
         token = generate_token_OTP(args.mobile)
+    
+    request_header = {"Authorization": f"Bearer {token}"}
+    beneficiaries_dtls = get_beneficiaries(request_header)
+    
+    beneficiaries = [id for id, vaccine_type in beneficiaries_dtls]
+    vaccine_type = max(vaccine_type for id, vaccine_type in beneficiaries_dtls)
+
+    minimum_slots = int(input('Enter minimum number of slots available to filter for: '))
 
     TOKEN_VALID = True
     while TOKEN_VALID == True:
-        TOKEN_VALID = check_and_book(token)
+        TOKEN_VALID = check_and_book(request_header, vaccine_type, beneficiaries, minimum_slots)
         
         if TOKEN_VALID:
             pass
