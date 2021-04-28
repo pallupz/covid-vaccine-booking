@@ -240,6 +240,7 @@ def main():
 
     TOKEN_VALID = True
     while TOKEN_VALID == True:
+        request_header = {"Authorization": f"Bearer {token}"}
         TOKEN_VALID = check_and_book(request_header, vaccine_type, beneficiaries, minimum_slots)
         
         if TOKEN_VALID:
