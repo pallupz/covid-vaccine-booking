@@ -6,7 +6,7 @@ import sys, msvcrt, tabulate, json, copy, argparse
 from hashlib import sha256
 
 
-# change this to the district id you need. These are for TCR & EKM
+# change this to the district id you need. These are for TCR & EKM in Kerala
 district_ids = [303, 307]
 
 URL = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByDistrict?district_id={0}&date={1}&vaccine={2}"
