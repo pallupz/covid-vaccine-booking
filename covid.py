@@ -9,14 +9,8 @@ from hashlib import sha256
 # change this to the district id you need. These are for TCR & EKM
 district_ids = [303, 307]
 
-# provide a valid Bearer token while calling the script as first argument
-HEADER = {
-    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX25hbWUiOiIxZWNmODJiNC00YjFjLTQzNTAtYTZkYS0wODAxMGEyMWE5NGUiLCJ1c2VyX2lkIjoiMWVjZjgyYjQtNGIxYy00MzUwLWE2ZGEtMDgwMTBhMjFhOTRlIiwidXNlcl90eXBlIjoiQkVORUZJQ0lBUlkiLCJtb2JpbGVfbnVtYmVyIjo5NDQ2MDU2NjA4LCJiZW5lZmljaWFyeV9yZWZlcmVuY2VfaWQiOjgxMzg2MzQ2MTQ4OTcsInVhIjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV2luNjQ7IHg2NDsgcnY6ODguMCkgR2Vja28vMjAxMDAxMDEgRmlyZWZveC84OC4wIiwiZGF0ZV9tb2RpZmllZCI6IjIwMjEtMDQtMjhUMTM6MzQ6MDEuNDI0WiIsImlhdCI6MTYxOTYxNjg0MSwiZXhwIjoxNjE5NjE3NzQxfQ.BtdVN0ONdYt2fVU6WPprYbLpdxyVxZCDd8qZ8bqOj6M"
-    }
-
 URL = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByDistrict?district_id={0}&date={1}&vaccine=COVISHIELD"
 BOOKING_URL = "https://cdn-api.co-vin.in/api/v2/appointment/schedule"
-
 
 BOOKING_REQUEST = {
     "beneficiaries": ["8138634614897", "1256868718565"], 
@@ -26,8 +20,7 @@ BOOKING_REQUEST = {
 
 
 def check_calendar(bearer_token):
-    if bearer_token:
-        HEADER = {"Authorization": f"Bearer {bearer_token}"}
+    HEADER = {"Authorization": f"Bearer {bearer_token}"}
 
     try:
         print('===================================================================================')
@@ -81,8 +74,7 @@ def check_calendar(bearer_token):
 
 
 def schedule_appointment(bearer_token, details):
-    if bearer_token:
-        HEADER = {"Authorization": f"Bearer {bearer_token}"}
+    HEADER = {"Authorization": f"Bearer {bearer_token}"}
 
     try:
         print('================================= ATTEMPTING BOOKING ==================================================')
