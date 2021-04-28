@@ -42,8 +42,7 @@ def check_calendar(bearer_token):
             
             if resp.status_code == 401:
                 print('TOKEN INVALID')
-                TOKEN_VALID = False 
-                break
+                return False
 
             elif resp.status_code == 200:
                 resp = resp.json()
@@ -100,12 +99,14 @@ def schedule_appointment(bearer_token, details):
 
         if resp.status_code == 401:
             print('TOKEN INVALID')
-            TOKEN_VALID = False 
+            return False
+
         elif resp.status_code == 200:
             print('##############    BOOKED!  ##############')
             sys.exit(0)
+
         else:
-            pass
+            return True
 
     except Exception as e:
         print(str(e))
@@ -133,6 +134,9 @@ def input_with_timeout(prompt, timeout, timer=time.monotonic):
 def check_and_book(bearer_token):
     try:
         options = check_calendar(bearer_token)
+
+        if isinstance(options, bool):
+            return False
         
         tmp_options = copy.deepcopy(options)
         if len(tmp_options) > 0:
@@ -142,8 +146,8 @@ def check_and_book(bearer_token):
                 item.pop('center_id', None)
                 cleaned_options_for_display.append(item)
 
-            header = cleaned_options_for_display[0].keys()
-            rows =  [x.values() for x in cleaned_options_for_display]
+            header = ['id'] + list(cleaned_options_for_display[0].keys())
+            rows =  [[idx + 1] + list(x.values()) for idx, x in enumerate(cleaned_options_for_display)]
 
             print(tabulate.tabulate(rows, header, tablefmt='grid'))
 
@@ -154,6 +158,7 @@ def check_and_book(bearer_token):
     
     except TimeoutExpired:
         time.sleep(5)
+        return True
     
     else:
         choice = choice.split('.')
@@ -164,7 +169,7 @@ def check_and_book(bearer_token):
         new_req['slot'] = options[int(choice[0])-1]['slots'][int(choice[1])-1]
         print(f'Booking with info: {new_req}')
 
-        schedule_appointment(bearer_token, new_req)
+        return schedule_appointment(bearer_token, new_req)
 
 
 def generate_token_OTP(mobile):
@@ -209,8 +214,10 @@ def main():
         token = generate_token_OTP(args.mobile)
 
     while TOKEN_VALID == True:
+        TOKEN_VALID = check_and_book(token)
+        
         if TOKEN_VALID:
-            check_and_book(token)
+            pass
         
         else:
             tryOTP = None
