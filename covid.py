@@ -46,11 +46,6 @@ def check_calendar(bearer_token):
 
             elif resp.status_code == 200:
                 resp = resp.json()
-
-                # with open('test.json', 'r') as f:
-                #     resp = ''.join(f.readlines())
-                #     resp = json.loads(resp)
-                
                 print(f"Response at {today.strftime('%Y-%m-%d %H:%M:%S')} for {district_id}: {len(resp['centers'])}")
 
                 if len(resp['centers']) > 0:
@@ -199,9 +194,7 @@ def generate_token_OTP(mobile):
 
 
 def main():
-    TOKEN_VALID = True
     parser = argparse.ArgumentParser()
-
     parser.add_argument('--mobile', help='Pass the mobile to generate OTP')
     parser.add_argument('--token', help='Pass token directly')
     args = parser.parse_args()
@@ -213,6 +206,7 @@ def main():
     elif args.mobile:
         token = generate_token_OTP(args.mobile)
 
+    TOKEN_VALID = True
     while TOKEN_VALID == True:
         TOKEN_VALID = check_and_book(token)
         
