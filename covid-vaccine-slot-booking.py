@@ -6,7 +6,7 @@ import sys, msvcrt, tabulate, json, copy, argparse
 from hashlib import sha256
 
 
-# change this to the district id you need. These are for TCR & EKM in Kerala
+# change this to the district id you need. These are for TCR & EKM
 district_ids = [303, 307]
 
 URL = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByDistrict?district_id={0}&date={1}&vaccine={2}"
@@ -33,10 +33,11 @@ def check_calendar(request_header, vaccine_type, minimum_slots):
     try:
         print('===================================================================================')
         today = datetime.datetime.today()
+        tomorrow = today + datetime.timedelta(days=1)
         
         options = []
         for district_id in district_ids:
-            resp = requests.get(URL.format(district_id, (today + datetime.timedelta(days=1)).strftime("%d-%m-%Y"), vaccine_type), 
+            resp = requests.get(URL.format(district_id, tomorrow.strftime("%d-%m-%Y"), vaccine_type), 
                                 headers=request_header)
             
             if resp.status_code == 401:
@@ -150,12 +151,13 @@ def check_and_book(request_header, vaccine_type, beneficiaries, minimum_slots):
             return True
         else:
             choice = choice.split('.')
+            choice = [int(item) for item in choice]
             print(f'============> Got {choice}')
             new_req = copy.deepcopy(BOOKING_REQUEST_TEMPLATE)
             new_req['beneficiaries'] = beneficiaries
-            new_req['center_id'] = options[int(choice[0]) - 1]['center_id']
-            new_req['session_id'] = options[int(choice[0]) - 1]['session_id']
-            new_req['slot'] = options[int(choice[0]) - 1]['slots'][int(choice[1]) - 1]
+            new_req['center_id'] = options[choice[0] - 1]['center_id']
+            new_req['session_id'] = options[choice[0] - 1]['session_id']
+            new_req['slot'] = options[int(choice[0]) - 1]['slots'][choice[1] - 1]
             print(f'Booking with info: {new_req}')
 
             return book_appointment(request_header, new_req)
