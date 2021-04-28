@@ -1,4 +1,4 @@
-# covid-vaccine-booking
+# COVID-19 Vaccine Second Dose Slot Booking Script
 
 This very basic script can be used to automate covid vaccine second dose slot booking on Co-WIN Platform. No option to register new user or add beneficiaries .
 
