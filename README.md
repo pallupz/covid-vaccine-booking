@@ -101,7 +101,7 @@ python covid-vaccine-slot-booking.py --token=YOUR-TOKEN-HERE
 	```
 	Enter comma separated index numbers of districts to monitor : 2,13
 	```
-6. Ensure correct districts are getting selected. Enter the minimum number of slots to be available at the center:
+6. Ensure correct districts are getting selected.
 	```
 	Selected districts:  
 	+-------+---------------+-----------------+-----------------------+  
