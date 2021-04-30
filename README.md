@@ -10,7 +10,9 @@ This very basic script can be used to automate covid vaccination slot booking on
 
 ### Usage:
 
-- For the uninitiated in Python, using the ```covid-vaccine-slot-booking.exe``` file would be the easiest way. It might trigger an anti-virus alert. That's only because I used ```pyinstaller``` to package it and that needs a bit more effort to avoid such alerts.
+For the uninitiated in Python, using the ```covid-vaccine-slot-booking.exe``` file would be the easiest way. It might trigger an anti-virus alert. That's only because I used ```pyinstaller``` to package it and that needs a bit more effort to avoid such alerts.
+
+OR
 
 Run the script file as show below:
 
