@@ -19,6 +19,8 @@ BOOKING_REQUEST_TEMPLATE = {
     "dose": 2
     }
 
+WARNING_BEEP_DURATION = (1000, 2000)
+
 
 def display_table(dict_list):
     header = ['idx'] + list(dict_list[0].keys())
@@ -77,7 +79,7 @@ def check_calendar(request_header, vaccine_type, minimum_slots):
 
     except Exception as e:
         print(str(e))
-        winsound.Beep(1000, 2000)
+        winsound.Beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
 
 
 def book_appointment(request_header, details):
@@ -163,6 +165,45 @@ def check_and_book(request_header, vaccine_type, beneficiaries, minimum_slots):
             return book_appointment(request_header, new_req)
 
 
+def get_districts(request_header):
+    states = requests.get('https://cdn-api.co-vin.in/api/v2/admin/location/states')
+
+    state = None
+    if states.status_code == 200:
+        states = states.json()['states']
+        refined_states = []
+        for state in refined_states:
+            tmp = {}
+            tmp['state'] = state['state_name']
+            refined_beneficiaries.append(tmp)
+        
+        display_table(refined_beneficiaries)
+
+        state = input('Enter State index: ')
+
+    else:
+        print('Unable to fetch states')
+        print(states.status_code)
+        print(states.text)
+        sys.exit(1)
+
+    districts = requests.get(f'https://cdn-api.co-vin.in/api/v2/admin/location/districts/{state}')
+    districts = None
+    if districts.status_code == 200:
+        districts = districts.json()['districts']
+        display_table(districts)
+
+        districts = input('Enter comma-separated district IDs you want to monitor: ')
+        districts = districts.split(',')
+        districts = [int(id) for id in districts]
+        return districts
+
+    else:
+        print('Unable to fetch districts')
+        print(districts.status_code)
+        print(districts.text)
+        sys.exit(1)
+
 def get_beneficiaries(request_header):
     beneficiaries = requests.get(BENEFICIARIES_URL, headers=request_header)
 
@@ -193,6 +234,7 @@ def get_beneficiaries(request_header):
 
 def generate_token_OTP(mobile):
     data = {"mobile": mobile, "secret": "U2FsdGVkX1/3I5UgN1RozGJtexc1kfsaCKPadSux9LY+cVUADlIDuKn0wCN+Y8iB4ceu6gFxNQ5cCfjm1BsmRQ=="}
+    print(f"Requesting OTP with mobile number {mobile}..")
     txnId = requests.post(url='https://cdn-api.co-vin.in/api/v2/auth/generateMobileOTP', json=data)
     
     if txnId.status_code == 200:
@@ -204,6 +246,7 @@ def generate_token_OTP(mobile):
 
     OTP = input("Enter OTP: ")
     data = {"otp": sha256(str(OTP).encode('utf-8')).hexdigest(), "txnId": txnId}
+    print(f"Validating OTP..")
 
     token = requests.post(url='https://cdn-api.co-vin.in/api/v2/auth/validateMobileOtp', json=data)
     if token.status_code == 200:
@@ -224,17 +267,19 @@ def main():
     args = parser.parse_args()
 
     token = None
-    
+    mobile = args.mobile
     if args.token:
         token = args.token
-    elif args.mobile:
-        token = generate_token_OTP(args.mobile)
+    elif mobile:
+        token = generate_token_OTP(mobile)
     
     request_header = {"Authorization": f"Bearer {token}"}
     beneficiaries_dtls = get_beneficiaries(request_header)
     
     beneficiaries = [id for id, vaccine_type in beneficiaries_dtls]
     vaccine_type = max(vaccine_type for id, vaccine_type in beneficiaries_dtls)
+
+    districts = get_districts(request_header)
 
     minimum_slots = int(input('Enter minimum number of slots available to filter for: '))
 
@@ -247,15 +292,27 @@ def main():
             pass
         
         else:
+            winsound.Beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
+            print('Token is INVALID.')
+
             tryOTP = None
-            tryOTP = input("Token is INVALID. Mobile Number for generating OTP? : ")
-            
-            if tryOTP:
-                token = generate_token_OTP(tryOTP)
-                TOKEN_VALID = True
-            else:
-                TOKEN_VALID = False
+            tryOTP = input('Try for a new Token? (y/n): ')
+            if tryOTP.lower() == 'n':
                 print("Exiting")
+                sys.exit()
+            else:
+                if mobile:
+                    tryOTP = input(f"Try for OTP with Mobile Number {mobile}? (y/n) : ")
+                    if tryOTP.lower() == 'y':
+                        token = generate_token_OTP(mobile)
+                        TOKEN_VALID = True
+                    else:
+                        TOKEN_VALID = False
+                        print("Exiting")
+                else:
+                    mobile = input(f"10 digit mobile number for new OTP generation? : ")
+                    token = generate_token_OTP(mobile)
+                    TOKEN_VALID = True
 
 if __name__ == '__main__':
     main()
