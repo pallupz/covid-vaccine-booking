@@ -27,7 +27,7 @@ python covid-vaccine-slot-booking.py --token=YOUR-TOKEN-HERE
 ### Third-Party Package Dependency:
 - ```tabulate``` : Used for displaying data in tabular format. For packgae installation, ```pip install tabulate```
 
-###s Steps:
+### Steps:
 1. Run script:
 	```python .\covid-vaccine-slot-booking.py --mobile=██████████```
 2. Select Beneficiaries. Read the important notes. You can select multiple beneficiaries by providing comma-separated index values such as ```1,2```:
