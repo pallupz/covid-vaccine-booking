@@ -1,10 +1,15 @@
 
-# COVID-19 Vaccine Second Dose Slot Booking Script
+
+# COVID-19 Vaccination Slot Booking Script
 
 This very basic script can be used to automate covid vaccination slot booking on Co-WIN Platform. No option to register new user or add beneficiaries.
 
+#### Important: 
+- POC project. Use on your own risk.
+- Do NOT use unless all beneficiaries selected are supposed to get the same vaccine and dose. 
+
 #### 3rd Party Package Dependency:
-- ```tabulate``` : Used for displaying tabular data. For packgae installation, ```pip install tabulate```
+- ```tabulate``` : Used for displaying data in tabular format. For packgae installation, ```pip install tabulate```
 
 #### Usage:
 ```
@@ -15,9 +20,8 @@ If you already have a bearer token, you can also use:
 python covid-vaccine-slot-booking.py --token=YOUR-TOKEN-HERE
 ```
 
-#### Important: 
-- POC project. Use on your own risk.
-- Do NOT use unless all beneficiaries selected are supposed to get the same vaccine and dose. 
+
+
 
 #### Steps:
 1. Run script:
@@ -25,7 +29,7 @@ python covid-vaccine-slot-booking.py --token=YOUR-TOKEN-HERE
 2. Select Beneficiaries. Read the important notes. You can select multiple beneficiaries by providing comma-separated index values such as ```1,2```:
 	```
 	Requesting OTP with mobile number ██████████..  
-	Enter OTP: 101937  
+	Enter OTP: 999999  
 	Validating OTP..  
 	Token Generated: █████████████████████████████████████████████████████████████  
 	Fetching registered beneficiaries..  
@@ -127,8 +131,24 @@ python covid-vaccine-slot-booking.py --token=YOUR-TOKEN-HERE
 	Centers available in Thrissur from 01-05-2021 as of 2021-04-30 15:13:59: 0  
 	No viable options. Waiting for next update in 15s.
 	```
-9. When a center with more than minimum number of slots is available, the script will make a beep sound - different frequency for different district. It will then display the available options as table:
+9. If at any stage your token becomes invalid, the script will make a beep and prompt for ```y``` or ```n```. If you'd like to continue, provide ```y``` and proceed to allow using same mobile number
 	```
-	Options table
+	Token is INVALID.  
+	Try for a new Token? (y/n): y
+	Try for OTP with mobile number ███████████? (y/n) : y
+	Enter OTP: 888888
+	```  
+11. When a center with more than minimum number of slots is available, the script will make a beep sound - different frequency for different district. It will then display the available options as table:
 	```
-10. Before the next update, you'll have 10 seconds to provide a choice in the format ```centerIndex, slotIndex``` eg: The input```2,4``` will select the vaccination center in second row and its fourth slot.
+	===================================================================================  
+	Centers available in Ernakulam from 01-05-2021 as of 2021-04-30 15:34:19: 1  
+	Centers available in Thrissur from 01-05-2021 as of 2021-04-30 15:34:19: 0  
+	+-------+----------------+------------+-------------+------------+------------------------------------------------------------------------------+  
+	| idx   | name           | district   | available   | date       | slots                                                                        |  
+	+=======+================+============+=============+============+==============================================================================+  
+	| 1     | Ayyampilly PHC | Ernakulam  | 30          | 01-05-2021 | ['09:00AM-10:00AM', '10:00AM-11:00AM', '11:00AM-12:00PM', '12:00PM-02:00PM'] |  
+	+-------+----------------+------------+-------------+------------+------------------------------------------------------------------------------+  
+	---------->  Wait 10 seconds for updated options OR  
+	---------->  Enter a choice e.g: 1.4 for (1st center 4th slot): 1,3
+	```
+12. Before the next update, you'll have 10 seconds to provide a choice in the format ```centerIndex, slotIndex``` eg: The input```1,4``` will select the vaccination center in second row and its fourth slot.
