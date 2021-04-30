@@ -3,7 +3,7 @@
 This very basic script can be used to automate covid vaccination slot booking on Co-WIN Platform. No option to register new user or add beneficiaries.
 
 #### 3rd Party Package Dependency:
-- ```tabulate``` : For packgae installation, ```pip install tabulate```
+- ```tabulate``` : Used for displaying tabular data. For packgae installation, ```pip install tabulate```
 
 #### Usage:
 ```
@@ -15,8 +15,8 @@ python covid-vaccine-slot-booking.py --token=YOUR-TOKEN-HERE
 ```
 
 #### Important: 
-- Do NOT use unless all beneficiaries selected are supposed to get the same vaccine. 
-- Beware of district, and a lot of other, hardcoding. Too lazy to fix.
+- POC project. Use on your own risk
+- Do NOT use unless all beneficiaries selected are supposed to get the same vaccine and dose. 
 
 #### Steps:
 1. Run script:
