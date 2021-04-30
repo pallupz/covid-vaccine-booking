@@ -33,10 +33,10 @@ class TimeoutExpired(Exception):
 def check_calendar(request_header, vaccine_type, district_dtls, minimum_slots):
     '''
     This function 
-        1. Takes details to required to check vaccination calendar
+        1. Takes details required to check vaccination calendar
         2. Filters result by minimum number of slots available
         3. Returns False if token is invalid
-        4. Returns list of vaccination centers and slots if available
+        4. Returns list of vaccination centers & slots if available
     '''
     try:
         print('===================================================================================')
