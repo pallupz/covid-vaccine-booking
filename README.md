@@ -12,9 +12,8 @@ This very basic script can be used to automate covid vaccination slot booking on
 
 #### Usage:
 
-First, if you don't already have it, install Python from https://www.python.org/downloads/. Also, it would be easier if python is added to PATH variable so that it is callable from anywhere in your system. 
+- For the uninitiated in Python, using the ```covid-vaccine-slot-booking.exe``` file would be the easiest way. It might trigger an anti-virus alert. That's only because I used ```pyinstaller``` to package it and that needs a bit more effort to avoid such alerts.
 
-Then, in command prompt, run ```pip install tabulate``` to install the third-party dependency. It would be best to do this in a venv, if you know/can find out how to create it. Even otherwise, that's fine. 
 Run the script file as show below:
 
 ```
