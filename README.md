@@ -154,6 +154,6 @@ python covid-vaccine-slot-booking.py --token=YOUR-TOKEN-HERE
 	| 1     | Ayyampilly PHC | Ernakulam  | 30          | 01-05-2021 | ['09:00AM-10:00AM', '10:00AM-11:00AM', '11:00AM-12:00PM', '12:00PM-02:00PM'] |  
 	+-------+----------------+------------+-------------+------------+------------------------------------------------------------------------------+  
 	---------->  Wait 10 seconds for updated options OR  
-	---------->  Enter a choice e.g: 1,4 for (1st center 4th slot): 1,3
+	---------->  Enter a choice e.g: 1.4 for (1st center 4th slot): 1.3
 	```
-12. Before the next update, you'll have 10 seconds to provide a choice in the format ```centerIndex, slotIndex``` eg: The input```1,4``` will select the vaccination center in second row and its fourth slot.
+12. Before the next update, you'll have 10 seconds to provide a choice in the format ```centerIndex.slotIndex``` eg: The input```1.4``` will select the vaccination center in second row and its fourth slot.
