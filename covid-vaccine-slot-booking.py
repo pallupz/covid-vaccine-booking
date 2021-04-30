@@ -4,20 +4,12 @@ import time
 import winsound
 import sys, msvcrt, tabulate, json, copy, argparse
 from hashlib import sha256
+from collections import Counter
 
 
-# change this to the district id you need. These are for TCR & EKM
-district_ids = [303, 307]
-
-URL = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByDistrict?district_id={0}&date={1}&vaccine={2}"
+CALENDAR_URL = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByDistrict?district_id={0}&date={1}"
 BOOKING_URL = "https://cdn-api.co-vin.in/api/v2/appointment/schedule"
 BENEFICIARIES_URL = "https://cdn-api.co-vin.in/api/v2/appointment/beneficiaries"
-
-BOOKING_REQUEST_TEMPLATE = {
-    "beneficiaries": [], 
-    "slot": "", 
-    "dose": 2
-    }
 
 WARNING_BEEP_DURATION = (1000, 2000)
 
@@ -27,20 +19,25 @@ def display_table(dict_list):
     rows =  [[idx + 1] + list(x.values()) for idx, x in enumerate(dict_list)]
     print(tabulate.tabulate(rows, header, tablefmt='grid'))
 
+
 class TimeoutExpired(Exception):
     pass
 
 
-def check_calendar(request_header, vaccine_type, minimum_slots):
+def check_calendar(request_header, vaccine_type, district_dtls, minimum_slots):
     try:
         print('===================================================================================')
         today = datetime.datetime.today()
-        tomorrow = today + datetime.timedelta(days=1)
+        tomorrow = (today + datetime.timedelta(days=1)).strftime("%d-%m-%Y")
+        
+        CALENDAR_URL = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByDistrict?district_id={0}&date={1}"
+
+        if vaccine_type:
+            CALENDAR_URL += f"&vaccine={vaccine_type}"
         
         options = []
-        for district_id in district_ids:
-            resp = requests.get(URL.format(district_id, tomorrow.strftime("%d-%m-%Y"), vaccine_type), 
-                                headers=request_header)
+        for district in district_dtls:
+            resp = requests.get(CALENDAR_URL.format(district['district_id'], tomorrow), headers=request_header)
             
             if resp.status_code == 401:
                 print('TOKEN INVALID')
@@ -48,11 +45,10 @@ def check_calendar(request_header, vaccine_type, minimum_slots):
 
             elif resp.status_code == 200:
                 resp = resp.json()
-                print(f"Responses at {today.strftime('%Y-%m-%d %H:%M:%S')} for dist. {district_id} for {vaccine_type}: {len(resp['centers'])}")
+                print(f"Centers available in {district['district_name']} from {tomorrow} as of {today.strftime('%Y-%m-%d %H:%M:%S')}: {len(resp['centers'])}")
 
                 if len(resp['centers']) >= 0:
                     for center in resp['centers']:
-                        print(f"######### :::: {center['district_name']}")
                         out = {}
                         for session in center['sessions']:
                             if session['available_capacity'] >= minimum_slots:
@@ -64,10 +60,7 @@ def check_calendar(request_header, vaccine_type, minimum_slots):
                                 out['slots'] = session['slots']
                                 out['session_id'] = session['session_id']
                                 options.append(out)
-                                if center['district_name'] == 'Thrissur':
-                                    winsound.Beep(440, 150)
-                                elif center['district_name'] == 'Ernakulam':
-                                    winsound.Beep(660, 150)
+                                winsound.Beep(district['district_alert_freq'], 150)
                             else:
                                 pass
                 else:
@@ -120,9 +113,9 @@ def input_with_timeout(prompt, timeout, timer=time.monotonic):
     raise TimeoutExpired
 
 
-def check_and_book(request_header, vaccine_type, beneficiaries, minimum_slots):
+def check_and_book(request_header, vaccine_type, beneficiary_dtls, district_dtls, minimum_slots):
     try:
-        options = check_calendar(request_header, vaccine_type, minimum_slots)
+        options = check_calendar(request_header, vaccine_type, district_dtls, minimum_slots)
 
         if isinstance(options, bool):
             return False
@@ -136,10 +129,10 @@ def check_and_book(request_header, vaccine_type, beneficiaries, minimum_slots):
                 cleaned_options_for_display.append(item)
 
             display_table(cleaned_options_for_display)
-            choice = input_with_timeout('----------> \nWait 10 seconds for updated options OR \n----------> \nEnter Choice e.g: 1.4 for (1st center 4th slot): ', 10)
+            choice = input_with_timeout('----------> \nWait 10 seconds for updated options OR \n----------> \nEnter a choice e.g: 1.4 for (1st center 4th slot): ', 10)
 
         else:
-            print("No viable options. Waiting for next update.")
+            print("No viable options. Waiting for next update in 15s.")
             time.sleep(15)
             choice = '.'
         
@@ -155,8 +148,11 @@ def check_and_book(request_header, vaccine_type, beneficiaries, minimum_slots):
             choice = choice.split('.')
             choice = [int(item) for item in choice]
             print(f'============> Got {choice}')
-            new_req = copy.deepcopy(BOOKING_REQUEST_TEMPLATE)
-            new_req['beneficiaries'] = beneficiaries
+            
+            new_req = {}
+            beneficiaries = [beneficiary['beneficiary_reference_id'] for beneficiary in beneficiary_dtls]
+            new_req['beneficiaries'] = beneficiaries                             # pass list of beneficiaries
+            new_req['dose'] = 2 if vaccine_type else 1                           # if vaccine type is available, then its their second dose
             new_req['center_id'] = options[choice[0] - 1]['center_id']
             new_req['session_id'] = options[choice[0] - 1]['session_id']
             new_req['slot'] = options[int(choice[0]) - 1]['slots'][choice[1] - 1]
@@ -171,15 +167,17 @@ def get_districts(request_header):
     state = None
     if states.status_code == 200:
         states = states.json()['states']
+        
         refined_states = []
-        for state in refined_states:
+        for state in states:
             tmp = {}
             tmp['state'] = state['state_name']
-            refined_beneficiaries.append(tmp)
+            refined_states.append(tmp)
         
-        display_table(refined_beneficiaries)
+        display_table(refined_states)
 
-        state = input('Enter State index: ')
+        state = int(input('Enter State index: '))
+        state_id = states[state - 1]['state_id']
 
     else:
         print('Unable to fetch states')
@@ -187,22 +185,36 @@ def get_districts(request_header):
         print(states.text)
         sys.exit(1)
 
-    districts = requests.get(f'https://cdn-api.co-vin.in/api/v2/admin/location/districts/{state}')
-    districts = None
+    districts = requests.get(f'https://cdn-api.co-vin.in/api/v2/admin/location/districts/{state_id}')
     if districts.status_code == 200:
         districts = districts.json()['districts']
-        display_table(districts)
+        
+        refined_districts = []
+        for district in districts:
+            tmp = {}
+            tmp['district'] = district['district_name']
+            refined_districts.append(tmp)
+        
+        display_table(refined_districts)
+        reqd_districts = input('Enter comma separated index numbers of districts to monitor : ')
+        districts_idx = [int(idx) -1 for idx in reqd_districts.split(',')]
+        reqd_districts = [{
+            'district_id': item['district_id'], 
+            'district_name': item['district_name'],
+            'district_alert_freq': 440 + ((2 * idx) * 110)
+            } for idx, item in enumerate(districts) if idx in districts_idx]
+        
+        print(f'Selected districts: ')
+        display_table(reqd_districts)
+        return reqd_districts
 
-        districts = input('Enter comma-separated district IDs you want to monitor: ')
-        districts = districts.split(',')
-        districts = [int(id) for id in districts]
-        return districts
 
     else:
         print('Unable to fetch districts')
         print(districts.status_code)
         print(districts.text)
         sys.exit(1)
+
 
 def get_beneficiaries(request_header):
     beneficiaries = requests.get(BENEFICIARIES_URL, headers=request_header)
@@ -216,13 +228,28 @@ def get_beneficiaries(request_header):
             tmp['beneficiary_reference_id'] = beneficiary['beneficiary_reference_id']
             tmp['name'] = beneficiary['name']
             tmp['vaccine'] = beneficiary['vaccine']
-            tmp['status'] = beneficiary['vaccination_status']
             refined_beneficiaries.append(tmp)
         
         display_table(refined_beneficiaries)
+        print("""
+        ################# IMPORTANT NOTES ################# 
+        # 1. While selecting beneficiaries, make sure that selected beneficiaries are all taking the same dose: either first OR second.
+        #    Please do no try to club together booking for first dose for one beneficiary and second dose for another beneficiary.
+        # 
+        # 2. While selecting beneficiaries, also make sure that beneficiaries selected for second dose are all taking the same vaccine: COVISHIELD OR COVAXIN.
+        #    Please do no try to club together booking for beneficiary taking COVISHIELD with beneficiary taking COVAXIN.
+        ###################################################
+        """)
         reqd_beneficiaries = input('Enter comma separated index numbers of beneficiaries to book for : ')
         beneficiary_idx = [int(idx) -1 for idx in reqd_beneficiaries.split(',')]
-        reqd_beneficiaries = [(item['beneficiary_reference_id'], item['vaccine']) for idx, item in enumerate(refined_beneficiaries) if idx in beneficiary_idx]
+        reqd_beneficiaries = [{
+            'beneficiary_reference_id': item['beneficiary_reference_id'], 
+            'vaccine': item['vaccine']
+            } for idx, item in enumerate(beneficiaries) if idx in beneficiary_idx]
+
+        
+        print(f'Selected beneficiaries: ')
+        display_table(reqd_beneficiaries)
         return reqd_beneficiaries
 
     else:
@@ -274,35 +301,39 @@ def main():
         token = generate_token_OTP(mobile)
     
     request_header = {"Authorization": f"Bearer {token}"}
-    beneficiaries_dtls = get_beneficiaries(request_header)
-    
-    beneficiaries = [id for id, vaccine_type in beneficiaries_dtls]
-    vaccine_type = max(vaccine_type for id, vaccine_type in beneficiaries_dtls)
 
-    districts = get_districts(request_header)
+    print("Fetching registered beneficiaries.. ")
+    beneficiary_dtls = get_beneficiaries(request_header)
+    assert len(beneficiary_dtls) > 0, "There should be at least one beneficiary"
 
-    minimum_slots = int(input('Enter minimum number of slots available to filter for: '))
+    vaccine_types = [beneficiary['vaccine'] for beneficiary in beneficiary_dtls]
+    vaccines = Counter(vaccine_types)
+    assert len(vaccines.keys()) == 1, f"All beneficiaries in one attempt should have the same vaccine type. Found {len(vaccines.keys())}"
+    vaccine_type = vaccine_types[0]
+
+    district_dtls = get_districts(request_header)
+    minimum_slots = int(input('Filter out centers with availability less than: '))
+    minimum_slots = minimum_slots if minimum_slots > len(beneficiary_dtls) else len(beneficiary_dtls)
 
     TOKEN_VALID = True
-    while TOKEN_VALID == True:
+    while TOKEN_VALID:
         request_header = {"Authorization": f"Bearer {token}"}
-        TOKEN_VALID = check_and_book(request_header, vaccine_type, beneficiaries, minimum_slots)
         
-        if TOKEN_VALID:
-            pass
+        TOKEN_VALID = check_and_book(request_header, vaccine_type, beneficiary_dtls, district_dtls, minimum_slots)
+        
+        beneficiaries_list = requests.get(BENEFICIARIES_URL, headers=request_header)
+        if beneficiaries_list.status_code == 200:
+            TOKEN_VALID = True
         
         else:
             winsound.Beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
             print('Token is INVALID.')
+            TOKEN_VALID = False
 
-            tryOTP = None
             tryOTP = input('Try for a new Token? (y/n): ')
-            if tryOTP.lower() == 'n':
-                print("Exiting")
-                sys.exit()
-            else:
+            if tryOTP.lower() == 'y':
                 if mobile:
-                    tryOTP = input(f"Try for OTP with Mobile Number {mobile}? (y/n) : ")
+                    tryOTP = input(f"Try for OTP with mobile number {mobile}? (y/n) : ")
                     if tryOTP.lower() == 'y':
                         token = generate_token_OTP(mobile)
                         TOKEN_VALID = True
@@ -310,9 +341,12 @@ def main():
                         TOKEN_VALID = False
                         print("Exiting")
                 else:
-                    mobile = input(f"10 digit mobile number for new OTP generation? : ")
+                    mobile = input(f"Enter 10 digit mobile number for new OTP generation? : ")
                     token = generate_token_OTP(mobile)
                     TOKEN_VALID = True
+            else:
+                print("Exiting")
+                sys.exit()
 
 if __name__ == '__main__':
     main()
