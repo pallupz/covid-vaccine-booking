@@ -22,7 +22,7 @@ python covid-vaccine-slot-booking.py --token=YOUR-TOKEN-HERE
 #### Steps:
 1. Run script:
 	```python .\covid-vaccine-slot-booking.py --mobile=██████████```
-2. Select Beneficiaries. Read the important notes. You can select multiple beneficiaries by providing comma-separated index values.:
+2. Select Beneficiaries. Read the important notes. You can select multiple beneficiaries by providing comma-separated index values such as ```1,2```:
 	```
 	Requesting OTP with mobile number ██████████..  
 	Enter OTP: 101937  
