@@ -88,6 +88,7 @@ def book_appointment(request_header, details):
             return False
 
         elif resp.status_code == 200:
+            winsound.Beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
             print('##############    BOOKED!  ##############')
             sys.exit(0)
 
@@ -96,7 +97,7 @@ def book_appointment(request_header, details):
 
     except Exception as e:
         print(str(e))
-        winsound.Beep(1000, 2000)
+        winsound.Beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
 
 
 def input_with_timeout(prompt, timeout, timer=time.monotonic):
@@ -129,7 +130,7 @@ def check_and_book(request_header, vaccine_type, beneficiary_dtls, district_dtls
                 cleaned_options_for_display.append(item)
 
             display_table(cleaned_options_for_display)
-            choice = input_with_timeout('----------> \nWait 10 seconds for updated options OR \n----------> \nEnter a choice e.g: 1.4 for (1st center 4th slot): ', 10)
+            choice = input_with_timeout('----------> Wait 10 seconds for updated options OR \n----------> Enter a choice e.g: 1,4 for (1st center 4th slot): ', 10)
 
         else:
             print("No viable options. Waiting for next update in 15s.")
