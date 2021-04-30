@@ -15,6 +15,12 @@ WARNING_BEEP_DURATION = (1000, 2000)
 
 
 def display_table(dict_list):
+    '''
+    This function 
+        1. Takes a list of dictionary
+        2. Add an Index column, and
+        3. Displays the data in tabular format
+    '''
     header = ['idx'] + list(dict_list[0].keys())
     rows =  [[idx + 1] + list(x.values()) for idx, x in enumerate(dict_list)]
     print(tabulate.tabulate(rows, header, tablefmt='grid'))
@@ -25,6 +31,13 @@ class TimeoutExpired(Exception):
 
 
 def check_calendar(request_header, vaccine_type, district_dtls, minimum_slots):
+    '''
+    This function 
+        1. Takes details to required to check vaccination calendar
+        2. Filters result by minimum number of slots available
+        3. Returns False if token is invalid
+        4. Returns list of vaccination centers and slots if available
+    '''
     try:
         print('===================================================================================')
         today = datetime.datetime.today()
@@ -76,6 +89,12 @@ def check_calendar(request_header, vaccine_type, district_dtls, minimum_slots):
 
 
 def book_appointment(request_header, details):
+    '''
+    This function 
+        1. Takes details in json format
+        2. Attempts to book an appointment using the details
+        3. Returns True or False depending on Token Validity
+    '''
     try:
         print('================================= ATTEMPTING BOOKING ==================================================')
         
@@ -101,6 +120,9 @@ def book_appointment(request_header, details):
 
 
 def input_with_timeout(prompt, timeout, timer=time.monotonic):
+    '''
+    This function gives option to provide an input but on a timer
+    '''
     sys.stdout.write(prompt)
     sys.stdout.flush()
     endtime = timer() + timeout
@@ -115,6 +137,14 @@ def input_with_timeout(prompt, timeout, timer=time.monotonic):
 
 
 def check_and_book(request_header, vaccine_type, beneficiary_dtls, district_dtls, minimum_slots):
+    '''
+    This function 
+        1. Checks the vaccination calendar for available slots, 
+        2. Lists all viable options, 
+        3. Takes user's choice of vaccination center and slot,
+        4. Calls function to book appointment, and
+        5. Returns True or False depending on Token Validity
+    '''
     try:
         options = check_calendar(request_header, vaccine_type, district_dtls, minimum_slots)
 
@@ -163,6 +193,12 @@ def check_and_book(request_header, vaccine_type, beneficiary_dtls, district_dtls
 
 
 def get_districts(request_header):
+    '''
+    This function 
+        1. Lists all states, prompts to select one, 
+        2. Lists all districts in that state, prompts to select required ones, and
+        3. Returns the list of districts as list(dict)
+    '''
     states = requests.get('https://cdn-api.co-vin.in/api/v2/admin/location/states')
 
     state = None
@@ -218,6 +254,12 @@ def get_districts(request_header):
 
 
 def get_beneficiaries(request_header):
+    '''
+    This function 
+        1. Fetches all beneficiaries registered under the mobile number,
+        2. Prompts user to select the applicable beneficiaries, and
+        3. Returns the list of beneficiaries as list(dict)
+    '''
     beneficiaries = requests.get(BENEFICIARIES_URL, headers=request_header)
 
     if beneficiaries.status_code == 200:
@@ -261,6 +303,9 @@ def get_beneficiaries(request_header):
 
 
 def generate_token_OTP(mobile):
+    """
+    This function generate OTP and returns a new token
+    """
     data = {"mobile": mobile, "secret": "U2FsdGVkX1/3I5UgN1RozGJtexc1kfsaCKPadSux9LY+cVUADlIDuKn0wCN+Y8iB4ceu6gFxNQ5cCfjm1BsmRQ=="}
     print(f"Requesting OTP with mobile number {mobile}..")
     txnId = requests.post(url='https://cdn-api.co-vin.in/api/v2/auth/generateMobileOTP', json=data)
@@ -303,16 +348,21 @@ def main():
     
     request_header = {"Authorization": f"Bearer {token}"}
 
+    # Get Beneficiaries
     print("Fetching registered beneficiaries.. ")
     beneficiary_dtls = get_beneficiaries(request_header)
     assert len(beneficiary_dtls) > 0, "There should be at least one beneficiary"
 
+    # Make sure all beneficiaries have the same type of vaccine
     vaccine_types = [beneficiary['vaccine'] for beneficiary in beneficiary_dtls]
     vaccines = Counter(vaccine_types)
     assert len(vaccines.keys()) == 1, f"All beneficiaries in one attempt should have the same vaccine type. Found {len(vaccines.keys())}"
     vaccine_type = vaccine_types[0]
-
+    
+    # Collect vaccination center preferance
     district_dtls = get_districts(request_header)
+
+    # Set filter condition
     minimum_slots = int(input('Filter out centers with availability less than: '))
     minimum_slots = minimum_slots if minimum_slots > len(beneficiary_dtls) else len(beneficiary_dtls)
 
@@ -320,13 +370,16 @@ def main():
     while TOKEN_VALID:
         request_header = {"Authorization": f"Bearer {token}"}
         
+        # call function to check and book slots
         TOKEN_VALID = check_and_book(request_header, vaccine_type, beneficiary_dtls, district_dtls, minimum_slots)
         
+        # check if token is still valid
         beneficiaries_list = requests.get(BENEFICIARIES_URL, headers=request_header)
         if beneficiaries_list.status_code == 200:
             TOKEN_VALID = True
         
         else:
+            # if token invalid, regenerate OTP and new token
             winsound.Beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
             print('Token is INVALID.')
             TOKEN_VALID = False
