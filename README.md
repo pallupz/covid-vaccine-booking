@@ -23,7 +23,7 @@ python covid-vaccine-slot-booking.py --token=YOUR-TOKEN-HERE
 
 ![image](https://user-images.githubusercontent.com/63504047/116673251-cb9fe200-a9c0-11eb-89a2-721847ec8c2d.png)
 
-2. Select Beneficiaries:
+2. Select Beneficiaries. Read the important notes. You can select multiple beneficiaries by providing comma-separated index values.:
 
 ![image](https://user-images.githubusercontent.com/63504047/116673996-b5465600-a9c1-11eb-9686-ad7a5bb4680c.png)
 
