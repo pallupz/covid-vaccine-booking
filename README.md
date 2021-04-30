@@ -1,7 +1,3 @@
-
-<<<<<<< HEAD
-=======
-
 # COVID-19 Vaccination Slot Booking Script
 
 This very basic script can be used to automate covid vaccination slot booking on Co-WIN Platform. 
@@ -155,4 +151,3 @@ python covid-vaccine-slot-booking.py --token=YOUR-TOKEN-HERE
 	---------->  Enter a choice e.g: 1,4 for (1st center 4th slot): 1,3
 	```
 12. Before the next update, you'll have 10 seconds to provide a choice in the format ```centerIndex, slotIndex``` eg: The input```1,4``` will select the vaccination center in second row and its fourth slot.
->>>>>>> parent of 3eb7804... Update README.md
