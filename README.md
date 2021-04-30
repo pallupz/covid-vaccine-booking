@@ -9,7 +9,7 @@ This very basic script can be used to automate covid vaccination slot booking on
 - Do NOT use unless all beneficiaries selected are supposed to get the same vaccine and dose. 
 - No option to register new user or add beneficiaries. This can be used only after beneficiary has been added through the official app/site
 
-#### 3rd Party Package Dependency:
+#### Third-Party Package Dependency:
 - ```tabulate``` : Used for displaying data in tabular format. For packgae installation, ```pip install tabulate```
 
 #### Usage:
