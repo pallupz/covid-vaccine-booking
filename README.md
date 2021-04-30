@@ -1,8 +1,11 @@
 # COVID-19 Vaccine Second Dose Slot Booking Script
 
-This very basic script can be used to automate covid vaccine second dose slot booking on Co-WIN Platform. No option to register new user or add beneficiaries .
+This very basic script can be used to automate covid vaccination slot booking on Co-WIN Platform. No option to register new user or add beneficiaries.
 
-### Usage:
+#### 3rd Party Package Dependency:
+- ```tabulate``` : For packgae installation, ```pip install tabulate```
+
+#### Usage:
 ```
 python covid-vaccine-slot-booking.py --mobile=9876543210
 ```
@@ -14,3 +17,19 @@ python covid-vaccine-slot-booking.py --token=YOUR-TOKEN-HERE
 #### Important: 
 - Do NOT use unless all beneficiaries selected are supposed to get the same vaccine. 
 - Beware of district, and a lot of other, hardcoding. Too lazy to fix.
+
+#### Steps:
+1. Run script:
+
+![image](https://user-images.githubusercontent.com/63504047/116673251-cb9fe200-a9c0-11eb-89a2-721847ec8c2d.png)
+
+2. Select Beneficiaries:
+
+![image](https://user-images.githubusercontent.com/63504047/116673996-b5465600-a9c1-11eb-9686-ad7a5bb4680c.png)
+
+3. Ensure correct beneficiary is getting selected:
+
+![image](https://user-images.githubusercontent.com/63504047/116674114-ddce5000-a9c1-11eb-8aca-7305a5517a55.png)
+
+4. Select a state and districts. Multiple districts can be selected by providing comma-separated index values
+5. 
