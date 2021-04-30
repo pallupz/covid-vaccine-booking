@@ -5,7 +5,7 @@
 This very basic script can be used to automate covid vaccination slot booking on Co-WIN Platform. No option to register new user or add beneficiaries.
 
 #### Important: 
-- POC project. Use on your own risk.
+- POC project. **Use on your own risk**.
 - Do NOT use unless all beneficiaries selected are supposed to get the same vaccine and dose. 
 
 #### 3rd Party Package Dependency:
