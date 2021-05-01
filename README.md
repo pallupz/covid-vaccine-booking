@@ -20,7 +20,7 @@ OR
 Run the script file as show below:
 
 ```
-python covid-vaccine-slot-booking.py --mobile=9876543210
+python covid-vaccine-slot-booking.py
 ```
 If you already have a bearer token, you can also use:
 ```
@@ -32,9 +32,10 @@ python covid-vaccine-slot-booking.py --token=YOUR-TOKEN-HERE
 
 ### Steps:
 1. Run script:
-	```python .\covid-vaccine-slot-booking.py --mobile=██████████```
+	```python .\covid-vaccine-slot-booking.py```
 2. Select Beneficiaries. Read the important notes. You can select multiple beneficiaries by providing comma-separated index values such as ```1,2```:
 	```
+	Enter the registered mobile number: ██████████
 	Requesting OTP with mobile number ██████████..  
 	Enter OTP: 999999  
 	Validating OTP..  
