@@ -5,12 +5,18 @@ import winsound
 import sys, msvcrt, tabulate, json, copy, argparse, os
 from hashlib import sha256
 from collections import Counter
-
+from math import sin, cos, sqrt, atan2, radians
 
 CALENDAR_URL = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByDistrict?district_id={0}&date={1}"
 BOOKING_URL = "https://cdn-api.co-vin.in/api/v2/appointment/schedule"
 BENEFICIARIES_URL = "https://cdn-api.co-vin.in/api/v2/appointment/beneficiaries"
 WARNING_BEEP_DURATION = (1000, 2000)
+
+with open('./data/geocode_IN.json') as f:
+    data = json.load(f)
+
+PIN_lat = data[0]
+PIN_long = data[1]
 
 
 def beep(freq, duration):
@@ -25,7 +31,7 @@ def display_table(dict_list):
         3. Displays the data in tabular format
     '''
     header = ['idx'] + list(dict_list[0].keys())
-    rows =  [[idx + 1] + list(x.values()) for idx, x in enumerate(dict_list)]
+    rows = [[idx + 1] + list(x.values()) for idx, x in enumerate(dict_list)]
     print(tabulate.tabulate(rows, header, tablefmt='grid'))
 
 
@@ -33,7 +39,36 @@ class TimeoutExpired(Exception):
     pass
 
 
-def check_calendar(request_header, vaccine_type, district_dtls, minimum_slots, min_age_booking):
+def calc_haversine_distance(lat1, lon1, lat2, lon2):
+    """
+    This function calculates the haversine distance between two points
+    :param lat1:
+    :param lon1:
+    :param lat2:
+    :param lon2:
+    :return:
+    """
+
+    # approximate radius of earth in km
+    R = 6373.0
+
+    lat1 = radians(float(lat1))
+    lat2 = radians(float(lat2))
+    lon1 = radians(float(lon1))
+    lon2 = radians(float(lon2))
+
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+
+    a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
+    c = 2 * atan2(sqrt(a), sqrt(1 - a))
+
+    distance = R * c
+
+    return distance
+
+
+def check_calendar(request_header, vaccine_type, district_dtls, minimum_slots, min_age_booking, lat, long):
     '''
     This function
         1. Takes details required to check vaccination calendar
@@ -41,6 +76,13 @@ def check_calendar(request_header, vaccine_type, district_dtls, minimum_slots, m
         3. Returns False if token is invalid
         4. Returns list of vaccination centers & slots if available
     '''
+
+    # if latitude and longitude are not available for distance calc, then plugging in center of India
+    if lat is None:
+        lat = 20.5937
+    if long is None:
+        long = 78.9629
+
     try:
         print('===================================================================================')
         today = datetime.datetime.today()
@@ -75,22 +117,35 @@ def check_calendar(request_header, vaccine_type, district_dtls, minimum_slots, m
                                 out['date'] = session['date']
                                 out['slots'] = session['slots']
                                 out['session_id'] = session['session_id']
+                                out['min_age_limit'] = session['min_age_limit']
+
+                                if isinstance(center['lat'], float):
+                                    center_lat = center['lat']
+                                    center_long = center['long']
+                                else:
+                                    center_PIN = center['pincode']
+                                    center_lat = PIN_lat.get(str(center_PIN))
+                                    center_long = PIN_long.get(str(center_PIN))
+
+                                distance = calc_haversine_distance(lat, long, center_lat, center_long)
+                                out['distance'] = distance
                                 options.append(out)
 
                             else:
                                 pass
+
                 else:
                     pass
             else:
                 pass
-        
+
         for dist in set([item['district'] for item in options]):
             for district in district_dtls:
                 if dist == district['district_name']:
                     for _ in range(2):
                         # beep twice for each district with a slot
                         beep(district['district_alert_freq'], 150)
-        
+
         return options
 
     except Exception as e:
@@ -148,7 +203,8 @@ def input_with_timeout(prompt, timeout, timer=time.monotonic):
     raise TimeoutExpired
 
 
-def check_and_book(request_header, vaccine_type, beneficiary_dtls, district_dtls, minimum_slots, min_age_booking):
+def check_and_book(request_header, vaccine_type, beneficiary_dtls, district_dtls, minimum_slots, min_age_booking,
+                   autobook=False, lat=None, long=None):
     '''
     This function
         1. Checks the vaccination calendar for available slots,
@@ -157,13 +213,21 @@ def check_and_book(request_header, vaccine_type, beneficiary_dtls, district_dtls
         4. Calls function to book appointment, and
         5. Returns True or False depending on Token Validity
     '''
+
+    if autobook:
+        if lat is None:
+            raise ValueError("Latitude and Longitude have to be defined for autobook")
+        elif long is None:
+            raise ValueError("Latitude and Longitude have to be defined for autobook")
+
     try:
-        options = check_calendar(request_header, vaccine_type, district_dtls, minimum_slots, min_age_booking)
+        options = check_calendar(request_header, vaccine_type, district_dtls, minimum_slots, min_age_booking, lat, long)
 
         if isinstance(options, bool):
             return False
 
-        options = sorted(options, key=lambda k: (k['district'].lower(), k['name'].lower(), datetime.datetime.strptime(k['date'], "%d-%m-%Y")))
+        options = sorted(options, key=lambda k: (
+        k['distance'], datetime.datetime.strptime(k['date'], "%d-%m-%Y"), k['name'].lower()))
 
         tmp_options = copy.deepcopy(options)
         if len(tmp_options) > 0:
@@ -171,10 +235,17 @@ def check_and_book(request_header, vaccine_type, beneficiary_dtls, district_dtls
             for item in tmp_options:
                 item.pop('session_id', None)
                 item.pop('center_id', None)
+                item.pop('distance', None)
+                item.pop('min_age_limit', None)
                 cleaned_options_for_display.append(item)
 
             display_table(cleaned_options_for_display)
-            choice = input_with_timeout('----------> Wait 10 seconds for updated options OR \n----------> Enter a choice e.g: 1.4 for (1st center 4th slot): ', 10)
+            if autobook:
+                choice = "1.1"
+            else:
+                choice = input_with_timeout(
+                    '----------> Wait 10 seconds for updated options OR \n----------> Enter a choice e.g: 1.4 for (1st center 4th slot): ',
+                    10)
 
         else:
             for i in range(15, 0, -1):
@@ -370,6 +441,10 @@ def generate_token_OTP(mobile):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--token', help='Pass token directly')
+    parser.add_argument('--lat', default=None, help='Latitude of your location')
+    parser.add_argument('--long', default=None, help='Longitude of your location')
+    parser.add_argument('--PINCode', default=None, help='PIN Code of your location')
+
     args = parser.parse_args()
 
     token = None
@@ -379,6 +454,17 @@ def main():
         else:
             mobile = input("Enter the registered mobile number: ")
             token = generate_token_OTP(mobile)
+
+        if (args.lat is not None) and (args.long is not None):
+            lat = args.lat
+            long = args.long
+        elif args.PINCode is not None:
+            lat = PIN_lat.get(str(args.PINCode))
+            long = PIN_long.get(str(args.PINCode))
+
+        else:
+            lat = None
+            long = None
 
         request_header = {"Authorization": f"Bearer {token}"}
 
@@ -417,7 +503,8 @@ def main():
             request_header = {"Authorization": f"Bearer {token}"}
 
             # call function to check and book slots
-            TOKEN_VALID = check_and_book(request_header, vaccine_type, beneficiary_dtls, district_dtls, minimum_slots, min_age_booking)
+            TOKEN_VALID = check_and_book(request_header, vaccine_type, beneficiary_dtls, district_dtls, minimum_slots,
+                                         min_age_booking, False, lat, long)
 
             # check if token is still valid
             beneficiaries_list = requests.get(BENEFICIARIES_URL, headers=request_header)
