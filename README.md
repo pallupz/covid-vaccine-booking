@@ -1,6 +1,6 @@
 # COVID-19 Vaccination Slot Booking Script
 
-This very basic script can be used to automate covid vaccination slot booking on Co-WIN Platform. 
+This very basic CLI based script can be used to automate covid vaccination slot booking on Co-WIN Platform. 
 
 ### Important: 
 - POC project. **Use at your own risk**.
@@ -20,44 +20,64 @@ OR
 Run the script file as show below:
 
 ```
-python covid-vaccine-slot-booking.py --mobile=9876543210
+python covid-vaccine-slot-booking.py
 ```
+
 If you already have a bearer token, you can also use:
+
 ```
 python covid-vaccine-slot-booking.py --token=YOUR-TOKEN-HERE
 ```
 
+#### Optional Arguments:
+
+To sort locations by distance, you need to either specify the PIN Code, or your latitude and longitude
+
+```
+python covid-vaccine-slot-booking.py --PINCode 110092
+```
+
+or
+
+```
+python covid-vaccine-slot-booking.py --lat=28.636589 --long=77.274315
+```
+
 ### Third-Party Package Dependency:
+
 - ```tabulate``` : Used for displaying data in tabular format. For packgae installation, ```pip install tabulate```
 
 ### Steps:
+
 1. Run script:
-	```python .\covid-vaccine-slot-booking.py --mobile=██████████```
-2. Select Beneficiaries. Read the important notes. You can select multiple beneficiaries by providing comma-separated index values such as ```1,2```:
-	```
-	Requesting OTP with mobile number ██████████..  
-	Enter OTP: 999999  
-	Validating OTP..  
-	Token Generated: █████████████████████████████████████████████████████████████  
-	Fetching registered beneficiaries..  
-	+-------+----------------------------+---------------------------+------------+  
-	| idx   | beneficiary_reference_id   | name                      | vaccine    |  
-	+=======+============================+===========================+============+  
-	| 1     | ██████████████             | █████████████████████████ | COVISHIELD |  
-	+-------+----------------------------+---------------------------+------------+  
-	| 2     | ██████████████             | █████████████████         |            |  
-	+-------+----------------------------+---------------------------+------------+  
-	  
-	################# IMPORTANT NOTES #################  
-	# 1. While selecting beneficiaries, make sure that selected beneficiaries are all taking the same dose: either first OR second.  
-	# Please do no try to club together booking for first dose for one beneficiary and second dose for another beneficiary.  
-	#  
-	# 2. While selecting beneficiaries, also make sure that beneficiaries selected for second dose are all taking the same vaccine: COVISHIELD OR COVAXIN.  
-	# Please do no try to club together booking for beneficiary taking COVISHIELD with beneficiary taking COVAXIN.  
-	###################################################  
-	  
-	Enter comma separated index numbers of beneficiaries to book for : 2
-	```
+   ```python .\covid-vaccine-slot-booking.py```
+2. Select Beneficiaries. Read the important notes. You can select multiple beneficiaries by providing comma-separated
+   index values such as ```1,2```:
+   ```
+   Enter the registered mobile number: ██████████
+   Requesting OTP with mobile number ██████████..  
+   Enter OTP: 999999  
+   Validating OTP..  
+   Token Generated: █████████████████████████████████████████████████████████████  
+   Fetching registered beneficiaries..  
+   +-------+----------------------------+---------------------------+------------+  
+   | idx   | beneficiary_reference_id   | name                      | vaccine    |  
+   +=======+============================+===========================+============+  
+   | 1     | ██████████████             | █████████████████████████ | COVISHIELD |  
+   +-------+----------------------------+---------------------------+------------+  
+   | 2     | ██████████████             | █████████████████         |            |  
+   +-------+----------------------------+---------------------------+------------+  
+     
+   ################# IMPORTANT NOTES #################  
+   # 1. While selecting beneficiaries, make sure that selected beneficiaries are all taking the same dose: either first OR second.  
+   # Please do no try to club together booking for first dose for one beneficiary and second dose for another beneficiary.  
+   #  
+   # 2. While selecting beneficiaries, also make sure that beneficiaries selected for second dose are all taking the same vaccine: COVISHIELD OR COVAXIN.  
+   # Please do no try to club together booking for beneficiary taking COVISHIELD with beneficiary taking COVAXIN.  
+   ###################################################  
+     
+   Enter comma separated index numbers of beneficiaries to book for : 2
+   ```
 
 
 3. Ensure correct beneficiaries are getting selected:
