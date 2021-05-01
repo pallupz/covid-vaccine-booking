@@ -161,7 +161,7 @@ def check_and_book(request_header, vaccine_type, beneficiary_dtls, district_dtls
                 cleaned_options_for_display.append(item)
 
             display_table(cleaned_options_for_display)
-            choice = input_with_timeout('----------> Wait 10 seconds for updated options OR \n----------> Enter a choice e.g: 1,4 for (1st center 4th slot): ', 10)
+            choice = input_with_timeout('----------> Wait 10 seconds for updated options OR \n----------> Enter a choice e.g: 1.4 for (1st center 4th slot): ', 10)
 
         else:
             print("No viable options. Waiting for next update in 15s.")
