@@ -1,6 +1,6 @@
 # COVID-19 Vaccination Slot Booking Script
 
-This very basic script can be used to automate covid vaccination slot booking on Co-WIN Platform. 
+This very basic CLI based script can be used to automate covid vaccination slot booking on Co-WIN Platform. 
 
 ### Important: 
 - POC project. **Use at your own risk**.
