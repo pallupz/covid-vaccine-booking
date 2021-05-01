@@ -151,6 +151,8 @@ def check_and_book(request_header, vaccine_type, beneficiary_dtls, district_dtls
 
         if isinstance(options, bool):
             return False
+
+        options = sorted(options, key=lambda k: (k['name'].lower(), k['date']))
         
         tmp_options = copy.deepcopy(options)
         if len(tmp_options) > 0:
@@ -268,7 +270,6 @@ def get_beneficiaries(request_header):
         
         refined_beneficiaries = []
         for beneficiary in beneficiaries:
-
             beneficiary['age'] = datetime.datetime.today().year - int(beneficiary['birth_year'])
 
             tmp = {}
