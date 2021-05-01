@@ -177,8 +177,11 @@ def check_and_book(request_header, vaccine_type, beneficiary_dtls, district_dtls
             choice = input_with_timeout('----------> Wait 10 seconds for updated options OR \n----------> Enter a choice e.g: 1.4 for (1st center 4th slot): ', 10)
 
         else:
-            print("No viable options. Waiting for next update in 15s.")
-            time.sleep(15)
+            for i in range(15, 0, -1):
+                msg = f"No viable options. Next update in {i} seconds.."
+                print(msg, end="\r", flush=True)
+                sys.stdout.flush()
+                time.sleep(1)
             choice = '.'
 
 
