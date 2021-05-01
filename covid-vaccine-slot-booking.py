@@ -2,7 +2,7 @@ import requests
 import datetime
 import time
 import winsound
-import sys, msvcrt, tabulate, json, copy, argparse
+import sys, msvcrt, tabulate, json, copy, argparse, os
 from hashlib import sha256
 from collections import Counter
 
@@ -10,11 +10,8 @@ from collections import Counter
 CALENDAR_URL = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByDistrict?district_id={0}&date={1}"
 BOOKING_URL = "https://cdn-api.co-vin.in/api/v2/appointment/schedule"
 BENEFICIARIES_URL = "https://cdn-api.co-vin.in/api/v2/appointment/beneficiaries"
+
 WARNING_BEEP_DURATION = (1000, 2000)
-
-
-def beep(freq, duration):
-    winsound.Beep(freq, duration)
 
 
 def display_table(dict_list):
@@ -31,23 +28,6 @@ def display_table(dict_list):
 
 class TimeoutExpired(Exception):
     pass
-
-
-def input_with_timeout(prompt, timeout, timer=time.monotonic):
-    '''
-    This function gives option to provide an input but on a timer
-    '''
-    sys.stdout.write(prompt)
-    sys.stdout.flush()
-    endtime = timer() + timeout
-    result = []
-    while timer() < endtime:
-        if msvcrt.kbhit():
-            result.append(msvcrt.getwche()) #XXX can it block on multibyte characters?
-            if result[-1] == '\r':
-                return ''.join(result[:-1])
-        time.sleep(0.04) # just to yield to other processes/threads
-    raise TimeoutExpired
 
 
 def check_calendar(request_header, vaccine_type, district_dtls, minimum_slots, min_age_booking):
@@ -92,10 +72,8 @@ def check_calendar(request_header, vaccine_type, district_dtls, minimum_slots, m
                                 out['date'] = session['date']
                                 out['slots'] = session['slots']
                                 out['session_id'] = session['session_id']
-                                out['min_age_limit'] = session['min_age_limit']
                                 options.append(out)
-                                
-                                beep(district['district_alert_freq'], 150)
+                                winsound.Beep(district['district_alert_freq'], 150)
                             else:
                                 pass
                 else:
@@ -107,7 +85,7 @@ def check_calendar(request_header, vaccine_type, district_dtls, minimum_slots, m
 
     except Exception as e:
         print(str(e))
-        beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
+        winsound.Beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
 
 
 def book_appointment(request_header, details):
@@ -129,16 +107,35 @@ def book_appointment(request_header, details):
             return False
 
         elif resp.status_code == 200:
-            beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
+            winsound.Beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
             print('##############    BOOKED!  ##############')
-            sys.exit(0)
+            os.system("pause")
 
         else:
+            print(f'Response: {resp.status_code} : {resp.text}')
+            os.system("pause")
             return True
 
     except Exception as e:
         print(str(e))
-        beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
+        winsound.Beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
+
+
+def input_with_timeout(prompt, timeout, timer=time.monotonic):
+    '''
+    This function gives option to provide an input but on a timer
+    '''
+    sys.stdout.write(prompt)
+    sys.stdout.flush()
+    endtime = timer() + timeout
+    result = []
+    while timer() < endtime:
+        if msvcrt.kbhit():
+            result.append(msvcrt.getwche()) #XXX can it block on multibyte characters?
+            if result[-1] == '\r':
+                return ''.join(result[:-1])
+        time.sleep(0.04) # just to yield to other processes/threads
+    raise TimeoutExpired
 
 
 def check_and_book(request_header, vaccine_type, beneficiary_dtls, district_dtls, minimum_slots, min_age_booking):
@@ -157,7 +154,7 @@ def check_and_book(request_header, vaccine_type, beneficiary_dtls, district_dtls
             return False
 
         options = sorted(options, key=lambda k: (k['district'].lower(), k['name'].lower(), datetime.datetime.strptime(k['date'], "%d-%m-%Y")))
-
+        
         tmp_options = copy.deepcopy(options)
         if len(tmp_options) > 0:
             cleaned_options_for_display = []
@@ -227,7 +224,7 @@ def get_districts(request_header):
         print('Unable to fetch states')
         print(states.status_code)
         print(states.text)
-        sys.exit(1)
+        os.system("pause")
 
     districts = requests.get(f'https://cdn-api.co-vin.in/api/v2/admin/location/districts/{state_id}')
     if districts.status_code == 200:
@@ -257,7 +254,7 @@ def get_districts(request_header):
         print('Unable to fetch districts')
         print(districts.status_code)
         print(districts.text)
-        sys.exit(1)
+        os.system("pause")
 
 
 def get_beneficiaries(request_header):
@@ -281,7 +278,6 @@ def get_beneficiaries(request_header):
             tmp['name'] = beneficiary['name']
             tmp['vaccine'] = beneficiary['vaccine']
             tmp['age'] = beneficiary['age']
-
             refined_beneficiaries.append(tmp)
         
         display_table(refined_beneficiaries)
@@ -294,7 +290,7 @@ def get_beneficiaries(request_header):
         #    Please do no try to club together booking for beneficiary taking COVISHIELD with beneficiary taking COVAXIN.
         #
         # 3. If you're selecting multiple beneficiaries, make sure all are of the same age group (45+ or 18+) as defined by the govt.
-        #    Please do not try to club together booking for younger and older beneficiaries. 
+        #    Please do not try to club together booking for younger and older beneficiaries.
         ###################################################
         """)
         reqd_beneficiaries = input('Enter comma separated index numbers of beneficiaries to book for : ')
@@ -313,7 +309,7 @@ def get_beneficiaries(request_header):
         print('Unable to fetch beneficiaries')
         print(beneficiaries.status_code)
         print(beneficiaries.text)
-        sys.exit(1)
+        os.system("pause")
 
 
 def get_min_age(beneficiary_dtls):
@@ -325,6 +321,7 @@ def get_min_age(beneficiary_dtls):
     age_list = [item['age'] for item in beneficiary_dtls]
     min_age = min(age_list)
     return min_age
+
 
 def generate_token_OTP(mobile):
     """
@@ -339,7 +336,7 @@ def generate_token_OTP(mobile):
     else:
         print('Unable to Create OTP')
         print(txnId.text)
-        sys.exit(1)
+        os.system("pause")
 
     OTP = input("Enter OTP: ")
     data = {"otp": sha256(str(OTP).encode('utf-8')).hexdigest(), "txnId": txnId}
@@ -351,7 +348,7 @@ def generate_token_OTP(mobile):
     else:
         print('Unable to Validate OTP')
         print(token.text)
-        sys.exit(1)
+        os.system("pause")
     
     print(f'Token Generated: {token}')
     return token
@@ -359,74 +356,89 @@ def generate_token_OTP(mobile):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--mobile', help='Pass the registered mobile to generate OTP')
     parser.add_argument('--token', help='Pass token directly')
     args = parser.parse_args()
 
     token = None
-    mobile = args.mobile
-    if args.token:
-        token = args.token
-    elif mobile:
-        token = generate_token_OTP(mobile)
-    
-    request_header = {"Authorization": f"Bearer {token}"}
-
-    # Get Beneficiaries
-    print("Fetching registered beneficiaries.. ")
-    beneficiary_dtls = get_beneficiaries(request_header)
-    assert len(beneficiary_dtls) > 0, "There should be at least one beneficiary"
-
-    min_age_booking = get_min_age(beneficiary_dtls)
-
-    # Make sure all beneficiaries have the same type of vaccine
-    vaccine_types = [beneficiary['vaccine'] for beneficiary in beneficiary_dtls]
-    vaccines = Counter(vaccine_types)
-    assert len(vaccines.keys()) == 1, f"All beneficiaries in one attempt should have the same vaccine type. Found {len(vaccines.keys())}"
-    vaccine_type = vaccine_types[0]
-    
-    # Collect vaccination center preferance
-    district_dtls = get_districts(request_header)
-
-    # Set filter condition
-    minimum_slots = int(input('Filter out centers with availability less than: '))
-    minimum_slots = minimum_slots if minimum_slots > len(beneficiary_dtls) else len(beneficiary_dtls)
-
-    TOKEN_VALID = True
-    while TOKEN_VALID:
-        request_header = {"Authorization": f"Bearer {token}"}
-        
-        # call function to check and book slots
-        TOKEN_VALID = check_and_book(request_header, vaccine_type, beneficiary_dtls, district_dtls, minimum_slots, min_age_booking)
-        
-        # check if token is still valid
-        beneficiaries_list = requests.get(BENEFICIARIES_URL, headers=request_header)
-        if beneficiaries_list.status_code == 200:
-            TOKEN_VALID = True
-        
+    try:
+        if args.token:
+            token = args.token
         else:
-            # if token invalid, regenerate OTP and new token
-            beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
-            print('Token is INVALID.')
-            TOKEN_VALID = False
+            mobile = input("Enter the registered mobile number: ")    
+            token = generate_token_OTP(mobile)
+        
+        request_header = {"Authorization": f"Bearer {token}"}
 
-            tryOTP = input('Try for a new Token? (y/n): ')
-            if tryOTP.lower() == 'y':
-                if mobile:
-                    tryOTP = input(f"Try for OTP with mobile number {mobile}? (y/n) : ")
-                    if tryOTP.lower() == 'y':
+        # Get Beneficiaries
+        print("Fetching registered beneficiaries.. ")
+        beneficiary_dtls = get_beneficiaries(request_header)
+        
+        if len(beneficiary_dtls) == 0:
+            print("There should be at least one beneficiary. Exiting.")
+            os.system("pause")
+            sys.exit(1)
+
+        min_age_booking = get_min_age(beneficiary_dtls)
+
+        # Make sure all beneficiaries have the same type of vaccine
+        vaccine_types = [beneficiary['vaccine'] for beneficiary in beneficiary_dtls]
+        vaccines = Counter(vaccine_types)
+
+        if len(vaccines.keys()) != 1:
+            print(f"All beneficiaries in one attempt should have the same vaccine type. Found {len(vaccines.keys())}")
+            os.system("pause")
+            sys.exit(1)
+
+
+        vaccine_type = vaccine_types[0]
+        
+        # Collect vaccination center preferance
+        district_dtls = get_districts(request_header)
+
+        # Set filter condition
+        minimum_slots = int(input('Filter out centers with availability less than: '))
+        minimum_slots = minimum_slots if minimum_slots > len(beneficiary_dtls) else len(beneficiary_dtls)
+
+        TOKEN_VALID = True
+        while TOKEN_VALID:
+            request_header = {"Authorization": f"Bearer {token}"}
+            
+            # call function to check and book slots
+            TOKEN_VALID = check_and_book(request_header, vaccine_type, beneficiary_dtls, district_dtls, minimum_slots, min_age_booking)
+            
+            # check if token is still valid
+            beneficiaries_list = requests.get(BENEFICIARIES_URL, headers=request_header)
+            if beneficiaries_list.status_code == 200:
+                TOKEN_VALID = True
+            
+            else:
+                # if token invalid, regenerate OTP and new token
+                winsound.Beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
+                print('Token is INVALID.')
+                TOKEN_VALID = False
+
+                tryOTP = input('Try for a new Token? (y/n): ')
+                if tryOTP.lower() == 'y':
+                    if mobile:
+                        tryOTP = input(f"Try for OTP with mobile number {mobile}? (y/n) : ")
+                        if tryOTP.lower() == 'y':
+                            token = generate_token_OTP(mobile)
+                            TOKEN_VALID = True
+                        else:
+                            TOKEN_VALID = False
+                            print("Exiting")
+                    else:
+                        mobile = input(f"Enter 10 digit mobile number for new OTP generation? : ")
                         token = generate_token_OTP(mobile)
                         TOKEN_VALID = True
-                    else:
-                        TOKEN_VALID = False
-                        print("Exiting")
                 else:
-                    mobile = input(f"Enter 10 digit mobile number for new OTP generation? : ")
-                    token = generate_token_OTP(mobile)
-                    TOKEN_VALID = True
-            else:
-                print("Exiting")
-                sys.exit()
+                    print("Exiting")
+                    os.system("pause")
+    
+    except Exception as e:
+        print(str(e))
+        print('Exiting Script')
+        os.system("pause")
 
 if __name__ == '__main__':
     main()
