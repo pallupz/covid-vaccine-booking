@@ -30,7 +30,7 @@ class TimeoutExpired(Exception):
     pass
 
 
-def check_calendar(request_header, vaccine_type, district_dtls, minimum_slots):
+def check_calendar(request_header, vaccine_type, district_dtls, minimum_slots, min_age_booking):
     '''
     This function 
         1. Takes details required to check vaccination calendar
@@ -64,7 +64,7 @@ def check_calendar(request_header, vaccine_type, district_dtls, minimum_slots):
                     for center in resp['centers']:
                         out = {}
                         for session in center['sessions']:
-                            if session['available_capacity'] >= minimum_slots:
+                            if (session['available_capacity'] >= minimum_slots) and (session['min_age_limit'] <= min_age_booking):
                                 out['name'] = center['name']
                                 out['district'] = center['district_name']
                                 out['center_id'] = center['center_id']
@@ -72,6 +72,7 @@ def check_calendar(request_header, vaccine_type, district_dtls, minimum_slots):
                                 out['date'] = session['date']
                                 out['slots'] = session['slots']
                                 out['session_id'] = session['session_id']
+                                out['min_age_limit'] = session['min_age_limit']
                                 options.append(out)
                                 winsound.Beep(district['district_alert_freq'], 150)
                             else:
@@ -136,7 +137,7 @@ def input_with_timeout(prompt, timeout, timer=time.monotonic):
     raise TimeoutExpired
 
 
-def check_and_book(request_header, vaccine_type, beneficiary_dtls, district_dtls, minimum_slots):
+def check_and_book(request_header, vaccine_type, beneficiary_dtls, district_dtls, minimum_slots, min_age_booking):
     '''
     This function 
         1. Checks the vaccination calendar for available slots, 
@@ -146,7 +147,7 @@ def check_and_book(request_header, vaccine_type, beneficiary_dtls, district_dtls
         5. Returns True or False depending on Token Validity
     '''
     try:
-        options = check_calendar(request_header, vaccine_type, district_dtls, minimum_slots)
+        options = check_calendar(request_header, vaccine_type, district_dtls, minimum_slots, min_age_booking)
 
         if isinstance(options, bool):
             return False
@@ -267,10 +268,15 @@ def get_beneficiaries(request_header):
         
         refined_beneficiaries = []
         for beneficiary in beneficiaries:
+
+            beneficiary['age'] = datetime.datetime.today().year - int(beneficiary['birth_year'])
+
             tmp = {}
             tmp['beneficiary_reference_id'] = beneficiary['beneficiary_reference_id']
             tmp['name'] = beneficiary['name']
             tmp['vaccine'] = beneficiary['vaccine']
+            tmp['age'] = beneficiary['age']
+
             refined_beneficiaries.append(tmp)
         
         display_table(refined_beneficiaries)
@@ -281,13 +287,16 @@ def get_beneficiaries(request_header):
         # 
         # 2. While selecting beneficiaries, also make sure that beneficiaries selected for second dose are all taking the same vaccine: COVISHIELD OR COVAXIN.
         #    Please do no try to club together booking for beneficiary taking COVISHIELD with beneficiary taking COVAXIN.
+        #
+        # 3. If you select two beneficiaries, one who is 45+, and another who is less than 45, then only centers where both are eligible will be displayed
+        #    If you do not want this to happen, then run separately for 45+ and less than 45 beneficiaries
         ###################################################
         """)
         reqd_beneficiaries = input('Enter comma separated index numbers of beneficiaries to book for : ')
         beneficiary_idx = [int(idx) -1 for idx in reqd_beneficiaries.split(',')]
         reqd_beneficiaries = [{
             'beneficiary_reference_id': item['beneficiary_reference_id'], 
-            'vaccine': item['vaccine']
+            'vaccine': item['vaccine'], 'age' : item['age']
             } for idx, item in enumerate(beneficiaries) if idx in beneficiary_idx]
 
         
@@ -301,6 +310,18 @@ def get_beneficiaries(request_header):
         print(beneficiaries.text)
         sys.exit(1)
 
+
+def get_min_age(beneficiary_dtls):
+    """
+    This function returns a min age argument, based on age of all beneficiaries
+    :param beneficiaries:
+    :return: min_age:int
+    """
+    age_list = [item['age'] for item in beneficiary_dtls]
+
+    min_age = min(age_list)
+
+    return min_age
 
 def generate_token_OTP(mobile):
     """
@@ -353,6 +374,8 @@ def main():
     beneficiary_dtls = get_beneficiaries(request_header)
     assert len(beneficiary_dtls) > 0, "There should be at least one beneficiary"
 
+    min_age_booking = get_min_age(beneficiary_dtls)
+
     # Make sure all beneficiaries have the same type of vaccine
     vaccine_types = [beneficiary['vaccine'] for beneficiary in beneficiary_dtls]
     vaccines = Counter(vaccine_types)
@@ -371,7 +394,7 @@ def main():
         request_header = {"Authorization": f"Bearer {token}"}
         
         # call function to check and book slots
-        TOKEN_VALID = check_and_book(request_header, vaccine_type, beneficiary_dtls, district_dtls, minimum_slots)
+        TOKEN_VALID = check_and_book(request_header, vaccine_type, beneficiary_dtls, district_dtls, minimum_slots, min_age_booking)
         
         # check if token is still valid
         beneficiaries_list = requests.get(BENEFICIARIES_URL, headers=request_header)
