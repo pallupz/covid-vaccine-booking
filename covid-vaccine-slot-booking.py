@@ -288,8 +288,8 @@ def get_beneficiaries(request_header):
         # 2. While selecting beneficiaries, also make sure that beneficiaries selected for second dose are all taking the same vaccine: COVISHIELD OR COVAXIN.
         #    Please do no try to club together booking for beneficiary taking COVISHIELD with beneficiary taking COVAXIN.
         #
-        # 3. If you select two beneficiaries, one who is 45+, and another who is less than 45, then only centers where both are eligible will be displayed
-        #    If you do not want this to happen, then run separately for 45+ and less than 45 beneficiaries
+        # 3. If you're selecting multiple beneficiaries, make sure all are of the same age group (45+ or 18+) as defined by the govt.
+        #    Please do not try to club together booking for younger and older beneficiaries. 
         ###################################################
         """)
         reqd_beneficiaries = input('Enter comma separated index numbers of beneficiaries to book for : ')
@@ -318,9 +318,7 @@ def get_min_age(beneficiary_dtls):
     :return: min_age:int
     """
     age_list = [item['age'] for item in beneficiary_dtls]
-
     min_age = min(age_list)
-
     return min_age
 
 def generate_token_OTP(mobile):
