@@ -152,8 +152,8 @@ def check_and_book(request_header, vaccine_type, beneficiary_dtls, district_dtls
         if isinstance(options, bool):
             return False
 
-        options = sorted(options, key=lambda k: (k['name'].lower(), datetime.datetime.strptime(k['date'], "%d-%m-%Y")))
-        
+        options = sorted(options, key=lambda k: (k['district'].lower(), k['name'].lower(), datetime.datetime.strptime(k['date'], "%d-%m-%Y")))
+
         tmp_options = copy.deepcopy(options)
         if len(tmp_options) > 0:
             cleaned_options_for_display = []
