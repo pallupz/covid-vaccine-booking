@@ -7,11 +7,12 @@ This very basic script can be used to automate covid vaccination slot booking on
 - Do NOT use unless all beneficiaries selected are supposed to get the same vaccine and dose. 
 - No option to register new user or add beneficiaries. This can be used only after beneficiary has been added through the official app/site
 - If you accidentally book a slot, don't worry. You can always login to the official portal and cancel that.
+- And finally, I know code quality probably isn't great. Suggestions are welcome.
 
 
 ### Usage:
 
-For the uninitiated in Python, using the ```covid-vaccine-slot-booking.exe``` file would be the easiest way. It might trigger an anti-virus alert. That's only because I used ```pyinstaller``` to package it and that needs a bit more effort to avoid such alerts.
+For the uninitiated in Python, using the ```covid-vaccine-slot-booking.exe``` executable file would be the easiest way. It might trigger an anti-virus alert. That's because I used ```pyinstaller``` to package the python code and it needs a bit more effort to avoid such alerts.
 
 OR
 
