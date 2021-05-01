@@ -10,8 +10,11 @@ from collections import Counter
 CALENDAR_URL = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByDistrict?district_id={0}&date={1}"
 BOOKING_URL = "https://cdn-api.co-vin.in/api/v2/appointment/schedule"
 BENEFICIARIES_URL = "https://cdn-api.co-vin.in/api/v2/appointment/beneficiaries"
-
 WARNING_BEEP_DURATION = (1000, 2000)
+
+
+def beep(freq, duration):
+    winsound.Beep(freq, duration)
 
 
 def display_table(dict_list):
@@ -28,6 +31,23 @@ def display_table(dict_list):
 
 class TimeoutExpired(Exception):
     pass
+
+
+def input_with_timeout(prompt, timeout, timer=time.monotonic):
+    '''
+    This function gives option to provide an input but on a timer
+    '''
+    sys.stdout.write(prompt)
+    sys.stdout.flush()
+    endtime = timer() + timeout
+    result = []
+    while timer() < endtime:
+        if msvcrt.kbhit():
+            result.append(msvcrt.getwche()) #XXX can it block on multibyte characters?
+            if result[-1] == '\r':
+                return ''.join(result[:-1])
+        time.sleep(0.04) # just to yield to other processes/threads
+    raise TimeoutExpired
 
 
 def check_calendar(request_header, vaccine_type, district_dtls, minimum_slots, min_age_booking):
@@ -74,7 +94,8 @@ def check_calendar(request_header, vaccine_type, district_dtls, minimum_slots, m
                                 out['session_id'] = session['session_id']
                                 out['min_age_limit'] = session['min_age_limit']
                                 options.append(out)
-                                winsound.Beep(district['district_alert_freq'], 150)
+                                
+                                beep(district['district_alert_freq'], 150)
                             else:
                                 pass
                 else:
@@ -86,7 +107,7 @@ def check_calendar(request_header, vaccine_type, district_dtls, minimum_slots, m
 
     except Exception as e:
         print(str(e))
-        winsound.Beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
+        beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
 
 
 def book_appointment(request_header, details):
@@ -108,7 +129,7 @@ def book_appointment(request_header, details):
             return False
 
         elif resp.status_code == 200:
-            winsound.Beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
+            beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
             print('##############    BOOKED!  ##############')
             sys.exit(0)
 
@@ -117,24 +138,7 @@ def book_appointment(request_header, details):
 
     except Exception as e:
         print(str(e))
-        winsound.Beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
-
-
-def input_with_timeout(prompt, timeout, timer=time.monotonic):
-    '''
-    This function gives option to provide an input but on a timer
-    '''
-    sys.stdout.write(prompt)
-    sys.stdout.flush()
-    endtime = timer() + timeout
-    result = []
-    while timer() < endtime:
-        if msvcrt.kbhit():
-            result.append(msvcrt.getwche()) #XXX can it block on multibyte characters?
-            if result[-1] == '\r':
-                return ''.join(result[:-1])
-        time.sleep(0.04) # just to yield to other processes/threads
-    raise TimeoutExpired
+        beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
 
 
 def check_and_book(request_header, vaccine_type, beneficiary_dtls, district_dtls, minimum_slots, min_age_booking):
@@ -402,7 +406,7 @@ def main():
         
         else:
             # if token invalid, regenerate OTP and new token
-            winsound.Beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
+            beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
             print('Token is INVALID.')
             TOKEN_VALID = False
 
