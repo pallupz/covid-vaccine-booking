@@ -62,9 +62,9 @@ def check_calendar(request_header, vaccine_type, district_dtls, minimum_slots, m
 
                 if len(resp['centers']) >= 0:
                     for center in resp['centers']:
-                        out = {}
                         for session in center['sessions']:
                             if (session['available_capacity'] >= minimum_slots) and (session['min_age_limit'] <= min_age_booking):
+                                out = {}
                                 out['name'] = center['name']
                                 out['district'] = center['district_name']
                                 out['center_id'] = center['center_id']
