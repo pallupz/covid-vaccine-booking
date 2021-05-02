@@ -22,6 +22,10 @@ Run the script file as show below:
 ```
 python covid-vaccine-slot-booking.py
 ```
+If you're on Linux, install the beep package first:
+```
+sudo apt-get install beep
+```
 If you already have a bearer token, you can also use:
 ```
 python covid-vaccine-slot-booking.py --token=YOUR-TOKEN-HERE
