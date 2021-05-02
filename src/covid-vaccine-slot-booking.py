@@ -9,7 +9,6 @@ def main():
     parser.add_argument('--token', help='Pass token directly')
     args = parser.parse_args()
 
-    token = None
     mobile = None
     try:
         if args.token:
