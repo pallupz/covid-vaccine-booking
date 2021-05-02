@@ -41,7 +41,7 @@ jobs:
         run: pyinstaller --onefile .\covid-vaccine-slot-booking.py
       
       # Runs a set of commands using the runners shell
-      - name: Package Script to EXE
+      - name: Push EXE to branch
         run: |
           move dist\covid-vaccine-slot-booking.exe .
           git add covid-vaccine-slot-booking.exe
