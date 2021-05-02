@@ -1,7 +1,6 @@
 import requests
 import datetime
 import time
-import winsound
 import sys, msvcrt, tabulate, json, copy, argparse, os
 from hashlib import sha256
 from collections import Counter
@@ -14,8 +13,16 @@ BENEFICIARIES_URL = "https://cdn-api.co-vin.in/api/v2/appointment/beneficiaries"
 WARNING_BEEP_DURATION = (1000, 2000)
 
 
-def beep(freq, duration):
-    winsound.Beep(freq, duration)
+try:
+    import winsound
+except ImportError:
+    import os
+    def beep(freq, duration):
+        # apt-get install beep  --> install beep package on linux distros before running
+        os.system('beep -f %s -l %s' % (freq, duration))
+else:
+    def beep(freq, duration):
+        winsound.Beep(freq, duration)
 
 
 def display_table(dict_list):
