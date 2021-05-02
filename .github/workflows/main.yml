@@ -37,5 +37,13 @@ jobs:
         run: pip install pyinstaller
       
       # Runs a set of commands using the runners shell
-      - name: Install pyinstaller package
+      - name: Package Script to EXE
         run: pyinstaller --onefile .\covid-vaccine-slot-booking.py
+      
+      # Runs a set of commands using the runners shell
+      - name: Package Script to EXE
+        run: |
+          move dist\covid-vaccine-slot-booking.exe .
+          git add covid-vaccine-slot-booking.exe
+          git commit -m "packaging script via GitHub Actions"
+          git push -u origin test/github-action
