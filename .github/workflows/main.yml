@@ -32,7 +32,9 @@ jobs:
           echo $branchName
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          pip install -r requirements.txt
+          pip install pyinstaller
         
       - name: Package Script to EXE
         run: |
