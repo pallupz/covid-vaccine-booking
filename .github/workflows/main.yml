@@ -4,11 +4,15 @@ name: CI Windows EXE Build
 
 # Controls when the action will run. 
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
+  # Triggers the workflow on push or pull request events
   push:
     paths:
-      - 'src/covid-vaccine-slot-booking.py'
-      - 'src/utils.py'
+      - '**.py'
+
+  pull_request:
+    paths:
+      - '**.py'
+
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -32,11 +36,13 @@ jobs:
           $branchName = $Env:GITHUB_REF -replace "refs/heads/", ""
           echo $branchName
 
+      # Install all required dependencies and pyinstaller to package code
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
           pip install pyinstaller
-        
+
+      # Package script and move to root folder
       - name: Package Script to EXE
         run: |
           rm covid-vaccine-slot-booking.exe -ErrorAction Ignore
@@ -45,7 +51,7 @@ jobs:
           cd ..
           move src\dist\covid-vaccine-slot-booking.exe .
       
-      # Runs a set of commands using the runners shell
+      # Commit and push EXE file to branch
       - name: Push EXE to branch
         run: |
           git add covid-vaccine-slot-booking.exe
