@@ -5,7 +5,7 @@ import winsound
 import sys, msvcrt, tabulate, json, copy, argparse, os
 from hashlib import sha256
 from collections import Counter
-print('asd')
+
 
 CALENDAR_URL = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByDistrict?district_id={0}&date={1}"
 BOOKING_URL = "https://cdn-api.co-vin.in/api/v2/appointment/schedule"
