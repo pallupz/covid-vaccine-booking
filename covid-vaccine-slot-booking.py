@@ -1,10 +1,10 @@
 import requests
 import datetime
 import time
-import winsound
 import sys, msvcrt, tabulate, json, copy, argparse, os
 from hashlib import sha256
 from collections import Counter
+from inputimeout import inputimeout, TimeoutOccurred
 
 
 CALENDAR_URL = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByDistrict?district_id={0}&date={1}"
@@ -13,8 +13,16 @@ BENEFICIARIES_URL = "https://cdn-api.co-vin.in/api/v2/appointment/beneficiaries"
 WARNING_BEEP_DURATION = (1000, 2000)
 
 
-def beep(freq, duration):
-    winsound.Beep(freq, duration)
+try:
+    import winsound
+except ImportError:
+    import os
+    def beep(freq, duration):
+        # apt-get install beep  --> install beep package on linux distros before running
+        os.system('beep -f %s -l %s' % (freq, duration))
+else:
+    def beep(freq, duration):
+        winsound.Beep(freq, duration)
 
 
 def display_table(dict_list):
@@ -27,10 +35,6 @@ def display_table(dict_list):
     header = ['idx'] + list(dict_list[0].keys())
     rows =  [[idx + 1] + list(x.values()) for idx, x in enumerate(dict_list)]
     print(tabulate.tabulate(rows, header, tablefmt='grid'))
-
-
-class TimeoutExpired(Exception):
-    pass
 
 
 def check_calendar(request_header, vaccine_type, district_dtls, minimum_slots, min_age_booking):
@@ -131,23 +135,6 @@ def book_appointment(request_header, details):
         beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
 
 
-def input_with_timeout(prompt, timeout, timer=time.monotonic):
-    '''
-    This function gives option to provide an input but on a timer
-    '''
-    sys.stdout.write(prompt)
-    sys.stdout.flush()
-    endtime = timer() + timeout
-    result = []
-    while timer() < endtime:
-        if msvcrt.kbhit():
-            result.append(msvcrt.getwche()) #XXX can it block on multibyte characters?
-            if result[-1] == '\r':
-                return ''.join(result[:-1])
-        time.sleep(0.04) # just to yield to other processes/threads
-    raise TimeoutExpired
-
-
 def check_and_book(request_header, vaccine_type, beneficiary_dtls, district_dtls, minimum_slots, min_age_booking):
     '''
     This function
@@ -174,7 +161,7 @@ def check_and_book(request_header, vaccine_type, beneficiary_dtls, district_dtls
                 cleaned_options_for_display.append(item)
 
             display_table(cleaned_options_for_display)
-            choice = input_with_timeout('----------> Wait 10 seconds for updated options OR \n----------> Enter a choice e.g: 1.4 for (1st center 4th slot): ', 10)
+            choice = inputimeout(prompt='----------> Wait 10 seconds for updated options OR \n----------> Enter a choice e.g: 1.4 for (1st center 4th slot): ', timeout=10)
 
         else:
             for i in range(15, 0, -1):
@@ -185,7 +172,7 @@ def check_and_book(request_header, vaccine_type, beneficiary_dtls, district_dtls
             choice = '.'
 
 
-    except TimeoutExpired:
+    except TimeoutOccurred:
         time.sleep(15)
         return True
 
