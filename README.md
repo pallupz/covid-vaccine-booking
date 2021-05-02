@@ -34,8 +34,7 @@ python covid-vaccine-slot-booking.py --token=YOUR-TOKEN-HERE
 ### Third-Party Package Dependency:
 - ```tabulate``` : For displaying data in tabular format.
 - ```requests``` : For making GET and POST requests to the API.
-- ```inputimeout``` : For creating an input with timeout
-- ```pyinstaller``` : [Optional] For building the windows application 
+- ```inputimeout``` : For creating an input with timeout.
 
 Install all dependencies by running:
 ```

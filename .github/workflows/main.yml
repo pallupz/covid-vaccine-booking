@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI building Windows EXE from python script
+name: CI Windows EXE Build
 
 # Controls when the action will run. 
 on:
@@ -35,12 +35,12 @@ jobs:
         run: pip install -r requirements.txt
         
       - name: Package Script to EXE
-        run: pyinstaller --onefile .\covid-vaccine-slot-booking.py
-        
-      - name: Replace covid-vaccine-slot-booking.exe
         run: |
           rm covid-vaccine-slot-booking.exe
-          move dist\covid-vaccine-slot-booking.exe . 
+          cd src
+          pyinstaller --onefile covid-vaccine-slot-booking.py
+          cd ..
+          move src\dist\covid-vaccine-slot-booking.exe .
       
       # Runs a set of commands using the runners shell
       - name: Push EXE to branch
