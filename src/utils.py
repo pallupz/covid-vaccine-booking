@@ -193,9 +193,11 @@ def check_and_book(request_header, beneficiary_dtls, district_dtls, minimum_slot
 
                 new_req = {
                     'beneficiaries': [beneficiary['beneficiary_reference_id'] for beneficiary in beneficiary_dtls],
-                    'dose': 2 if vaccine_type else 1, 'center_id': options[choice[0] - 1]['center_id'],
+                    'dose': 2 if vaccine_type else 1,
+                    'center_id' : options[choice[0] - 1]['center_id'],
                     'session_id': options[choice[0] - 1]['session_id'],
-                    'slot'      : options[choice[0] - 1]['slots'][choice[1] - 1]}
+                    'slot'      : options[choice[0] - 1]['slots'][choice[1] - 1]
+                }
 
                 print(f'Booking with info: {new_req}')
                 return book_appointment(request_header, new_req)
