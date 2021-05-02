@@ -20,7 +20,7 @@ OR
 Run the script file as show below:
 
 ```
-python covid-vaccine-slot-booking.py
+python src\covid-vaccine-slot-booking.py
 ```
 If you're on Linux, install the beep package before running the Python script. To install beep, run:
 ```
@@ -28,14 +28,13 @@ sudo apt-get install beep
 ```
 If you already have a bearer token, you can also use:
 ```
-python covid-vaccine-slot-booking.py --token=YOUR-TOKEN-HERE
+python src\covid-vaccine-slot-booking.py --token=YOUR-TOKEN-HERE
 ```
 
 ### Third-Party Package Dependency:
 - ```tabulate``` : For displaying data in tabular format.
 - ```requests``` : For making GET and POST requests to the API.
-- ```inputimeout``` : For creating an input with timeout
-- ```pyinstaller``` : [Optional] For building the windows application 
+- ```inputimeout``` : For creating an input with timeout.
 
 Install all dependencies by running:
 ```
@@ -44,7 +43,7 @@ pip install -r requirements.txt
 
 ### Steps:
 1. Run script:
-	```python .\covid-vaccine-slot-booking.py```
+	```python src\covid-vaccine-slot-booking.py```
 2. Select Beneficiaries. Read the important notes. You can select multiple beneficiaries by providing comma-separated index values such as ```1,2```:
 	```
 	Enter the registered mobile number: ██████████
