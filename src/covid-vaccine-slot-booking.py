@@ -1,6 +1,5 @@
-import requests
-import sys, argparse, os
 from collections import Counter
+import requests, sys, argparse, os
 from utils import generate_token_OTP, get_beneficiaries, check_and_book, get_districts, get_min_age, beep, \
     BENEFICIARIES_URL, WARNING_BEEP_DURATION
 
@@ -30,8 +29,6 @@ def main():
             os.system("pause")
             sys.exit(1)
 
-        min_age_booking = get_min_age(beneficiary_dtls)
-
         # Make sure all beneficiaries have the same type of vaccine
         vaccine_types = [beneficiary['vaccine'] for beneficiary in beneficiary_dtls]
         vaccines = Counter(vaccine_types)
@@ -41,33 +38,30 @@ def main():
             os.system("pause")
             sys.exit(1)
 
-        vaccine_type = vaccine_types[0]
-
         # Collect vaccination center preferance
-        district_dtls = get_districts(request_header)
+        district_dtls = get_districts()
 
         # Set filter condition
         minimum_slots = int(input('Filter out centers with availability less than: '))
         minimum_slots = minimum_slots if minimum_slots > len(beneficiary_dtls) else len(beneficiary_dtls)
 
-        TOKEN_VALID = True
-        while TOKEN_VALID:
+        token_valid = True
+        while token_valid:
             request_header = {"Authorization": f"Bearer {token}"}
 
             # call function to check and book slots
-            TOKEN_VALID = check_and_book(request_header, vaccine_type, beneficiary_dtls, district_dtls, minimum_slots,
-                                         min_age_booking)
+            token_valid = check_and_book(request_header, beneficiary_dtls, district_dtls, minimum_slots)
 
             # check if token is still valid
             beneficiaries_list = requests.get(BENEFICIARIES_URL, headers=request_header)
             if beneficiaries_list.status_code == 200:
-                TOKEN_VALID = True
+                token_valid = True
 
             else:
                 # if token invalid, regenerate OTP and new token
                 beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
                 print('Token is INVALID.')
-                TOKEN_VALID = False
+                token_valid = False
 
                 tryOTP = input('Try for a new Token? (y/n): ')
                 if tryOTP.lower() == 'y':
@@ -75,14 +69,14 @@ def main():
                         tryOTP = input(f"Try for OTP with mobile number {mobile}? (y/n) : ")
                         if tryOTP.lower() == 'y':
                             token = generate_token_OTP(mobile)
-                            TOKEN_VALID = True
+                            token_valid = True
                         else:
-                            TOKEN_VALID = False
+                            token_valid = False
                             print("Exiting")
                     else:
                         mobile = input(f"Enter 10 digit mobile number for new OTP generation? : ")
                         token = generate_token_OTP(mobile)
-                        TOKEN_VALID = True
+                        token_valid = True
                 else:
                     print("Exiting")
                     os.system("pause")
