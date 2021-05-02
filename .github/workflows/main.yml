@@ -47,7 +47,6 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Push EXE to branch
         run: |
-          move dist\covid-vaccine-slot-booking.exe .
           git add covid-vaccine-slot-booking.exe
           git commit -m "packaging script via GitHub Actions"
           git push -u origin test/github-action
