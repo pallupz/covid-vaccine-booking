@@ -23,6 +23,7 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+      - uses: fregante/setup-git-user@v1
 
       # Runs a single command using the runners shell
       - name: list packages
