@@ -36,7 +36,7 @@ jobs:
         
       - name: Package Script to EXE
         run: |
-          if exist covid-vaccine-slot-booking.exe del covid-vaccine-slot-booking.exe
+          rm covid-vaccine-slot-booking.exe -ErrorAction Ignore
           cd src
           pyinstaller --onefile covid-vaccine-slot-booking.py
           cd ..
