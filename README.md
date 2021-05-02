@@ -22,7 +22,7 @@ Run the script file as show below:
 ```
 python covid-vaccine-slot-booking.py
 ```
-If you're on Linux, install the beep package first:
+If you're on Linux, install the beep package before running the Python script. To install beep, run:
 ```
 sudo apt-get install beep
 ```
