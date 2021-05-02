@@ -454,5 +454,4 @@ def main():
         os.system("pause")
 
 if __name__ == '__main__':
-    os.system("pause")
     main()
