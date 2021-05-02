@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: CI building Windows EXE from python script
 
 # Controls when the action will run. 
 on:
@@ -24,31 +24,26 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
       - uses: fregante/setup-git-user@v1
-
-      # Runs a single command using the runners shell
-      - name: list packages
-        run: pip list
-
-      # Runs a set of commands using the runners shell
-      - name: Install tabulate package
-        run: pip install tabulate
-        
-      # Runs a set of commands using the runners shell
-      - name: Install pyinstaller package
-        run: pip install pyinstaller
       
-      # Runs a set of commands using the runners shell
+      # Set branch name
+      - name: Set branch name
+        run: |
+          $branchName = $Env:GITHUB_REF -replace "refs/heads/", ""
+          echo $branchName
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+        
       - name: Package Script to EXE
         run: pyinstaller --onefile .\covid-vaccine-slot-booking.py
         
-      # Runs a set of commands using the runners shell
-      - name: replace covid-vaccine-slot-booking.exe
+      - name: Replace covid-vaccine-slot-booking.exe
         run: |
-          move -y dist\covid-vaccine-slot-booking.exe . 
+          rm covid-vaccine-slot-booking.exe
+          move dist\covid-vaccine-slot-booking.exe . 
       
       # Runs a set of commands using the runners shell
       - name: Push EXE to branch
         run: |
-          git add covid-vaccine-slot-booking.exe
-          git commit -m "packaging script via GitHub Actions"
-          git push -u origin test/github-action
+          git commit -m "rebuilt via GitHub Actions"
+          git push -u origin $branchName
