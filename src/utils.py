@@ -168,7 +168,7 @@ def check_and_book(request_header, beneficiary_dtls, district_dtls, minimum_slot
             display_table(cleaned_options_for_display)
             choice = inputimeout(
                 prompt='----------> Wait 10 seconds for updated options OR \n----------> Enter a choice e.g: 1.4 for (1st center 4th slot): ',
-                timeout=10)
+                timeout=20)
 
         else:
             for i in range(15, 0, -1):
@@ -179,7 +179,7 @@ def check_and_book(request_header, beneficiary_dtls, district_dtls, minimum_slot
             choice = '.'
 
     except TimeoutOccurred:
-        time.sleep(15)
+        time.sleep(5)
         return True
 
     else:
