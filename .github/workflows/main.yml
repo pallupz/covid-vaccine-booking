@@ -28,8 +28,15 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+        if: github.event_name == 'pull_request'
         with:
+          fetch-depth: 0
           ref: ${{ github.event.pull_request.head.ref }}
+
+      - uses: actions/checkout@v2
+        if: github.event_name == 'push'
+        with:
+          fetch-depth: 0
 
       - uses: fregante/setup-git-user@v1
       
