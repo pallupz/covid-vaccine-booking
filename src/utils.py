@@ -134,7 +134,7 @@ def book_appointment(request_header, details):
         beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
 
 
-def check_and_book(request_header, beneficiary_dtls, district_dtls, minimum_slots):
+def check_and_book(request_header, beneficiary_dtls, district_dtls, **kwargs):
     """
     This function
         1. Checks the vaccination calendar for available slots,
@@ -146,6 +146,10 @@ def check_and_book(request_header, beneficiary_dtls, district_dtls, minimum_slot
     try:
         min_age_booking = get_min_age(beneficiary_dtls)
         vaccine_type = [beneficiary['vaccine'] for beneficiary in beneficiary_dtls][0]
+
+        minimum_slots = kwargs['min_slots']
+        refresh_freq = kwargs['ref_freq']
+
         options = check_calendar(request_header, vaccine_type, district_dtls, minimum_slots, min_age_booking)
 
         if isinstance(options, bool):
@@ -167,11 +171,11 @@ def check_and_book(request_header, beneficiary_dtls, district_dtls, minimum_slot
 
             display_table(cleaned_options_for_display)
             choice = inputimeout(
-                prompt='----------> Wait 10 seconds for updated options OR \n----------> Enter a choice e.g: 1.4 for (1st center 4th slot): ',
+                prompt='----------> Wait 20 seconds for updated options OR \n----------> Enter a choice e.g: 1.4 for (1st center 4th slot): ',
                 timeout=20)
 
         else:
-            for i in range(15, 0, -1):
+            for i in range(refresh_freq, 0, -1):
                 msg = f"No viable options. Next update in {i} seconds.."
                 print(msg, end="\r", flush=True)
                 sys.stdout.flush()
@@ -179,7 +183,7 @@ def check_and_book(request_header, beneficiary_dtls, district_dtls, minimum_slot
             choice = '.'
 
     except TimeoutOccurred:
-        time.sleep(5)
+        time.sleep(1)
         return True
 
     else:
