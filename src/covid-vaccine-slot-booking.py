@@ -45,11 +45,11 @@ def main():
 
         # Set filter condition
         minimum_slots = int(input(f'Filter out centers with availability less than ? Minimum {len(beneficiary_dtls)} : '))
-        minimum_slots = minimum_slots if minimum_slots > len(beneficiary_dtls) else len(beneficiary_dtls)
+        minimum_slots = minimum_slots if minimum_slots >= len(beneficiary_dtls) else len(beneficiary_dtls)
 
         # Get refresh frequency
         refresh_freq = input('How often do you want to refresh the calendar (in seconds)? Default 15. Minimum 5. : ')
-        refresh_freq = int(refresh_freq) if refresh_freq and int(refresh_freq) > 5 else 15
+        refresh_freq = int(refresh_freq) if refresh_freq and int(refresh_freq) >= 5 else 15
 
         token_valid = True
         while token_valid:
