@@ -49,7 +49,7 @@ def main():
 
         # Get refresh frequency
         refresh_freq = input('How often do you want to refresh the calendar (in seconds)? Default 15. Minimum 5. : ')
-        refresh_freq = int(refresh_freq) if refresh_freq and int(refresh_freq) > 5 else 15
+        refresh_freq = int(refresh_freq) if refresh_freq and int(refresh_freq) >= 5 else 15
 
         token_valid = True
         while token_valid:
@@ -97,4 +97,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
