@@ -1,7 +1,7 @@
 from collections import Counter
-import requests, sys, argparse, os
+import requests, sys, argparse, os, traceback
 from utils import generate_token_OTP, get_beneficiaries, check_and_book, get_districts, get_min_age, beep, \
-    BENEFICIARIES_URL, WARNING_BEEP_DURATION
+    BENEFICIARIES_URL, WARNING_BEEP_DURATION, book_by_pincode
 
 
 def main():
@@ -52,13 +52,26 @@ def main():
         refresh_freq = int(refresh_freq) if refresh_freq and int(refresh_freq) >= 5 else 15
 
         token_valid = True
+
+        pincode = None
+        try:
+            pincode = int(input(f'Enter your pincode, incase you know it! If not, just say 0: '))
+        except:
+            print("invalid pincode, going by districts")
+            pass
+
         while token_valid:
             request_header = {"Authorization": f"Bearer {token}"}
 
-            # call function to check and book slots
-            token_valid = check_and_book(request_header, beneficiary_dtls, district_dtls, 
-                                         min_slots=minimum_slots,
-                                         ref_freq=refresh_freq)
+            if pincode:
+                token_valid = book_by_pincode(pincode, request_header, beneficiary_dtls,
+                                             min_slots=minimum_slots,
+                                             ref_freq=refresh_freq)
+            else:
+                # call function to check and book slots
+                token_valid = check_and_book(request_header, beneficiary_dtls, district_dtls,
+                                             min_slots=minimum_slots,
+                                             ref_freq=refresh_freq)
 
             # check if token is still valid
             beneficiaries_list = requests.get(BENEFICIARIES_URL, headers=request_header)
@@ -91,6 +104,7 @@ def main():
 
     except Exception as e:
         print(str(e))
+        traceback.print_exc(file=sys.stdout)
         print('Exiting Script')
         os.system("pause")
 
