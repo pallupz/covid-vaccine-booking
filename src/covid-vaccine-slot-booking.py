@@ -40,16 +40,25 @@ def main():
         # Collect vaccination center preferance
         district_dtls = get_districts()
 
+
+        print("================================= Additional Info =================================")
+
         # Set filter condition
-        minimum_slots = int(input('Filter out centers with availability less than: '))
-        minimum_slots = minimum_slots if minimum_slots > len(beneficiary_dtls) else len(beneficiary_dtls)
+        minimum_slots = int(input(f'Filter out centers with availability less than ? Minimum {len(beneficiary_dtls)} : '))
+        minimum_slots = minimum_slots if minimum_slots >= len(beneficiary_dtls) else len(beneficiary_dtls)
+
+        # Get refresh frequency
+        refresh_freq = input('How often do you want to refresh the calendar (in seconds)? Default 15. Minimum 5. : ')
+        refresh_freq = int(refresh_freq) if refresh_freq and int(refresh_freq) >= 5 else 15
 
         token_valid = True
         while token_valid:
             request_header = {"Authorization": f"Bearer {token}"}
 
             # call function to check and book slots
-            token_valid = check_and_book(request_header, beneficiary_dtls, district_dtls, minimum_slots)
+            token_valid = check_and_book(request_header, beneficiary_dtls, district_dtls, 
+                                         min_slots=minimum_slots,
+                                         ref_freq=refresh_freq)
 
             # check if token is still valid
             beneficiaries_list = requests.get(BENEFICIARIES_URL, headers=request_header)
@@ -88,4 +97,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

@@ -8,6 +8,7 @@ __pycache__/
 
 # Distribution / packaging
 .idea/
+slot-booking/
 src/build
 src/dist
 src/covid-vaccine-slot-booking.spec
