@@ -18,9 +18,9 @@ except ImportError:
 def beep(freq, duration):
     # apt-get install beep  --> install beep package on linux distros before running
     if platform == "darwin":
-        for i in enumerate(duration):
+        for i in range(3):
             os.system('say Fire in the Hole')
-            time.sleep(freq)
+            time.sleep(2)
     elif platform == "win32":
         winsound.Beep(freq, duration)
     else:
