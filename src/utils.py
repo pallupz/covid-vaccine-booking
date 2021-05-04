@@ -1,6 +1,7 @@
 from hashlib import sha256
 from inputimeout import inputimeout, TimeoutOccurred
 import tabulate, copy, time, datetime, requests, sys, os
+from sys import platform
 
 BOOKING_URL = "https://cdn-api.co-vin.in/api/v2/appointment/schedule"
 BENEFICIARIES_URL = "https://cdn-api.co-vin.in/api/v2/appointment/beneficiaries"
@@ -14,13 +15,16 @@ except ImportError:
     import os
 
 
-    def beep(freq, duration):
-        # apt-get install beep  --> install beep package on linux distros before running
-        os.system('beep -f %s -l %s' % (freq, duration))
-
-else:
-    def beep(freq, duration):
+def beep(freq, duration):
+    # apt-get install beep  --> install beep package on linux distros before running
+    if platform == "darwin":
+        for i in enumerate(duration):
+            os.system('say Fire in the Hole')
+            time.sleep(freq)
+    elif platform == "win32":
         winsound.Beep(freq, duration)
+    else:
+        print("JEEEELOOOO!!!")
 
 
 def display_table(dict_list):
