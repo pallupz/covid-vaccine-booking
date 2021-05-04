@@ -13,6 +13,7 @@ try:
 except ImportError:
     import os
 
+
     def beep(freq, duration):
         # apt-get install beep  --> install beep package on linux distros before running
         os.system('beep -f %s -l %s' % (freq, duration))
@@ -44,8 +45,7 @@ def check_calendar(request_header, vaccine_type, district_dtls, minimum_slots, m
     """
     try:
         print('===================================================================================')
-        today = datetime.datetime.today()
-        tomorrow = (today + datetime.timedelta(days=1)).strftime("%d-%m-%Y")
+        tomorrow = _get_tomorrow()
 
         base_url = CALENDAR_URL
         if vaccine_type:
@@ -61,29 +61,7 @@ def check_calendar(request_header, vaccine_type, district_dtls, minimum_slots, m
 
             elif resp.status_code == 200:
                 resp = resp.json()
-                print(
-                    f"Centers available in {district['district_name']} from {tomorrow} as of {today.strftime('%Y-%m-%d %H:%M:%S')}: {len(resp['centers'])}")
-
-                if len(resp['centers']) >= 0:
-                    for center in resp['centers']:
-                        for session in center['sessions']:
-                            if (session['available_capacity'] >= minimum_slots) \
-                                    and (session['min_age_limit'] <= min_age_booking):
-                                out = {
-                                    'name': center['name'],
-                                    'district': center['district_name'],
-                                    'center_id': center['center_id'],
-                                    'available': session['available_capacity'],
-                                    'date': session['date'],
-                                    'slots': session['slots'],
-                                    'session_id': session['session_id']
-                                }
-                                options.append(out)
-
-                            else:
-                                pass
-                else:
-                    pass
+                options.extend(parse_calender_response(resp, minimum_slots, min_age_booking))
             else:
                 pass
 
@@ -99,6 +77,38 @@ def check_calendar(request_header, vaccine_type, district_dtls, minimum_slots, m
     except Exception as e:
         print(str(e))
         beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
+
+
+def _get_tomorrow():
+    today = datetime.datetime.today()
+    return (today + datetime.timedelta(days=1)).strftime("%d-%m-%Y")
+
+
+def parse_calender_response(resp, minimum_slots=1, min_age_booking=18):
+    print(
+        f"Centers available from {_get_tomorrow()} as of {datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S')}: {len(resp['centers'])}")
+    options = []
+    if len(resp['centers']) >= 0:
+        for center in resp['centers']:
+            for session in center['sessions']:
+                if (session['available_capacity'] >= minimum_slots) \
+                        and (session['min_age_limit'] <= min_age_booking):
+                    out = {
+                        'name': center['name'],
+                        'district': center['district_name'],
+                        'center_id': center['center_id'],
+                        'available': session['available_capacity'],
+                        'date': session['date'],
+                        'slots': session['slots'],
+                        'session_id': session['session_id']
+                    }
+                    options.append(out)
+
+                else:
+                    pass
+    else:
+        pass
+    return options
 
 
 def book_appointment(request_header, details):
@@ -160,56 +170,78 @@ def check_and_book(request_header, beneficiary_dtls, district_dtls, **kwargs):
                                         k['name'].lower(),
                                         datetime.datetime.strptime(k['date'], "%d-%m-%Y"))
                          )
-
-        tmp_options = copy.deepcopy(options)
-        if len(tmp_options) > 0:
-            cleaned_options_for_display = []
-            for item in tmp_options:
-                item.pop('session_id', None)
-                item.pop('center_id', None)
-                cleaned_options_for_display.append(item)
-
-            display_table(cleaned_options_for_display)
-            choice = inputimeout(
-                prompt='----------> Wait 20 seconds for updated options OR \n----------> Enter a choice e.g: 1.4 for (1st center 4th slot): ',
-                timeout=20)
-
-        else:
-            for i in range(refresh_freq, 0, -1):
-                msg = f"No viable options. Next update in {i} seconds.."
-                print(msg, end="\r", flush=True)
-                sys.stdout.flush()
-                time.sleep(1)
-            choice = '.'
-
+        return ask_and_book(options, request_header, beneficiary_dtls, **kwargs)
     except TimeoutOccurred:
         time.sleep(1)
         return True
 
+
+def ask_and_book(options, request_header, beneficiary_dtls, **kwargs):
+    minimum_slots = kwargs['min_slots']
+    refresh_freq = kwargs['ref_freq']
+    vaccine_type = [beneficiary['vaccine'] for beneficiary in beneficiary_dtls][0]
+    tmp_options = copy.deepcopy(options)
+    if len(tmp_options) > 0:
+        cleaned_options_for_display = []
+        for item in tmp_options:
+            item.pop('session_id', None)
+            item.pop('center_id', None)
+            cleaned_options_for_display.append(item)
+
+        display_table(cleaned_options_for_display)
+        choice = inputimeout(
+            prompt='----------> Wait 20 seconds for updated options OR \n----------> Enter a choice e.g: 1.4 for (1st center 4th slot): ',
+            timeout=20)
+
     else:
-        if choice == '.':
-            return True
-        else:
-            try:
-                choice = choice.split('.')
-                choice = [int(item) for item in choice]
-                print(f'============> Got Choice: Center #{choice[0]}, Slot #{choice[1]}')
+        for i in range(refresh_freq, 0, -1):
+            msg = f"No viable options. Next update in {i} seconds.."
+            print(msg, end="\r", flush=True)
+            sys.stdout.flush()
+            time.sleep(1)
+        choice = '.'
 
-                new_req = {
-                    'beneficiaries': [beneficiary['beneficiary_reference_id'] for beneficiary in beneficiary_dtls],
-                    'dose': 2 if vaccine_type else 1,
-                    'center_id' : options[choice[0] - 1]['center_id'],
-                    'session_id': options[choice[0] - 1]['session_id'],
-                    'slot'      : options[choice[0] - 1]['slots'][choice[1] - 1]
-                }
+    if choice == '.':
+        return True
+    else:
+        try:
+            choice = choice.split('.')
+            choice = [int(item) for item in choice]
+            print(f'============> Got Choice: Center #{choice[0]}, Slot #{choice[1]}')
 
-                print(f'Booking with info: {new_req}')
-                return book_appointment(request_header, new_req)
+            new_req = {
+                'beneficiaries': [beneficiary['beneficiary_reference_id'] for beneficiary in beneficiary_dtls],
+                'dose': 2 if vaccine_type else 1,
+                'center_id': options[choice[0] - 1]['center_id'],
+                'session_id': options[choice[0] - 1]['session_id'],
+                'slot': options[choice[0] - 1]['slots'][choice[1] - 1]
+            }
 
-            except IndexError:
-                print("============> Invalid Option!")
-                os.system("pause")
-                pass
+            print(f'Booking with info: {new_req}')
+            return book_appointment(request_header, new_req)
+
+        except IndexError:
+            print("============> Invalid Option!")
+            os.system("pause")
+            pass
+
+
+def book_by_pincode(pincode, request_header, beneficiary_dtls, **kwargs):
+    """
+    Bloody the system lists places in district which are far off from your place.
+    Hence, the pincode search, gives you places in the vicinity of your house.
+    """
+    base_url = 'https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByPin?pincode={0}&date={1}'
+    tomorrow = _get_tomorrow()
+    target_url = base_url.format(pincode, tomorrow)
+    find_by_pin_response = requests.get(target_url)
+    if find_by_pin_response.status_code == 200:
+        resp = find_by_pin_response.json()
+    else:
+        print(find_by_pin_response.json())
+        return False
+    options = parse_calender_response(resp)
+    return ask_and_book(options, request_header, beneficiary_dtls, **kwargs)
 
 
 def get_districts():
