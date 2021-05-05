@@ -24,17 +24,17 @@ How it works:
 **Steps to setup**
 1. Create a shared storage URL at https://extendsclass.com/json-storage.html (Type something random and click on Savebin and note the URL generated which will be of the type https://json.extendsclass.com/bin/1232323132)
 2. Create an account in ifttt.com (A premium paid account is recommended for a quicker response)
-3.	Create a new applet
-4. 	If this..... click on Android SMS trigger
-5. 	Select "New SMS received matches search" and use CoWIN as the search key
-6. 	Then... Choose a service named Webhooks and then select make a web request
-7. 		Paste the url you created in step 1 above
-8. 		Method is PUT
-9. 		Content Type PlainText
-10. 		Body: Add ingredient and select Text
+3.     Create a new applet
+4.     If this..... click on Android SMS trigger
+5.     Select "New SMS received matches search" and use CoWIN as the search key
+6.     Then... Choose a service named Webhooks and then select make a web request
+7.         Paste the url you created in step 1 above
+8.         Method is PUT
+9.         Content Type PlainText
+10.         Body: Add ingredient and select Text
 11. On your android phone, install ifttt app
-12. 	Login 
-13. 	Ensure that the battery saver mode, and all other optimizations are removed. The appshould always run (This is the key for quick response). 
+12.     Login 
+13.     Ensure that the battery saver mode, and all other optimizations are removed. The appshould always run (This is the key for quick response). 
 	Tip: If your IFTTT is not triggered when your SMS is received: https://www.androidpolice.com/2020/05/30/how-to-prevent-apps-sleeping-in-the-background-on-android/
 	Also a premium account is faster
 14. Clone this repository
