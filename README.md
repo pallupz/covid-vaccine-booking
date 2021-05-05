@@ -6,7 +6,7 @@ This very basic CLI based script can be used to automate covid vaccination slot 
 - POC project. **Use at your own risk**.
 - Do NOT use unless all beneficiaries selected are supposed to get the same vaccine and dose. 
 - No option to register new user or add beneficiaries. This can be used only after beneficiary has been added through the official app/site
-- Be careful if you chose to use the auto-book feature. It will blindly book for first available center name, date, and slot - all sorted ascending.
+- Be careful if you choose to use the auto-book feature. It will blindly book for first available center name, date, and slot - all sorted ascending.
 - If you accidentally book a slot, don't worry. You can always login to the official portal and cancel that.
 - API Details: https://apisetu.gov.in/public/marketplace/api/cowin/cowinapi-v2
 - And finally, I know code quality probably isn't great. Suggestions are welcome.
