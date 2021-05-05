@@ -285,14 +285,14 @@ def get_pincodes():
     return locations
 
 
-def get_districts():
+def get_districts(request_header):
     """
     This function
         1. Lists all states, prompts to select one,
         2. Lists all districts in that state, prompts to select required ones, and
         3. Returns the list of districts as list(dict)
     """
-    states = requests.get('https://cdn-api.co-vin.in/api/v2/admin/location/states')
+    states = requests.get('https://cdn-api.co-vin.in/api/v2/admin/location/states', headers=request_header)
 
     if states.status_code == 200:
         states = states.json()['states']
@@ -314,7 +314,7 @@ def get_districts():
         os.system("pause")
         sys.exit(1)
 
-    districts = requests.get(f'https://cdn-api.co-vin.in/api/v2/admin/location/districts/{state_id}')
+    districts = requests.get(f'https://cdn-api.co-vin.in/api/v2/admin/location/districts/{state_id}', headers=request_header)
     if districts.status_code == 200:
         districts = districts.json()['districts']
 

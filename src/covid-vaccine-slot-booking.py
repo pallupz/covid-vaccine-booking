@@ -47,7 +47,7 @@ def main():
 
         if search_option == 2:
             # Collect vaccination center preferance
-            location_dtls = get_districts()
+            location_dtls = get_districts(request_header)
 
         else:
             # Collect vaccination center preferance
