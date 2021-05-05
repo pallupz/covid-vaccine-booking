@@ -24,6 +24,10 @@ def beep(freq, duration):
     elif platform == "win32":
         winsound.Beep(freq, duration)
     else:
+        # install sox on linux. Tested.
+        for i in range(5):
+            os.system('play -q -n synth 0.1 sin 880 || echo -e "\a"')
+            time.sleep(2)
         print("JEEEELOOOO!!!")
 
 
@@ -244,7 +248,10 @@ def book_by_pincode(pincode, request_header, beneficiary_dtls, **kwargs):
     else:
         print(find_by_pin_response.json())
         return False
-    options = parse_calender_response(resp)
+        
+    min_age_booking = get_min_age(beneficiary_dtls)
+    minimum_slots = kwargs['min_slots']
+    options = parse_calender_response(resp, minimum_slots, min_age_booking)
     return ask_and_book(options, request_header, beneficiary_dtls, **kwargs)
 
 
