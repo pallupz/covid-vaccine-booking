@@ -1,6 +1,6 @@
 from collections import Counter
 import requests, sys, argparse, os
-from utils import generate_token_OTP, get_beneficiaries, check_and_book, get_districts, get_min_age, beep, \
+from utils import generate_token_OTP, get_beneficiaries, check_and_book, get_districts, get_pincodes, beep, \
     BENEFICIARIES_URL, WARNING_BEEP_DURATION
 
 
@@ -37,15 +37,27 @@ def main():
             os.system("pause")
             sys.exit(1)
 
-        # Collect vaccination center preferance
-        district_dtls = get_districts()
+        print("================================= Location Info =================================\n")
 
+        search_option = input("""Search by Pincode? Or by State/District? \nEnter 1 for Pincode or 2 for State/District. (Default 2) : """)
+        search_option = int(search_option) if int(search_option) in [1, 2] else 2
 
-        print("================================= Additional Info =================================")
+        if search_option == 2:
+            # Collect vaccination center preferance
+            location_dtls = get_districts()
+
+        else:
+            # Collect vaccination center preferance
+            location_dtls = get_pincodes()
+
+        print("================================= Additional Info =================================\n")
 
         # Set filter condition
-        minimum_slots = int(input(f'Filter out centers with availability less than ? Minimum {len(beneficiary_dtls)} : '))
-        minimum_slots = minimum_slots if minimum_slots >= len(beneficiary_dtls) else len(beneficiary_dtls)
+        minimum_slots = input(f'Filter out centers with availability less than ? Minimum {len(beneficiary_dtls)} : ')
+        if minimum_slots:
+            minimum_slots = int(minimum_slots) if int(minimum_slots) >= len(beneficiary_dtls) else len(beneficiary_dtls)
+        else:
+            minimum_slots = len(beneficiary_dtls)
 
         # Get refresh frequency
         refresh_freq = input('How often do you want to refresh the calendar (in seconds)? Default 15. Minimum 5. : ')
@@ -56,7 +68,7 @@ def main():
             request_header = {"Authorization": f"Bearer {token}"}
 
             # call function to check and book slots
-            token_valid = check_and_book(request_header, beneficiary_dtls, district_dtls, 
+            token_valid = check_and_book(request_header, beneficiary_dtls, location_dtls, search_option,
                                          min_slots=minimum_slots,
                                          ref_freq=refresh_freq)
 
