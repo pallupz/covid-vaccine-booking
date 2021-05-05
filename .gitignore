@@ -12,7 +12,6 @@ slot-booking/
 src/build
 src/dist
 src/covid-vaccine-slot-booking.spec
-covid-vaccine-slot-booking.exe
 .Python
 build/
 develop-eggs/
