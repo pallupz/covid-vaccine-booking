@@ -11,14 +11,17 @@ def main():
 
     mobile = None
     try:
+        request_header = {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'
+        }
+
         if args.token:
             token = args.token
         else:
             mobile = input("Enter the registered mobile number: ")
-            token = generate_token_OTP(mobile)
+            token = generate_token_OTP(mobile, request_header)
 
-        request_header = {"Authorization": f"Bearer {token}"}
-
+        request_header["Authorization"] = f"Bearer {token}"
         # Get Beneficiaries
         print("Fetching registered beneficiaries.. ")
         beneficiary_dtls = get_beneficiaries(request_header)
@@ -69,7 +72,7 @@ def main():
 
         token_valid = True
         while token_valid:
-            request_header = {"Authorization": f"Bearer {token}"}
+            request_header["Authorization"] = f"Bearer {token}"
 
             # call function to check and book slots
             token_valid = check_and_book(request_header, beneficiary_dtls, location_dtls, search_option,

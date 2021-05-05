@@ -410,14 +410,14 @@ def get_min_age(beneficiary_dtls):
     return min_age
 
 
-def generate_token_OTP(mobile):
+def generate_token_OTP(mobile, request_header):
     """
     This function generate OTP and returns a new token
     """
     data = {"mobile": mobile,
-            "secret": "U2FsdGVkX1/3I5UgN1RozGJtexc1kfsaCKPadSux9LY+cVUADlIDuKn0wCN+Y8iB4ceu6gFxNQ5cCfjm1BsmRQ=="}
+            "secret": "U2FsdGVkX1+b2/jGHLoV5kD4lpHdQ/CI7p3TnigA+6ukck6gSGrAR9aAuWeN/Nod9RrY4RaREfPITQfnqgCI6Q=="}
     print(f"Requesting OTP with mobile number {mobile}..")
-    txnId = requests.post(url='https://cdn-api.co-vin.in/api/v2/auth/generateMobileOTP', json=data)
+    txnId = requests.post(url='https://cdn-api.co-vin.in/api/v2/auth/generateMobileOTP', json=data, headers=request_header)
 
     if txnId.status_code == 200:
         txnId = txnId.json()['txnId']
