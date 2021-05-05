@@ -430,7 +430,7 @@ def generate_token_OTP(mobile, request_header):
     data = {"otp": sha256(str(OTP).encode('utf-8')).hexdigest(), "txnId": txnId}
     print(f"Validating OTP..")
 
-    token = requests.post(url='https://cdn-api.co-vin.in/api/v2/auth/validateMobileOtp', json=data)
+    token = requests.post(url='https://cdn-api.co-vin.in/api/v2/auth/validateMobileOtp', json=data, headers=request_header)
     if token.status_code == 200:
         token = token.json()['token']
     else:
