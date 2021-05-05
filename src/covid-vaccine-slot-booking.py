@@ -11,14 +11,17 @@ def main():
 
     mobile = None
     try:
+        request_header = {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'
+        }
+
         if args.token:
             token = args.token
         else:
             mobile = input("Enter the registered mobile number: ")
-            token = generate_token_OTP(mobile)
+            token = generate_token_OTP(mobile, request_header)
 
-        request_header = {"Authorization": f"Bearer {token}"}
-
+        request_header["Authorization"] = f"Bearer {token}"
         # Get Beneficiaries
         print("Fetching registered beneficiaries.. ")
         beneficiary_dtls = get_beneficiaries(request_header)
@@ -37,7 +40,7 @@ def main():
             os.system("pause")
             sys.exit(1)
 
-        print("================================= Location Info =================================\n")
+        print("\n================================= Location Info =================================\n")
 
         search_option = input("""Search by Pincode? Or by State/District? \nEnter 1 for Pincode or 2 for State/District. (Default 2) : """)
         search_option = int(search_option) if int(search_option) in [1, 2] else 2
@@ -50,7 +53,7 @@ def main():
             # Collect vaccination center preferance
             location_dtls = get_pincodes()
 
-        print("================================= Additional Info =================================\n")
+        print("\n================================= Additional Info =================================\n")
 
         # Set filter condition
         minimum_slots = input(f'Filter out centers with availability less than ? Minimum {len(beneficiary_dtls)} : ')
@@ -63,14 +66,19 @@ def main():
         refresh_freq = input('How often do you want to refresh the calendar (in seconds)? Default 15. Minimum 5. : ')
         refresh_freq = int(refresh_freq) if refresh_freq and int(refresh_freq) >= 5 else 15
 
+        print("\n=========== CAUTION! =========== CAUTION! CAUTION! =============== CAUTION! =======\n")
+        print(" ==== BE CAREFUL WITH THIS OPTION! AUTO-BOOKING WILL BOOK THE FIRST AVAILABLE CENTRE, DATE, AND SLOT! ==== ")
+        auto_book = input("Do you want to enable auto-booking? (yes-please or no): ")
+
         token_valid = True
         while token_valid:
-            request_header = {"Authorization": f"Bearer {token}"}
+            request_header["Authorization"] = f"Bearer {token}"
 
             # call function to check and book slots
             token_valid = check_and_book(request_header, beneficiary_dtls, location_dtls, search_option,
                                          min_slots=minimum_slots,
-                                         ref_freq=refresh_freq)
+                                         ref_freq=refresh_freq,
+                                         auto_book=auto_book)
 
             # check if token is still valid
             beneficiaries_list = requests.get(BENEFICIARIES_URL, headers=request_header)
@@ -109,3 +117,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

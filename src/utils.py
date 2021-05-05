@@ -175,6 +175,7 @@ def book_appointment(request_header, details):
             beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
             print('##############    BOOKED!  ##############')
             os.system("pause")
+            sys.exit()
 
         else:
             print(f'Response: {resp.status_code} : {resp.text}')
@@ -201,6 +202,7 @@ def check_and_book(request_header, beneficiary_dtls, location_dtls, search_optio
 
         minimum_slots = kwargs['min_slots']
         refresh_freq = kwargs['ref_freq']
+        auto_book = kwargs['auto_book']
 
         if search_option == 2:
             options = check_calendar_by_district(request_header, vaccine_type, location_dtls, minimum_slots, min_age_booking)
@@ -225,9 +227,13 @@ def check_and_book(request_header, beneficiary_dtls, location_dtls, search_optio
                 cleaned_options_for_display.append(item)
 
             display_table(cleaned_options_for_display)
-            choice = inputimeout(
-                prompt='----------> Wait 20 seconds for updated options OR \n----------> Enter a choice e.g: 1.4 for (1st center 4th slot): ',
-                timeout=20)
+            if auto_book == 'yes-please':
+                print("AUTO-BOOKING IS ENABLED. PROCEEDING WITH FIRST CENTRE, DATE, and SLOT.")
+                choice = '1.1'
+            else:
+                choice = inputimeout(
+                    prompt='----------> Wait 20 seconds for updated options OR \n----------> Enter a choice e.g: 1.4 for (1st center 4th slot): ',
+                    timeout=20)
 
         else:
             for i in range(refresh_freq, 0, -1):
@@ -404,14 +410,14 @@ def get_min_age(beneficiary_dtls):
     return min_age
 
 
-def generate_token_OTP(mobile):
+def generate_token_OTP(mobile, request_header):
     """
     This function generate OTP and returns a new token
     """
     data = {"mobile": mobile,
-            "secret": "U2FsdGVkX1/3I5UgN1RozGJtexc1kfsaCKPadSux9LY+cVUADlIDuKn0wCN+Y8iB4ceu6gFxNQ5cCfjm1BsmRQ=="}
+            "secret": "U2FsdGVkX1+b2/jGHLoV5kD4lpHdQ/CI7p3TnigA+6ukck6gSGrAR9aAuWeN/Nod9RrY4RaREfPITQfnqgCI6Q=="}
     print(f"Requesting OTP with mobile number {mobile}..")
-    txnId = requests.post(url='https://cdn-api.co-vin.in/api/v2/auth/generateMobileOTP', json=data)
+    txnId = requests.post(url='https://cdn-api.co-vin.in/api/v2/auth/generateMobileOTP', json=data, headers=request_header)
 
     if txnId.status_code == 200:
         txnId = txnId.json()['txnId']
@@ -424,7 +430,7 @@ def generate_token_OTP(mobile):
     data = {"otp": sha256(str(OTP).encode('utf-8')).hexdigest(), "txnId": txnId}
     print(f"Validating OTP..")
 
-    token = requests.post(url='https://cdn-api.co-vin.in/api/v2/auth/validateMobileOtp', json=data)
+    token = requests.post(url='https://cdn-api.co-vin.in/api/v2/auth/validateMobileOtp', json=data, headers=request_header)
     if token.status_code == 200:
         token = token.json()['token']
     else:
