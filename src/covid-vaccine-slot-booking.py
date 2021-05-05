@@ -1,6 +1,6 @@
 from collections import Counter
 import requests, sys, argparse, os
-from utils import generate_token_OTP, get_beneficiaries, check_and_book, get_districts, get_pincodes, beep, \
+from utils import generate_token_OTP, get_beneficiaries, check_and_book, get_districts, get_min_age, beep, \
     BENEFICIARIES_URL, WARNING_BEEP_DURATION
 
 
@@ -14,7 +14,7 @@ def main():
         if args.token:
             token = args.token
         else:
-            mobile = input("Enter the registered mobile number: ")
+            mobile = "your_mobile_number"
             token = generate_token_OTP(mobile)
 
         request_header = {"Authorization": f"Bearer {token}"}
@@ -37,38 +37,25 @@ def main():
             os.system("pause")
             sys.exit(1)
 
-        print("================================= Location Info =================================\n")
+        # Collect vaccination center preferance
+        district_dtls = get_districts()
 
-        search_option = input("""Search by Pincode? Or by State/District? \nEnter 1 for Pincode or 2 for State/District. (Default 2) : """)
-        search_option = int(search_option) if int(search_option) in [1, 2] else 2
 
-        if search_option == 2:
-            # Collect vaccination center preferance
-            location_dtls = get_districts()
-
-        else:
-            # Collect vaccination center preferance
-            location_dtls = get_pincodes()
-
-        print("================================= Additional Info =================================\n")
+        print("================================= Additional Info =================================")
 
         # Set filter condition
-        minimum_slots = input(f'Filter out centers with availability less than ? Minimum {len(beneficiary_dtls)} : ')
-        if minimum_slots:
-            minimum_slots = int(minimum_slots) if int(minimum_slots) >= len(beneficiary_dtls) else len(beneficiary_dtls)
-        else:
-            minimum_slots = len(beneficiary_dtls)
+        minimum_slots = int(input(f'Filter out centers with availability less than ? Minimum {len(beneficiary_dtls)} : '))
+        minimum_slots = minimum_slots if minimum_slots >= len(beneficiary_dtls) else len(beneficiary_dtls)
 
         # Get refresh frequency
-        refresh_freq = input('How often do you want to refresh the calendar (in seconds)? Default 15. Minimum 5. : ')
-        refresh_freq = int(refresh_freq) if refresh_freq and int(refresh_freq) >= 5 else 15
+        refresh_freq = 1
 
         token_valid = True
         while token_valid:
             request_header = {"Authorization": f"Bearer {token}"}
 
             # call function to check and book slots
-            token_valid = check_and_book(request_header, beneficiary_dtls, location_dtls, search_option,
+            token_valid = check_and_book(request_header, beneficiary_dtls, district_dtls,
                                          min_slots=minimum_slots,
                                          ref_freq=refresh_freq)
 
@@ -83,10 +70,10 @@ def main():
                 print('Token is INVALID.')
                 token_valid = False
 
-                tryOTP = input('Try for a new Token? (y/n): ')
+                tryOTP = 'y'
                 if tryOTP.lower() == 'y':
                     if mobile:
-                        tryOTP = input(f"Try for OTP with mobile number {mobile}? (y/n) : ")
+                        tryOTP = 'y'
                         if tryOTP.lower() == 'y':
                             token = generate_token_OTP(mobile)
                             token_valid = True
