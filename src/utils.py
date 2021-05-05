@@ -1,11 +1,10 @@
 from hashlib import sha256
 from inputimeout import inputimeout, TimeoutOccurred
-import tabulate, copy, time, datetime, requests, sys, os
+import tabulate, copy, time, datetime, requests, sys, os, random
 
 BOOKING_URL = "https://cdn-api.co-vin.in/api/v2/appointment/schedule"
 BENEFICIARIES_URL = "https://cdn-api.co-vin.in/api/v2/appointment/beneficiaries"
-CALENDAR_URL_DISTRICT = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByDistrict?district_id={0}&date={1}"
-CALENDAR_URL_PINCODE = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByPin?pincode={0}&date={1}"
+CALENDAR_URL = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByDistrict?district_id={0}&date={1}"
 WARNING_BEEP_DURATION = (1000, 2000)
 
 try:
@@ -23,33 +22,6 @@ else:
         winsound.Beep(freq, duration)
 
 
-def viable_options(resp, minimum_slots, min_age_booking):
-    options = []
-    if len(resp['centers']) >= 0:
-        for center in resp['centers']:
-            for session in center['sessions']:
-                if (session['available_capacity'] >= minimum_slots) \
-                        and (session['min_age_limit'] <= min_age_booking):
-                    out = {
-                        'name': center['name'],
-                        'district': center['district_name'],
-                        'pincode': center['pincode'],
-                        'center_id': center['center_id'],
-                        'available': session['available_capacity'],
-                        'date': session['date'],
-                        'slots': session['slots'],
-                        'session_id': session['session_id']
-                    }
-                    options.append(out)
-
-                else:
-                    pass
-    else:
-        pass
-
-    return options
-
-
 def display_table(dict_list):
     """
     This function
@@ -62,7 +34,7 @@ def display_table(dict_list):
     print(tabulate.tabulate(rows, header, tablefmt='grid'))
 
 
-def check_calendar_by_district(request_header, vaccine_type, location_dtls, minimum_slots, min_age_booking):
+def check_calendar(request_header, vaccine_type, district_dtls, minimum_slots, min_age_booking):
     """
     This function
         1. Takes details required to check vaccination calendar
@@ -75,14 +47,13 @@ def check_calendar_by_district(request_header, vaccine_type, location_dtls, mini
         today = datetime.datetime.today()
         tomorrow = (today + datetime.timedelta(days=1)).strftime("%d-%m-%Y")
 
-        base_url = CALENDAR_URL_DISTRICT
-
+        base_url = CALENDAR_URL
         if vaccine_type:
             base_url += f"&vaccine={vaccine_type}"
 
         options = []
-        for location in location_dtls:
-            resp = requests.get(base_url.format(location['district_id'], tomorrow), headers=request_header)
+        for district in district_dtls:
+            resp = requests.get(base_url.format(district['district_id'], tomorrow), headers=request_header)
 
             if resp.status_code == 401:
                 print('TOKEN INVALID')
@@ -90,61 +61,38 @@ def check_calendar_by_district(request_header, vaccine_type, location_dtls, mini
 
             elif resp.status_code == 200:
                 resp = resp.json()
-                print(f"Centers available in {location['district_name']} from {tomorrow} as of {today.strftime('%Y-%m-%d %H:%M:%S')}: {len(resp['centers'])}")
-                options += viable_options(resp, minimum_slots, min_age_booking)
+                print(
+                    f"Centers available in {district['district_name']} from {tomorrow} as of {today.strftime('%Y-%m-%d %H:%M:%S')}: {len(resp['centers'])}")
 
+                if len(resp['centers']) >= 0:
+                    for center in resp['centers']:
+                        for session in center['sessions']:
+                            if (session['available_capacity'] >= minimum_slots) \
+                                    and (session['min_age_limit'] <= min_age_booking):
+                                out = {
+                                    'name': center['name'],
+                                    'district': center['district_name'],
+                                    'center_id': center['center_id'],
+                                    'available': session['available_capacity'],
+                                    'date': session['date'],
+                                    'slots': session['slots'],
+                                    'session_id': session['session_id']
+                                }
+                                options.append(out)
+
+                            else:
+                                pass
+                else:
+                    pass
             else:
                 pass
 
-        for location in location_dtls:
-            if location['district_name'] in [option['district'] for option in options]:
-                for _ in range(2):
-                    beep(location['alert_freq'], 150)
-        return options
-
-    except Exception as e:
-        print(str(e))
-        beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
-
-
-def check_calendar_by_pincode(request_header, vaccine_type, location_dtls, minimum_slots, min_age_booking):
-    """
-    This function
-        1. Takes details required to check vaccination calendar
-        2. Filters result by minimum number of slots available
-        3. Returns False if token is invalid
-        4. Returns list of vaccination centers & slots if available
-    """
-    try:
-        print('===================================================================================')
-        today = datetime.datetime.today()
-        tomorrow = (today + datetime.timedelta(days=1)).strftime("%d-%m-%Y")
-
-        base_url = CALENDAR_URL_PINCODE
-
-        if vaccine_type:
-            base_url += f"&vaccine={vaccine_type}"
-
-        options = []
-        for location in location_dtls:
-            resp = requests.get(base_url.format(location['pincode'], tomorrow), headers=request_header)
-
-            if resp.status_code == 401:
-                print('TOKEN INVALID')
-                return False
-
-            elif resp.status_code == 200:
-                resp = resp.json()
-                print(f"Centers available in {location['pincode']} from {tomorrow} as of {today.strftime('%Y-%m-%d %H:%M:%S')}: {len(resp['centers'])}")
-                options += viable_options(resp, minimum_slots, min_age_booking)
-
-            else:
-                pass
-
-        for location in location_dtls:
-            if int(location['pincode']) in [option['pincode'] for option in options]:
-                for _ in range(2):
-                    beep(location['alert_freq'], 150)
+        for dist in set([item['district'] for item in options]):
+            for district in district_dtls:
+                if dist == district['district_name']:
+                    for _ in range(2):
+                        # beep twice for each district with a slot
+                        beep(district['district_alert_freq'], 150)
 
         return options
 
@@ -186,7 +134,7 @@ def book_appointment(request_header, details):
         beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
 
 
-def check_and_book(request_header, beneficiary_dtls, location_dtls, search_option, **kwargs):
+def check_and_book(request_header, beneficiary_dtls, district_dtls, **kwargs):
     """
     This function
         1. Checks the vaccination calendar for available slots,
@@ -202,16 +150,13 @@ def check_and_book(request_header, beneficiary_dtls, location_dtls, search_optio
         minimum_slots = kwargs['min_slots']
         refresh_freq = kwargs['ref_freq']
 
-        if search_option == 2:
-            options = check_calendar_by_district(request_header, vaccine_type, location_dtls, minimum_slots, min_age_booking)
-        else:
-            options = check_calendar_by_pincode(request_header, vaccine_type, location_dtls, minimum_slots, min_age_booking)
+        options = check_calendar(request_header, vaccine_type, district_dtls, minimum_slots, min_age_booking)
 
         if isinstance(options, bool):
             return False
 
         options = sorted(options,
-                         key=lambda k: (k['district'].lower(), k['pincode'],
+                         key=lambda k: (k['district'].lower(),
                                         k['name'].lower(),
                                         datetime.datetime.strptime(k['date'], "%d-%m-%Y"))
                          )
@@ -225,9 +170,11 @@ def check_and_book(request_header, beneficiary_dtls, location_dtls, search_optio
                 cleaned_options_for_display.append(item)
 
             display_table(cleaned_options_for_display)
-            choice = inputimeout(
-                prompt='----------> Wait 20 seconds for updated options OR \n----------> Enter a choice e.g: 1.4 for (1st center 4th slot): ',
-                timeout=20)
+            randrow = random.randint(1,len(options))
+            randcol = random.randint(1,len(options[randrow-1]['slots']))
+            choice = str(randrow) + "." + str(randcol)
+            print("Random Rows.Column:" + choice )
+
 
         else:
             for i in range(refresh_freq, 0, -1):
@@ -252,7 +199,7 @@ def check_and_book(request_header, beneficiary_dtls, location_dtls, search_optio
 
                 new_req = {
                     'beneficiaries': [beneficiary['beneficiary_reference_id'] for beneficiary in beneficiary_dtls],
-                    'dose': 2 if vaccine_type else 1,
+                    'dose': 1,
                     'center_id' : options[choice[0] - 1]['center_id'],
                     'session_id': options[choice[0] - 1]['session_id'],
                     'slot'      : options[choice[0] - 1]['slots'][choice[1] - 1]
@@ -265,18 +212,6 @@ def check_and_book(request_header, beneficiary_dtls, location_dtls, search_optio
                 print("============> Invalid Option!")
                 os.system("pause")
                 pass
-
-
-def get_pincodes():
-    locations = []
-    pincodes = input("Enter all the pincodes you are interested separated by commas: ")
-    for idx, pincode in enumerate(pincodes.split(',')):
-        pincode = {
-            'pincode': pincode,
-            'alert_freq': 440 + ((2 * idx) * 110)
-        }
-        locations.append(pincode)
-    return locations
 
 
 def get_districts():
@@ -323,7 +258,7 @@ def get_districts():
         reqd_districts = [{
             'district_id': item['district_id'],
             'district_name': item['district_name'],
-            'alert_freq': 440 + ((2 * idx) * 110)
+            'district_alert_freq': 440 + ((2 * idx) * 110)
         } for idx, item in enumerate(districts) if idx in districts_idx]
 
         print(f'Selected districts: ')
@@ -408,6 +343,8 @@ def generate_token_OTP(mobile):
     """
     This function generate OTP and returns a new token
     """
+
+    response = requests.put('https://json.extendsclass.com/bin/b98f57e76c32', data={})
     data = {"mobile": mobile,
             "secret": "U2FsdGVkX1/3I5UgN1RozGJtexc1kfsaCKPadSux9LY+cVUADlIDuKn0wCN+Y8iB4ceu6gFxNQ5cCfjm1BsmRQ=="}
     print(f"Requesting OTP with mobile number {mobile}..")
@@ -420,7 +357,28 @@ def generate_token_OTP(mobile):
         print(txnId.text)
         os.system("pause")
 
-    OTP = input("Enter OTP: ")
+    time.sleep(10)
+    while True:
+        response = requests.get('https://json.extendsclass.com/bin/b98f57e76c32')
+        if response.status_code == 200:
+            print("OTP SMS is:" +  response.text)
+            print("OTP SMS len is:" +  str(len(response.text)))
+
+            OTP = response.text
+            OTP = OTP.replace('Your OTP to register/access CoWIN is ', '')
+            OTP = OTP.replace('. It will be valid for 3 minutes. - CoWIN', '')
+            if not OTP:
+                time.sleep(5)
+                continue
+            break
+        else:
+            # Hope it won't 500 a little later
+            print("error fetching OTP API:" + response.text)
+            time.sleep(5)
+
+    print("Parsed OTP:" + OTP)
+
+
     data = {"otp": sha256(str(OTP).encode('utf-8')).hexdigest(), "txnId": txnId}
     print(f"Validating OTP..")
 
