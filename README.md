@@ -1,3 +1,70 @@
+# Bombardier COVID-19 Vaccination Slot Booking Script
+This is a fork over the neat https://github.com/pallupz/covid-vaccine-booking Thanks for creating a playground for me to build on.
+
+What this repository does:
+1. Automates OTP read from the SMS (Android only) after the token expires
+2. Randomly chooses one of the available slots instea of waiting for input from the user
+3. Reduces the polling wait to optimize on the polling frequency (hence the name bombardier)
+
+
+How it works:
+1. https://ifttt.com/ is used to create a SMS trigger. The trigger happens when the OTP SMS is received
+2. The trigger sends the text of the SMS to a REST service, I have used a free service which needs 0 setup for a shared storage
+
+
+**Parallely**
+1. The script runs continuously to poll (same logic as the original repository)
+2. Whenever th OTP expires, an OTP is requested
+3. When the OTP SMS is received on the Android, phone, the above logic triggers to store the OTP SMS in the shared storage
+4. The script polls the shared storage to get the OTP
+5. Once the OTP is received, the polling resumes
+6. If a free slot is found, rather than waiting for an input, it randomly chooses a slot and attempts to book
+
+
+**Steps to setup**
+1. Create a shared storage URL at https://extendsclass.com/json-storage.html (Type something random and click on Savebin and note the URL generated which will be of the type https://json.extendsclass.com/bin/1232323132)
+2. Create an account in ifttt.com (A premium paid account is recommended for a quicker response)
+3.	Create a new applet
+4. 	If this..... click on Android SMS trigger
+5. 	Select "New SMS received matches search" and use CoWIN as the search key
+6. 	Then... Choose a service named Webhooks and then select make a web request
+7. 		Paste the url you created in step 1 above
+8. 		Method is PUT
+9. 		Content Type PlainText
+10. 		Body: Add ingredient and select Text
+11. On your android phone, install ifttt app
+12. 	Login 
+13. 	Ensure that the battery saver mode, and all other optimizations are removed. The appshould always run (This is the key for quick response). 
+	Tip: If your IFTTT is not triggered when your SMS is received: https://www.androidpolice.com/2020/05/30/how-to-prevent-apps-sleeping-in-the-background-on-android/
+	Also a premium account is faster
+14. Clone this repository
+15. 	Search for extendsclass url and replace with the one you created
+16. 	Search for your_mobile_number and replace with your mobile number
+17. Run the script, use the steps given below to enter your preferences
+18. Hopefully you get the slot
+19. Stay healthy and stay safe!
+
+Tips: I used this command to run the script as it was giving me Syntax error:_ python3 src/covid-vaccine-slot-booking.py_
+Also I used this command to install the dependencies _python3 pip install -r requirements.txt_
+
+
+**Same steps in screenshots:**
+![image](https://user-images.githubusercontent.com/83712877/117158837-67748800-addd-11eb-8880-4d26ef68fddf.png)
+![image](https://user-images.githubusercontent.com/83712877/117159030-90951880-addd-11eb-8fd3-f4c6242d03a5.png)
+![image](https://user-images.githubusercontent.com/83712877/117159172-b0c4d780-addd-11eb-90f0-ab8438db4c8e.png)
+![image](https://user-images.githubusercontent.com/83712877/117159291-c76b2e80-addd-11eb-991a-dc6de4bbb620.png)
+![image](https://user-images.githubusercontent.com/83712877/117159444-e669c080-addd-11eb-9b4c-448335b1c781.png)
+![image](https://user-images.githubusercontent.com/83712877/117159516-f8e3fa00-addd-11eb-832d-fcf92238f823.png)
+![image](https://user-images.githubusercontent.com/83712877/117159663-17e28c00-adde-11eb-9a5f-4faf39430279.png)
+![image](https://user-images.githubusercontent.com/83712877/117159753-2c268900-adde-11eb-9bb3-4bb54f951683.png)
+![image](https://user-images.githubusercontent.com/83712877/117159818-38aae180-adde-11eb-96b5-0e779803b4b2.png)
+![image](https://user-images.githubusercontent.com/83712877/117159863-4496a380-adde-11eb-8874-40cc6f851cf6.png)
+![image](https://user-images.githubusercontent.com/83712877/117160157-832c5e00-adde-11eb-8ca4-7bad71abde08.png)
+
+![image](https://user-images.githubusercontent.com/83712877/117160850-16fe2a00-addf-11eb-9e0a-3f5aa4679208.png)
+![image](https://user-images.githubusercontent.com/83712877/117160946-2e3d1780-addf-11eb-8f27-2477ac73d087.png)
+
+
 # COVID-19 Vaccination Slot Booking Script
 
 This very basic CLI based script can be used to automate covid vaccination slot booking on Co-WIN Platform. 
