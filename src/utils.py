@@ -175,6 +175,7 @@ def book_appointment(request_header, details):
             beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
             print('##############    BOOKED!  ##############')
             os.system("pause")
+            sys.exit()
 
         else:
             print(f'Response: {resp.status_code} : {resp.text}')
@@ -201,6 +202,7 @@ def check_and_book(request_header, beneficiary_dtls, location_dtls, search_optio
 
         minimum_slots = kwargs['min_slots']
         refresh_freq = kwargs['ref_freq']
+        auto_book = kwargs['auto_book']
 
         if search_option == 2:
             options = check_calendar_by_district(request_header, vaccine_type, location_dtls, minimum_slots, min_age_booking)
@@ -225,9 +227,13 @@ def check_and_book(request_header, beneficiary_dtls, location_dtls, search_optio
                 cleaned_options_for_display.append(item)
 
             display_table(cleaned_options_for_display)
-            choice = inputimeout(
-                prompt='----------> Wait 20 seconds for updated options OR \n----------> Enter a choice e.g: 1.4 for (1st center 4th slot): ',
-                timeout=20)
+            if auto_book == 'yes-please':
+                print("AUTO-BOOKING IS ENABLED. PROCEEDING WITH FIRST CENTRE, DATE, and SLOT.")
+                choice = '1.1'
+            else:
+                choice = inputimeout(
+                    prompt='----------> Wait 20 seconds for updated options OR \n----------> Enter a choice e.g: 1.4 for (1st center 4th slot): ',
+                    timeout=20)
 
         else:
             for i in range(refresh_freq, 0, -1):
