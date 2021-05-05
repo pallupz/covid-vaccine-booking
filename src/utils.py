@@ -175,6 +175,7 @@ def book_appointment(request_header, details):
             beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
             print('##############    BOOKED!  ##############')
             os.system("pause")
+            sys.exit()
 
         else:
             print(f'Response: {resp.status_code} : {resp.text}')
