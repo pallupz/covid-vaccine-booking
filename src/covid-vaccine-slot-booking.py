@@ -1,3 +1,4 @@
+import copy
 from collections import Counter
 import requests, sys, argparse, os
 from utils import generate_token_OTP, get_beneficiaries, check_and_book, get_districts, get_pincodes, beep, \
@@ -11,7 +12,7 @@ def main():
 
     mobile = None
     try:
-        request_header = {
+        base_request_header = {
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'
         }
 
@@ -19,8 +20,9 @@ def main():
             token = args.token
         else:
             mobile = input("Enter the registered mobile number: ")
-            token = generate_token_OTP(mobile, request_header)
+            token = generate_token_OTP(mobile, base_request_header)
 
+        request_header = copy.deepcopy(base_request_header)
         request_header["Authorization"] = f"Bearer {token}"
         # Get Beneficiaries
         print("Fetching registered beneficiaries.. ")
@@ -96,14 +98,14 @@ def main():
                     if mobile:
                         tryOTP = input(f"Try for OTP with mobile number {mobile}? (y/n) : ")
                         if tryOTP.lower() == 'y':
-                            token = generate_token_OTP(mobile)
+                            token = generate_token_OTP(mobile, base_request_header)
                             token_valid = True
                         else:
                             token_valid = False
                             print("Exiting")
                     else:
                         mobile = input(f"Enter 10 digit mobile number for new OTP generation? : ")
-                        token = generate_token_OTP(mobile)
+                        token = generate_token_OTP(mobile, base_request_header)
                         token_valid = True
                 else:
                     print("Exiting")
