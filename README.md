@@ -5,7 +5,7 @@ What this repository does:
 1. Automates OTP read from the SMS (Android only) after the token expires
 2. Randomly chooses one of the available slots instea of waiting for input from the user
 3. Reduces the polling wait to optimize on the polling frequency (hence the name bombardier)
-![image](https://user-images.githubusercontent.com/83712877/117167284-bf62bd00-ade4-11eb-949d-3227a8de2c75.png)
+![image](https://user-images.githubusercontent.com/83712877/117170462-ac052100-ade7-11eb-8f20-8a0cc3bde79b.png)
 
 
 How it works:
