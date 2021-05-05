@@ -8,7 +8,7 @@ This very basic CLI based script can be used to automate covid vaccination slot 
 - No option to register new user or add beneficiaries. This can be used only after beneficiary has been added through the official app/site
 - **Be careful if you choose to use the auto-book feature.** It will blindly book for first available center name, date, and slot - all sorted ascending. I would recommend __against__ using this. Only added for the convenience of people in short supply areas.
 - If you accidentally book a slot, don't worry. You can always login to the official portal and cancel that. There will be an X symbol on the right-top corner **_for each beneficiary._**
-- API Details: https://apisetu.gov.in/public/marketplace/api/cowin/cowinapi-v2
+- API Details (read the first paragraph at least): https://apisetu.gov.in/public/marketplace/api/cowin/cowin-public-v2
 - And finally, I know code quality probably isn't great. Suggestions are welcome.
 
 
