@@ -2,6 +2,8 @@
 
 This very basic CLI based script can be used to automate covid vaccination slot booking on Co-WIN Platform. 
 
+## Requests are getting blocked. The party is probably over - at least for now.
+
 ### Important: 
 - POC project. **Use at your own risk**.
 - Do NOT use unless all beneficiaries selected are supposed to get the same vaccine and dose. 
