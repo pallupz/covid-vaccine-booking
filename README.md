@@ -2,6 +2,8 @@
 
 This very basic CLI based script can be used to automate covid vaccination slot booking on Co-WIN Platform. 
 
+## Requests are getting blocked. The party is probably over - at least for now.
+
 ### Important: 
 - POC project. **Use at your own risk**.
 - Do NOT use unless all beneficiaries selected are supposed to get the same vaccine and dose. 
@@ -10,6 +12,9 @@ This very basic CLI based script can be used to automate covid vaccination slot 
 - API Details: https://apisetu.gov.in/public/marketplace/api/cowin/cowinapi-v2
 - And finally, I know code quality probably isn't great. Suggestions are welcome.
 
+
+### Note:
+- Branch ```feature/auto-book``` has auto-booking functionality that books the first available center, date, and slot. Considering it's possible impacts, I won't be promoting it to ```main```.
 
 ### Usage:
 
