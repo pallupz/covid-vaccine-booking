@@ -1,7 +1,7 @@
 import copy
 from collections import Counter
 import requests, sys, argparse, os
-from utils import generate_token_OTP, get_beneficiaries, check_and_book, get_districts, get_min_age, beep, \
+from utils import generate_token_OTP, get_beneficiaries, check_and_book, get_districts, get_pincodes, beep, \
     BENEFICIARIES_URL, WARNING_BEEP_DURATION
 
 
@@ -52,17 +52,22 @@ def main():
             # Collect vaccination center preferance
             location_dtls = get_districts(request_header)
 
-
+        else:
+            # Collect vaccination center preferance
+            location_dtls = get_pincodes()
 
         print("\n================================= Additional Info =================================\n")
 
         # Set filter condition
-        minimum_slots = int(input(f'Filter out centers with availability less than ? Minimum {len(beneficiary_dtls)} : '))
-        minimum_slots = minimum_slots if minimum_slots >= len(beneficiary_dtls) else len(beneficiary_dtls)
-        auto_book = "yes-please"
+        minimum_slots = input(f'Filter out centers with availability less than ? Minimum {len(beneficiary_dtls)} : ')
+        if minimum_slots:
+            minimum_slots = int(minimum_slots) if int(minimum_slots) >= len(beneficiary_dtls) else len(beneficiary_dtls)
+        else:
+            minimum_slots = len(beneficiary_dtls)
 
         # Get refresh frequency
-        refresh_freq = 1
+        refresh_freq = input('How often do you want to refresh the calendar (in seconds)? Default 15. Minimum 5. : ')
+        refresh_freq = int(refresh_freq) if refresh_freq and int(refresh_freq) >= 1 else 15
 
         print("\n=========== CAUTION! =========== CAUTION! CAUTION! =============== CAUTION! =======\n")
         print(" ==== BE CAREFUL WITH THIS OPTION! AUTO-BOOKING WILL BOOK THE FIRST AVAILABLE CENTRE, DATE, AND SLOT! ==== ")
@@ -70,12 +75,11 @@ def main():
 
         token_valid = True
         while token_valid:
-
             request_header = copy.deepcopy(base_request_header)
             request_header["Authorization"] = f"Bearer {token}"
 
             # call function to check and book slots
-            token_valid = check_and_book(request_header, beneficiary_dtls, district_dtls,
+            token_valid = check_and_book(request_header, beneficiary_dtls, location_dtls, search_option,
                                          min_slots=minimum_slots,
                                          ref_freq=refresh_freq,
                                          auto_book=auto_book)
