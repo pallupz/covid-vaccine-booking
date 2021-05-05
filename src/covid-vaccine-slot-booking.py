@@ -11,13 +11,15 @@ def main():
 
     mobile = None
     try:
+        request_header = {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'
+        }
+    try:
         if args.token:
             token = args.token
         else:
             mobile = "your_mobile_number"
-            token = generate_token_OTP(mobile)
-
-        request_header = {"Authorization": f"Bearer {token}"}
+            token = generate_token_OTP(mobile, request_header)
 
         # Get Beneficiaries
         print("Fetching registered beneficiaries.. ")
@@ -46,19 +48,20 @@ def main():
         # Set filter condition
         minimum_slots = int(input(f'Filter out centers with availability less than ? Minimum {len(beneficiary_dtls)} : '))
         minimum_slots = minimum_slots if minimum_slots >= len(beneficiary_dtls) else len(beneficiary_dtls)
+        auto_book = "yes-please"
 
         # Get refresh frequency
         refresh_freq = 1
 
         token_valid = True
         while token_valid:
-            request_header = {"Authorization": f"Bearer {token}"}
+            request_header["Authorization"] = f"Bearer {token}"
 
             # call function to check and book slots
             token_valid = check_and_book(request_header, beneficiary_dtls, district_dtls,
                                          min_slots=minimum_slots,
-                                         ref_freq=refresh_freq)
-
+                                         ref_freq=refresh_freq,
+                                         auto_book=auto_book)
             # check if token is still valid
             beneficiaries_list = requests.get(BENEFICIARIES_URL, headers=request_header)
             if beneficiaries_list.status_code == 200:
