@@ -74,6 +74,7 @@ def main():
 
         token_valid = True
         while token_valid:
+            request_header = copy.deepcopy(base_request_header)
             request_header["Authorization"] = f"Bearer {token}"
 
             # call function to check and book slots
