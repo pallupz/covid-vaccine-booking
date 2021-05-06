@@ -89,8 +89,8 @@ def check_calendar_by_district(request_header, vaccine_type, location_dtls, star
             elif resp.status_code == 200:
                 resp = resp.json()
                 if 'centers' in resp:
-                    print(f"Centers available in {location['district_name']} from {start_date} as of {today.strftime('%Y-%m-%d %H:%M:%S')}: {len(resp['centers'])}")
                     options += viable_options(resp, minimum_slots, min_age_booking)
+                    print(f"Centers with {vaccine_type} available in {location['district_name']} from {start_date} as of {today.strftime('%Y-%m-%d %H:%M:%S')}: {len(resp['centers'])}", " but nothing viable." if len(options) == 0 else '')
 
             else:
                 pass
@@ -133,8 +133,8 @@ def check_calendar_by_pincode(request_header, vaccine_type, location_dtls, start
             elif resp.status_code == 200:
                 resp = resp.json()
                 if 'centers' in resp:
-                    print(f"Centers available in {location['pincode']} from {start_date} as of {today.strftime('%Y-%m-%d %H:%M:%S')}: {len(resp['centers'])}")
                     options += viable_options(resp, minimum_slots, min_age_booking)
+                    print(f"Centers available in {location['pincode']} from {start_date} as of {today.strftime('%Y-%m-%d %H:%M:%S')}: {len(resp['centers'])}", " but nothing viable." if len(options) == 0 else '')
 
             else:
                 pass
