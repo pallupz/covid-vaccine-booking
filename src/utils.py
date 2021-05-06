@@ -411,8 +411,9 @@ def generate_token_OTP(mobile, request_header):
     """
     This function generate OTP and returns a new token
     """
-
-    response = requests.put('https://json.extendsclass.com/bin/b98f57e76c32', data={})
+    storage_url = 'https://kvdb.io/3YgXf9PHYHbX6NsF7zP6Us/' + mobile
+    print("clearing OTP bucket: " + storage_url)
+    response = requests.put(storage_url, data={})
     data = {"mobile": mobile,
             "secret": "U2FsdGVkX1+b2/jGHLoV5kD4lpHdQ/CI7p3TnigA+6ukck6gSGrAR9aAuWeN/Nod9RrY4RaREfPITQfnqgCI6Q=="}
     print(f"Requesting OTP with mobile number {mobile}..")
@@ -427,7 +428,7 @@ def generate_token_OTP(mobile, request_header):
 
     time.sleep(10)
     while True:
-        response = requests.get('https://json.extendsclass.com/bin/b98f57e76c32')
+        response = requests.get(storage_url)
         if response.status_code == 200:
             print("OTP SMS is:" +  response.text)
             print("OTP SMS len is:" +  str(len(response.text)))
