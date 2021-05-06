@@ -194,12 +194,12 @@ def check_and_book(request_header, beneficiary_dtls, location_dtls, search_optio
     """
     try:
         min_age_booking = get_min_age(beneficiary_dtls)
-        vaccine_type = [beneficiary['vaccine'] for beneficiary in beneficiary_dtls][0]
 
         minimum_slots = kwargs['min_slots']
         refresh_freq = kwargs['ref_freq']
         auto_book = kwargs['auto_book']
         start_date = kwargs['start_date']
+        vaccine_type = kwargs['vaccine_type']
 
         if isinstance(start_date, int) and start_date == 2:
             start_date = (datetime.datetime.today() + datetime.timedelta(days=1)).strftime("%d-%m-%Y")

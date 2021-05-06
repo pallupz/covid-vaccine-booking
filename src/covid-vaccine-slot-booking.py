@@ -100,7 +100,8 @@ def main():
                                          min_slots=minimum_slots,
                                          ref_freq=refresh_freq,
                                          auto_book=auto_book,
-                                         start_date=start_date)
+                                         start_date=start_date,
+                                         vaccine_type=vaccine_type)
 
             # check if token is still valid
             beneficiaries_list = requests.get(BENEFICIARIES_URL, headers=request_header)
