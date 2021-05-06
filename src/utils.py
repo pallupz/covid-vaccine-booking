@@ -262,7 +262,7 @@ def check_and_book(request_header, beneficiary_dtls, location_dtls, search_optio
 
                 new_req = {
                     'beneficiaries': [beneficiary['beneficiary_reference_id'] for beneficiary in beneficiary_dtls],
-                    'dose': 2 if vaccine_type else 1,
+                    'dose': 2 if [beneficiary['vaccine'] for beneficiary in beneficiary_dtls][0] in ['COVISHIELD', 'COVAXIN'] else 1,
                     'center_id' : options[choice[0] - 1]['center_id'],
                     'session_id': options[choice[0] - 1]['session_id'],
                     'slot'      : options[choice[0] - 1]['slots'][choice[1] - 1]
