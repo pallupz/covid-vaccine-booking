@@ -90,6 +90,19 @@ def main():
         print(" ==== BE CAREFUL WITH THIS OPTION! AUTO-BOOKING WILL BOOK THE FIRST AVAILABLE CENTRE, DATE, AND SLOT! ==== ")
         auto_book = input("Do you want to enable auto-booking? (yes-please or no): ")
 
+        print("\n=================== Starting search with below information ===================")
+        print("Vaccine type: " + vaccine_type)
+        print("Auto book: " + str(auto_book == "yes-please"))
+        display_start_date = ""
+        if isinstance(start_date, int):
+            display_start_date = datetime.date.today() + datetime.timedelta(days=start_date-1)
+        else:
+            display_start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
+        print("Slot search starting date: " + str(display_start_date))
+        print("Refresh interval: " + str(refresh_freq) + " seconds")
+        print("Minimum slots: " + str(minimum_slots))
+        print("=================== =================== =================== ===================\n")
+
         token_valid = True
         while token_valid:
             request_header = copy.deepcopy(base_request_header)
