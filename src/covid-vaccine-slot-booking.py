@@ -53,7 +53,11 @@ def main():
         print("\n================================= Location Info =================================\n")
         # get search method to use
         search_option = input("""Search by Pincode? Or by State/District? \nEnter 1 for Pincode or 2 for State/District. (Default 2) : """)
-        search_option = int(search_option) if int(search_option) in [1, 2] else 2
+
+        if not search_option or int(search_option) not in [1, 2]:
+                search_option = 2
+        else:
+            search_option = int(search_option)
 
         if search_option == 2:
             # Collect vaccination center preferance
