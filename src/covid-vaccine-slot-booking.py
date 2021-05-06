@@ -19,7 +19,7 @@ def main():
         if args.token:
             token = args.token
         else:
-            mobile = "your_mobile_number"
+            mobile = input("Enter the registered mobile number: ")
             token = generate_token_OTP(mobile, base_request_header)
 
         request_header = copy.deepcopy(base_request_header)
@@ -121,4 +121,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
