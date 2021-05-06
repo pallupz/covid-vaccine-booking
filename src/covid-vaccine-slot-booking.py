@@ -114,11 +114,11 @@ def main():
                 print('Token is INVALID.')
                 token_valid = False
 
-                tryOTP = input('Try for a new Token? (y/n): ')
-                if tryOTP.lower() == 'y':
+                tryOTP = input('Try for a new Token? (y/n Default y): ')
+                if tryOTP.lower() == 'y' or not tryOTP:
                     if mobile:
-                        tryOTP = input(f"Try for OTP with mobile number {mobile}? (y/n) : ")
-                        if tryOTP.lower() == 'y':
+                        tryOTP = input(f"Try for OTP with mobile number {mobile}? (y/n Default y) : ")
+                        if tryOTP.lower() == 'y' or not tryOTP:
                             token = generate_token_OTP(mobile, base_request_header)
                             token_valid = True
                         else:
