@@ -74,7 +74,7 @@ def main():
             minimum_slots = len(beneficiary_dtls)
 
         # Get refresh frequency
-        refresh_freq = input('How often do you want to refresh the calendar (in seconds)? Default 15. Minimum 5. : ')
+        refresh_freq = input('How often do you want to refresh the calendar (in seconds)? Default 15. Minimum 1. : ')
         refresh_freq = int(refresh_freq) if refresh_freq and int(refresh_freq) >= 1 else 15
 
         # Get search start date
