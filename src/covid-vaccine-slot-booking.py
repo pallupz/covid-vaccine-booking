@@ -1,8 +1,8 @@
 import copy
 from collections import Counter
-import requests, sys, argparse, os
+import requests, sys, argparse, os, datetime
 from utils import generate_token_OTP, get_beneficiaries, check_and_book, get_districts, get_pincodes, beep, \
-    BENEFICIARIES_URL, WARNING_BEEP_DURATION
+    BENEFICIARIES_URL, WARNING_BEEP_DURATION, get_vaccine_preference
 
 
 def main():
@@ -42,11 +42,19 @@ def main():
             os.system("pause")
             sys.exit(1)
 
+        vaccine_type = vaccine_types[0]
+        if not vaccine_type:
+            print("\n================================= Vaccine Info =================================\n")
+            vaccine_type = get_vaccine_preference()
 
         print("\n================================= Location Info =================================\n")
 
         search_option = input("""Search by Pincode? Or by State/District? \nEnter 1 for Pincode or 2 for State/District. (Default 2) : """)
-        search_option = int(search_option) if int(search_option) in [1, 2] else 2
+
+        if not search_option or int(search_option) not in [1, 2]:
+                search_option = 2
+        else:
+            search_option = int(search_option)
 
         if search_option == 2:
             # Collect vaccination center preferance
@@ -69,6 +77,18 @@ def main():
         refresh_freq = input('How often do you want to refresh the calendar (in seconds)? Default 15. Minimum 5. : ')
         refresh_freq = int(refresh_freq) if refresh_freq and int(refresh_freq) >= 1 else 15
 
+        # Get search start date
+        start_date = input('Search for next seven day starting from when?\nUse 1 for today, 2 for tomorrow, or provide a date in the format yyyy-mm-dd. Default 2: ')
+        if not start_date:
+            start_date = 2
+        elif start_date in ['1', '2']:
+            start_date = int(start_date)
+        else:
+            try:
+                datetime.datetime.strptime(start_date, '%Y-%m-%d')
+            except ValueError:
+                start_date = 2
+
         print("\n=========== CAUTION! =========== CAUTION! CAUTION! =============== CAUTION! =======\n")
         print(" ==== BE CAREFUL WITH THIS OPTION! AUTO-BOOKING WILL BOOK THE FIRST AVAILABLE CENTRE, DATE, AND SLOT! ==== ")
         auto_book = input("Do you want to enable auto-booking? (yes-please or no): ")
@@ -82,7 +102,9 @@ def main():
             token_valid = check_and_book(request_header, beneficiary_dtls, location_dtls, search_option,
                                          min_slots=minimum_slots,
                                          ref_freq=refresh_freq,
-                                         auto_book=auto_book)
+                                         auto_book=auto_book,
+                                         start_date=start_date,
+                                         vaccine_type=vaccine_type)
 
             # check if token is still valid
             beneficiaries_list = requests.get(BENEFICIARIES_URL, headers=request_header)
@@ -106,7 +128,7 @@ def main():
                             token_valid = False
                             print("Exiting")
                     else:
-                        mobile = input(f"Enter 10 digit mobile number for new OTP generation? : ")
+                        mobile = input("Enter the registered mobile number: ")
                         token = generate_token_OTP(mobile, base_request_header)
                         token_valid = True
                 else:
