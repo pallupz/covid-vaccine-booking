@@ -262,7 +262,7 @@ def check_and_book(request_header, beneficiary_dtls, location_dtls, search_optio
 
                 new_req = {
                     'beneficiaries': [beneficiary['beneficiary_reference_id'] for beneficiary in beneficiary_dtls],
-                    'dose': 2 if [beneficiary['vaccine'] for beneficiary in beneficiary_dtls][0] in ['COVISHIELD', 'COVAXIN'] else 1,
+                    'dose': 2 if [beneficiary['status'] for beneficiary in beneficiary_dtls][0] == 'Partially Vaccinated' else 1,
                     'center_id' : options[choice[0] - 1]['center_id'],
                     'session_id': options[choice[0] - 1]['session_id'],
                     'slot'      : options[choice[0] - 1]['slots'][choice[1] - 1]
@@ -381,7 +381,8 @@ def get_beneficiaries(request_header):
                 'beneficiary_reference_id': beneficiary['beneficiary_reference_id'],
                 'name': beneficiary['name'],
                 'vaccine': beneficiary['vaccine'],
-                'age': beneficiary['age']
+                'age': beneficiary['age'],
+                'status': beneficiary['vaccination_status']
             }
             refined_beneficiaries.append(tmp)
 
@@ -402,7 +403,9 @@ def get_beneficiaries(request_header):
         beneficiary_idx = [int(idx) - 1 for idx in reqd_beneficiaries.split(',')]
         reqd_beneficiaries = [{
             'beneficiary_reference_id': item['beneficiary_reference_id'],
-            'vaccine': item['vaccine'], 'age': item['age']
+            'vaccine': item['vaccine'],
+            'age': item['age'],
+            'status': item['vaccination_status']
         } for idx, item in enumerate(beneficiaries) if idx in beneficiary_idx]
 
         print(f'Selected beneficiaries: ')
