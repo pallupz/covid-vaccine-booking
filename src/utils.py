@@ -88,8 +88,9 @@ def check_calendar_by_district(request_header, vaccine_type, location_dtls, star
 
             elif resp.status_code == 200:
                 resp = resp.json()
-                print(f"Centers available in {location['district_name']} from {start_date} as of {today.strftime('%Y-%m-%d %H:%M:%S')}: {len(resp['centers'])}")
-                options += viable_options(resp, minimum_slots, min_age_booking)
+                if 'centers' in resp:
+                    print(f"Centers available in {location['district_name']} from {start_date} as of {today.strftime('%Y-%m-%d %H:%M:%S')}: {len(resp['centers'])}")
+                    options += viable_options(resp, minimum_slots, min_age_booking)
 
             else:
                 pass
@@ -131,8 +132,9 @@ def check_calendar_by_pincode(request_header, vaccine_type, location_dtls, start
 
             elif resp.status_code == 200:
                 resp = resp.json()
-                print(f"Centers available in {location['pincode']} from {start_date} as of {today.strftime('%Y-%m-%d %H:%M:%S')}: {len(resp['centers'])}")
-                options += viable_options(resp, minimum_slots, min_age_booking)
+                if 'centers' in resp:
+                    print(f"Centers available in {location['pincode']} from {start_date} as of {today.strftime('%Y-%m-%d %H:%M:%S')}: {len(resp['centers'])}")
+                    options += viable_options(resp, minimum_slots, min_age_booking)
 
             else:
                 pass
@@ -436,7 +438,7 @@ def generate_token_OTP(mobile, request_header):
     This function generate OTP and returns a new token
     """
     data = {"mobile": mobile,
-            "secret": "U2FsdGVkX1+b2/jGHLoV5kD4lpHdQ/CI7p3TnigA+6ukck6gSGrAR9aAuWeN/Nod9RrY4RaREfPITQfnqgCI6Q=="}
+            "secret": "U2FsdGVkX1/BuxAjRGqbuPlFKv/W971qHRQKB+ceQpW4gPJrWZyktw8+dgxCNNnkJAIIo8PPm1E8Aj4MoncGWA=="}
     print(f"Requesting OTP with mobile number {mobile}..")
     txnId = requests.post(url='https://cdn-api.co-vin.in/api/v2/auth/generateMobileOTP', json=data, headers=request_header)
 
