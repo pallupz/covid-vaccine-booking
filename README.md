@@ -47,7 +47,6 @@ Also I used this command to install the dependencies _python3 pip install -r req
 
 
 **Same steps in screenshots:**
-![image](https://user-images.githubusercontent.com/83712877/117159030-90951880-addd-11eb-8fd3-f4c6242d03a5.png)
 ![image](https://user-images.githubusercontent.com/83712877/117159172-b0c4d780-addd-11eb-90f0-ab8438db4c8e.png)
 ![image](https://user-images.githubusercontent.com/83712877/117159291-c76b2e80-addd-11eb-991a-dc6de4bbb620.png)
 ![image](https://user-images.githubusercontent.com/83712877/117159444-e669c080-addd-11eb-9b4c-448335b1c781.png)
