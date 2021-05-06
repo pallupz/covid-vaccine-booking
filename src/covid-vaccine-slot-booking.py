@@ -118,24 +118,11 @@ def main():
                 beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
                 print('Token is INVALID.')
                 token_valid = False
+                token = None
 
-                tryOTP = 'y'
-                if tryOTP.lower() == 'y':
-                    if mobile:
-                        tryOTP = 'y'
-                        if tryOTP.lower() == 'y':
-                            token = generate_token_OTP(mobile, base_request_header)
-                            token_valid = token is not None
-                        else:
-                            token_valid = False
-                            print("Exiting")
-                    else:
-                        mobile = input("Enter the registered mobile number: ")
-                        token = generate_token_OTP(mobile, base_request_header)
-                        token_valid = token is not None
-                else:
-                    print("Exiting")
-                    os.system("pause")
+                while token is None:
+                    token = generate_token_OTP(mobile, base_request_header)
+                token_valid = True
 
     except Exception as e:
         print(str(e))
