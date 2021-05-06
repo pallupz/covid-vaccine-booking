@@ -2,7 +2,7 @@ import copy
 from collections import Counter
 import requests, sys, argparse, os, datetime
 from utils import generate_token_OTP, get_beneficiaries, check_and_book, get_districts, get_pincodes, beep, \
-    BENEFICIARIES_URL, WARNING_BEEP_DURATION
+    BENEFICIARIES_URL, WARNING_BEEP_DURATION, get_vaccine_preference
 
 
 def main():
@@ -42,6 +42,11 @@ def main():
             print(f"All beneficiaries in one attempt should have the same vaccine type. Found {len(vaccines.keys())}")
             os.system("pause")
             sys.exit(1)
+
+        vaccine_type = vaccine_types[0]
+        if not vaccine_type:
+            print("\n================================= Vaccine Info =================================\n")
+            vaccine_type = get_vaccine_preference()
 
         print("\n================================= Location Info =================================\n")
         # get search method to use
