@@ -62,7 +62,7 @@ def display_table(dict_list):
     print(tabulate.tabulate(rows, header, tablefmt='grid'))
 
 
-def check_calendar_by_district(request_header, vaccine_type, location_dtls, minimum_slots, min_age_booking):
+def check_calendar_by_district(request_header, vaccine_type, location_dtls, start_date, minimum_slots, min_age_booking):
     """
     This function
         1. Takes details required to check vaccination calendar
@@ -73,8 +73,6 @@ def check_calendar_by_district(request_header, vaccine_type, location_dtls, mini
     try:
         print('===================================================================================')
         today = datetime.datetime.today()
-        tomorrow = (today + datetime.timedelta(days=1)).strftime("%d-%m-%Y")
-
         base_url = CALENDAR_URL_DISTRICT
 
         if vaccine_type:
@@ -82,7 +80,7 @@ def check_calendar_by_district(request_header, vaccine_type, location_dtls, mini
 
         options = []
         for location in location_dtls:
-            resp = requests.get(base_url.format(location['district_id'], tomorrow), headers=request_header)
+            resp = requests.get(base_url.format(location['district_id'], start_date), headers=request_header)
 
             if resp.status_code == 401:
                 print('TOKEN INVALID')
@@ -90,7 +88,7 @@ def check_calendar_by_district(request_header, vaccine_type, location_dtls, mini
 
             elif resp.status_code == 200:
                 resp = resp.json()
-                print(f"Centers available in {location['district_name']} from {tomorrow} as of {today.strftime('%Y-%m-%d %H:%M:%S')}: {len(resp['centers'])}")
+                print(f"Centers available in {location['district_name']} from {start_date} as of {today.strftime('%Y-%m-%d %H:%M:%S')}: {len(resp['centers'])}")
                 options += viable_options(resp, minimum_slots, min_age_booking)
 
             else:
@@ -107,7 +105,7 @@ def check_calendar_by_district(request_header, vaccine_type, location_dtls, mini
         beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
 
 
-def check_calendar_by_pincode(request_header, vaccine_type, location_dtls, minimum_slots, min_age_booking):
+def check_calendar_by_pincode(request_header, vaccine_type, location_dtls, start_date, minimum_slots, min_age_booking):
     """
     This function
         1. Takes details required to check vaccination calendar
@@ -118,8 +116,6 @@ def check_calendar_by_pincode(request_header, vaccine_type, location_dtls, minim
     try:
         print('===================================================================================')
         today = datetime.datetime.today()
-        tomorrow = (today + datetime.timedelta(days=1)).strftime("%d-%m-%Y")
-
         base_url = CALENDAR_URL_PINCODE
 
         if vaccine_type:
@@ -127,7 +123,7 @@ def check_calendar_by_pincode(request_header, vaccine_type, location_dtls, minim
 
         options = []
         for location in location_dtls:
-            resp = requests.get(base_url.format(location['pincode'], tomorrow), headers=request_header)
+            resp = requests.get(base_url.format(location['pincode'], start_date), headers=request_header)
 
             if resp.status_code == 401:
                 print('TOKEN INVALID')
@@ -135,7 +131,7 @@ def check_calendar_by_pincode(request_header, vaccine_type, location_dtls, minim
 
             elif resp.status_code == 200:
                 resp = resp.json()
-                print(f"Centers available in {location['pincode']} from {tomorrow} as of {today.strftime('%Y-%m-%d %H:%M:%S')}: {len(resp['centers'])}")
+                print(f"Centers available in {location['pincode']} from {start_date} as of {today.strftime('%Y-%m-%d %H:%M:%S')}: {len(resp['centers'])}")
                 options += viable_options(resp, minimum_slots, min_age_booking)
 
             else:
@@ -203,11 +199,19 @@ def check_and_book(request_header, beneficiary_dtls, location_dtls, search_optio
         minimum_slots = kwargs['min_slots']
         refresh_freq = kwargs['ref_freq']
         auto_book = kwargs['auto_book']
+        start_date = kwargs['start_date']
+
+        if isinstance(start_date, int) and start_date == 2:
+            start_date = (datetime.datetime.today() + datetime.timedelta(days=1)).strftime("%d-%m-%Y")
+        elif isinstance(start_date, int) and start_date == 1:
+            start_date = datetime.datetime.today().strftime("%d-%m-%Y")
+        else:
+            pass
 
         if search_option == 2:
-            options = check_calendar_by_district(request_header, vaccine_type, location_dtls, minimum_slots, min_age_booking)
+            options = check_calendar_by_district(request_header, vaccine_type, location_dtls, start_date, minimum_slots, min_age_booking)
         else:
-            options = check_calendar_by_pincode(request_header, vaccine_type, location_dtls, minimum_slots, min_age_booking)
+            options = check_calendar_by_pincode(request_header, vaccine_type, location_dtls, start_date, minimum_slots, min_age_booking)
 
         if isinstance(options, bool):
             return False
