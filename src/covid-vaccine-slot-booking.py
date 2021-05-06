@@ -127,18 +127,13 @@ def main():
                 print('Token is INVALID.')
                 token_valid = False
 
-                tryOTP = input('Try for a new Token? (y/n): ')
-                if tryOTP.lower() == 'y':
+                tryOTP = input('Try for a new Token? (y/n Default y): ')
+                if tryOTP.lower() == 'y' or not tryOTP:
                     if mobile:
-                        tryOTP = input(f"Try for OTP with mobile number {mobile}? (y/n) : ")
-                        if tryOTP.lower() == 'y':
-                            token = generate_token_OTP(mobile, base_request_header)
-                            token_valid = True
-                        else:
-                            token_valid = False
-                            print("Exiting")
+                        token = generate_token_OTP(mobile, base_request_header)
+                        token_valid = True
                     else:
-                        mobile = input(f"Enter 10 digit mobile number for new OTP generation? : ")
+                        mobile = input("Enter the registered mobile number: ")
                         token = generate_token_OTP(mobile, base_request_header)
                         token_valid = True
                 else:
