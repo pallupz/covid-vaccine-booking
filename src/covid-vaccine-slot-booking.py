@@ -83,7 +83,7 @@ def main():
 
                 tryOTP = input('Try for a new Token? (y/n Default y): ')
                 if tryOTP.lower() == 'y' or not tryOTP:
-                    if mobile is None:
+                    if not mobile:
                         mobile = input("Enter the registered mobile number: ")
                     token = generate_token_OTP(mobile, base_request_header)
                     token_valid = True
