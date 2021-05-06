@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import copy
 from collections import Counter
 import requests, sys, argparse, os, datetime
