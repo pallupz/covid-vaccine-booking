@@ -414,6 +414,7 @@ def get_beneficiaries(request_header):
         print(beneficiaries.status_code)
         print(beneficiaries.text)
         os.system("pause")
+        return []
 
 
 def get_min_age(beneficiary_dtls):
