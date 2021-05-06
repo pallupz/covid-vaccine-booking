@@ -2,7 +2,7 @@ import json
 from hashlib import sha256
 from collections import Counter
 from inputimeout import inputimeout, TimeoutOccurred
-import tabulate, copy, time, datetime, requests, sys, os, pprint
+import tabulate, copy, time, datetime, requests, sys, os, random
 
 BOOKING_URL = "https://cdn-api.co-vin.in/api/v2/appointment/schedule"
 BENEFICIARIES_URL = "https://cdn-api.co-vin.in/api/v2/appointment/beneficiaries"
@@ -177,7 +177,7 @@ def collect_user_details(request_header):
             start_date = 2
 
     print("\n=========== CAUTION! =========== CAUTION! CAUTION! =============== CAUTION! =======\n")
-    print(" ==== BE CAREFUL WITH THIS OPTION! AUTO-BOOKING WILL BOOK THE FIRST AVAILABLE CENTRE, DATE, AND SLOT! ==== ")
+    print("===== BE CAREFUL WITH THIS OPTION! AUTO-BOOKING WILL BOOK THE FIRST AVAILABLE CENTRE, DATE, AND A RANDOM SLOT! =====")
     auto_book = input("Do you want to enable auto-booking? (yes-please or no): ")
     auto_book = 'no' if not auto_book else auto_book
 
@@ -367,8 +367,10 @@ def check_and_book(request_header, beneficiary_dtls, location_dtls, search_optio
 
             display_table(cleaned_options_for_display)
             if auto_book == 'yes-please':
-                print("AUTO-BOOKING IS ENABLED. PROCEEDING WITH FIRST CENTRE, DATE, and SLOT.")
-                choice = '1.1'
+                print("AUTO-BOOKING IS ENABLED. PROCEEDING WITH FIRST CENTRE, DATE, and RANDOM SLOT.")
+                option = options[0]
+                random_slot = random.randint(1, len(option['slots']))
+                choice = f'1.{random_slot}'
             else:
                 choice = inputimeout(
                     prompt='----------> Wait 20 seconds for updated options OR \n----------> Enter a choice e.g: 1.4 for (1st center 4th slot): ',
