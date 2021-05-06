@@ -55,10 +55,8 @@ Also I used this command to install the dependencies _python3 pip install -r req
 ![image](https://user-images.githubusercontent.com/83712877/117159753-2c268900-adde-11eb-9bb3-4bb54f951683.png)
 ![image](https://user-images.githubusercontent.com/83712877/117159818-38aae180-adde-11eb-96b5-0e779803b4b2.png)
 ![image](https://user-images.githubusercontent.com/83712877/117159863-4496a380-adde-11eb-8874-40cc6f851cf6.png)
-![image](https://user-images.githubusercontent.com/83712877/117160157-832c5e00-adde-11eb-8ca4-7bad71abde08.png)
+![image](https://user-images.githubusercontent.com/83712877/117325821-b5a58c00-aeae-11eb-8156-2ea585a77834.png)
 
-![image](https://user-images.githubusercontent.com/83712877/117160850-16fe2a00-addf-11eb-9e0a-3f5aa4679208.png)
-![image](https://user-images.githubusercontent.com/83712877/117160946-2e3d1780-addf-11eb-8f27-2477ac73d087.png)
 
 
 # COVID-19 Vaccination Slot Booking Script
