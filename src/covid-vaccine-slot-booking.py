@@ -4,12 +4,13 @@ import copy
 from types import SimpleNamespace
 import requests, sys, argparse, os, datetime
 from utils import generate_token_OTP, check_and_book, beep, BENEFICIARIES_URL, WARNING_BEEP_DURATION, \
-    display_info_dict, save_user_info, collect_user_details, get_saved_user_info, confirm_and_proceed
+    display_info_dict, save_user_info, collect_user_details, get_saved_user_info, confirm_and_proceed, alert
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--token', help='Pass token directly')
+    parser.add_argument('--os', help='Operating System', default=None)
     args = parser.parse_args()
 
     filename = 'vaccine-booking-details.json'
@@ -19,6 +20,7 @@ def main():
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36',
         }
 
+        os_type = args.os
         if args.token:
             token = args.token
         else:
@@ -63,12 +65,16 @@ def main():
             request_header["Authorization"] = f"Bearer {token}"
 
             # call function to check and book slots
-            token_valid = check_and_book(request_header, info.beneficiary_dtls, info.location_dtls, info.search_option,
+            token_valid = check_and_book(request_header,
+                                         info.beneficiary_dtls,
+                                         info.location_dtls,
+                                         info.search_option,
                                          min_slots=info.minimum_slots,
                                          ref_freq=info.refresh_freq,
                                          auto_book=info.auto_book,
                                          start_date=info.start_date,
-                                         vaccine_type=info.vaccine_type)
+                                         vaccine_type=info.vaccine_type,
+                                         os_type=os_type)
 
             # check if token is still valid
             beneficiaries_list = requests.get(BENEFICIARIES_URL, headers=request_header)
@@ -77,7 +83,10 @@ def main():
 
             else:
                 # if token invalid, regenerate OTP and new token
-                beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
+                if os_type == "mac":
+                    alert("INVALID OTP")
+                else:
+                    beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
                 print('Token is INVALID.')
                 token_valid = False
 

@@ -20,7 +20,12 @@ except ImportError:
         # apt-get install beep  --> install beep package on linux distros before running
         os.system('beep -f %s -l %s' % (freq, duration))
 
+    def alert(message):
+
+        os.system(f'say -v Victoria {message}')
+
 else:
+
     def beep(freq, duration):
         winsound.Beep(freq, duration)
 
@@ -195,7 +200,13 @@ def collect_user_details(request_header):
     return collected_details
 
 
-def check_calendar_by_district(request_header, vaccine_type, location_dtls, start_date, minimum_slots, min_age_booking):
+def check_calendar_by_district(request_header,
+                               vaccine_type,
+                               location_dtls,
+                               start_date,
+                               minimum_slots,
+                               min_age_booking,
+                               os_type=None):
     """
     This function
         1. Takes details required to check vaccination calendar
@@ -231,15 +242,27 @@ def check_calendar_by_district(request_header, vaccine_type, location_dtls, star
         for location in location_dtls:
             if location['district_name'] in [option['district'] for option in options]:
                 for _ in range(2):
-                    beep(location['alert_freq'], 150)
+                    if os_type == "mac":
+                        alert("LOCATION ALERT")
+                    else:
+                        beep(location['alert_freq'], 150)
         return options
 
     except Exception as e:
         print(str(e))
-        beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
+        if os_type == "mac":
+            alert("ERROR")
+        else:
+            beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
 
 
-def check_calendar_by_pincode(request_header, vaccine_type, location_dtls, start_date, minimum_slots, min_age_booking):
+def check_calendar_by_pincode(request_header,
+                              vaccine_type,
+                              location_dtls,
+                              start_date,
+                              minimum_slots,
+                              min_age_booking,
+                              os_type=None):
     """
     This function
         1. Takes details required to check vaccination calendar
@@ -275,16 +298,22 @@ def check_calendar_by_pincode(request_header, vaccine_type, location_dtls, start
         for location in location_dtls:
             if int(location['pincode']) in [option['pincode'] for option in options]:
                 for _ in range(2):
-                    beep(location['alert_freq'], 150)
+                    if os_type == "mac":
+                        alert("LOCATION ALERT")
+                    else:
+                        beep(location['alert_freq'], 150)
 
         return options
 
     except Exception as e:
         print(str(e))
-        beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
+        if os_type == "mac":
+            alert("ERROR")
+        else:
+            beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
 
 
-def book_appointment(request_header, details):
+def book_appointment(request_header, details, os_type=None):
     """
     This function
         1. Takes details in json format
@@ -303,7 +332,10 @@ def book_appointment(request_header, details):
             return False
 
         elif resp.status_code == 200:
-            beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
+            if os_type == "mac":
+                alert("BOOKED")
+            else:
+                beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
             print('##############    BOOKED!  ##############')
             os.system("pause")
             sys.exit()
@@ -315,7 +347,10 @@ def book_appointment(request_header, details):
 
     except Exception as e:
         print(str(e))
-        beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
+        if os_type == "mac":
+            alert("ERROR")
+        else:
+            beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
 
 
 def check_and_book(request_header, beneficiary_dtls, location_dtls, search_option, **kwargs):
@@ -335,6 +370,7 @@ def check_and_book(request_header, beneficiary_dtls, location_dtls, search_optio
         auto_book = kwargs['auto_book']
         start_date = kwargs['start_date']
         vaccine_type = kwargs['vaccine_type']
+        os_type = kwargs['os_type']
 
         if isinstance(start_date, int) and start_date == 2:
             start_date = (datetime.datetime.today() + datetime.timedelta(days=1)).strftime("%d-%m-%Y")
@@ -344,9 +380,15 @@ def check_and_book(request_header, beneficiary_dtls, location_dtls, search_optio
             pass
 
         if search_option == 2:
-            options = check_calendar_by_district(request_header, vaccine_type, location_dtls, start_date, minimum_slots, min_age_booking)
+            options = check_calendar_by_district(request_header, vaccine_type,
+                                                 location_dtls, start_date,
+                                                 minimum_slots,
+                                                 min_age_booking, os_type)
         else:
-            options = check_calendar_by_pincode(request_header, vaccine_type, location_dtls, start_date, minimum_slots, min_age_booking)
+            options = check_calendar_by_pincode(request_header, vaccine_type,
+                                                location_dtls, start_date,
+                                                minimum_slots, min_age_booking,
+                                                os_type)
 
         if isinstance(options, bool):
             return False
@@ -406,7 +448,7 @@ def check_and_book(request_header, beneficiary_dtls, location_dtls, search_optio
                 }
 
                 print(f'Booking with info: {new_req}')
-                return book_appointment(request_header, new_req)
+                return book_appointment(request_header, new_req, os_type)
 
             except IndexError:
                 print("============> Invalid Option!")
