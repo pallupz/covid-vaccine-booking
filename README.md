@@ -16,7 +16,6 @@ This very basic CLI based script can be used to automate covid vaccination slot 
 - API Details (read the first paragraph at least): https://apisetu.gov.in/public/marketplace/api/cowin/cowin-public-v2
 - Please feel free to spread the word, if you dont mind. Link: https://www.linkedin.com/feed/update/urn:li:activity:6794138228464193536/
 - BMC Link: https://www.buymeacoffee.com/pallupz
-- Discord: https://discord.gg/rCz8VdRB
 - And finally, I know code quality isn't great. Suggestions are welcome.
 
 ### Noteworthy Forks
