@@ -17,6 +17,14 @@ except ImportError:
     if sys.platform == "darwin":
 
         def beep(freq, duration):
+            # send notification on mac os.
+            # Source: https://code-maven.com/display-notification-from-the-mac-command-line
+            message = "Attention required"
+            title = "Covid booking"
+            try:
+                os.system("osascript -e 'display notification \"%s\" with title \"%s\"'" % (message, title))
+            except:
+                os.system('echo "%s %s"' % (title, message))
             # brew install SoX --> install SOund eXchange universal sound sample translator on mac
             os.system(
                 f"play -n synth {duration / 1000} sin {freq} >/dev/null 2>&1")
