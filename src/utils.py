@@ -31,6 +31,13 @@ except ImportError:
     else:
 
         def beep(freq, duration):
+            # send notification. Requires "libnotify". Already present in almost all distros.
+            message = "Attention required"
+            title = "Covid booking"
+            try:
+                os.system('notify-send "%s" -a "%s" -u critical -t %s' % (message, title, duration))
+            except:
+                os.system('echo "%s %s"' % (title, message))
             # apt-get install beep  --> install beep package on linux distros before running
             os.system('beep -f %s -l %s' % (freq, duration))
 
