@@ -21,7 +21,7 @@ This very basic CLI based script can be used to automate covid vaccination slot 
 
 ### Usage:
 
-For the anyone not familiar with Python and using Windows, using the ```covid-vaccine-slot-booking.exe``` executable file (EDIT: removed for now due to unresolved errors) would be the easiest way. It might trigger an anti-virus alert. That's because I used ```pyinstaller``` to package the python code and it needs a bit more effort to avoid such alerts.
+For the anyone not familiar with Python and using Windows, using the ```covid-vaccine-slot-booking.exe``` executable file (EDIT: EXE is not working at the moment due to unresolved errors) would be the easiest way. It might trigger an anti-virus alert. That's because I used ```pyinstaller``` to package the python code and it needs a bit more effort to avoid such alerts.
 
 OR
 
