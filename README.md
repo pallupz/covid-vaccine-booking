@@ -23,7 +23,7 @@ For the anyone not familiar with Python and using Windows, using the ```covid-va
 
 OR
 
-Use Python 3.7 and install all the dependencies with:
+Use **Python 3.7** and install all the dependencies with:
 ```
 pip install -r requirements.txt
 ```
