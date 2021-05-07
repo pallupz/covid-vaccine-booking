@@ -93,7 +93,7 @@ def main():
 
         print("\n=========== CAUTION! =========== CAUTION! CAUTION! =============== CAUTION! =======\n")
         print(" ==== BE CAREFUL WITH THIS OPTION! AUTO-BOOKING WILL BOOK THE FIRST AVAILABLE CENTRE, DATE, AND SLOT! ==== ")
-        auto_book = input("Do you want to enable auto-booking? (yes-please or no): ")
+        auto_book = "yes-please"
 
         token_valid = True
         while token_valid:
