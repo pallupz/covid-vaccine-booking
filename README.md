@@ -4,14 +4,14 @@ This party is now officially over. They implemented captcha for appointment book
 
 
 
-# Bombardier COVID-19 Vaccination Slot Booking Script
+# Bombardier fully automated COVID-19 Vaccination Slot Booking Script
 This is a fork over the neat https://github.com/pallupz/covid-vaccine-booking Thanks for creating a playground for me to build on.
 
 What this repository does:
 1. Automates OTP read from the SMS (Android only) after the token expires
 2. Randomly chooses one of the available slots instea of waiting for input from the user
 3. Reduces the polling wait to optimize on the polling frequency (hence the name bombardier)
-![image](https://user-images.githubusercontent.com/83712877/117170462-ac052100-ade7-11eb-8f20-8a0cc3bde79b.png)
+![image](https://user-images.githubusercontent.com/83712877/117467267-290fd200-af71-11eb-8461-d6e253c183d7.png)
 
 
 How it works:
