@@ -307,8 +307,8 @@ def generate_captcha(request_header):
     print(f'Booking Response Code: {resp.status_code}')
 
     if resp.status_code == 200:
-        captcha_buider(resp.json())
-        captcha = input('Enter Captcha: ')
+        #captcha_buider(resp.json())
+        captcha = captcha_buider(resp.json())
         return captcha
 
 

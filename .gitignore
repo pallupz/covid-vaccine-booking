@@ -13,7 +13,6 @@ src/build
 src/dist
 src/covid-vaccine-slot-booking.spec
 src/vaccine-booking-details.json
-src/vaccine-booking-details.json
 src/captcha.png
 src/captcha.svg
 .Python
