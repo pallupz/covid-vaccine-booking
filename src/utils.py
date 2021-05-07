@@ -3,11 +3,13 @@ from hashlib import sha256
 from collections import Counter
 from inputimeout import inputimeout, TimeoutOccurred
 import tabulate, copy, time, datetime, requests, sys, os, random
+from captcha import captcha_buider
 
 BOOKING_URL = "https://cdn-api.co-vin.in/api/v2/appointment/schedule"
 BENEFICIARIES_URL = "https://cdn-api.co-vin.in/api/v2/appointment/beneficiaries"
 CALENDAR_URL_DISTRICT = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByDistrict?district_id={0}&date={1}"
 CALENDAR_URL_PINCODE = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByPin?pincode={0}&date={1}"
+CAPTCHA_URL = "https://cdn-api.co-vin.in/api/v2/auth/getRecaptcha"
 WARNING_BEEP_DURATION = (1000, 2000)
 
 try:
@@ -287,6 +289,17 @@ def check_calendar_by_pincode(request_header, vaccine_type, location_dtls, start
         beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
 
 
+def generate_captcha(request_header):
+    print('================================= GETTING CAPTCHA ==================================================')
+    resp = requests.post(CAPTCHA_URL, headers=request_header)
+    print(f'Booking Response Code: {resp.status_code}')
+
+    if resp.status_code == 200:
+        captcha_buider(resp.json())
+        captcha = input('Enter Captcha: ')
+        return captcha
+
+
 def book_appointment(request_header, details):
     """
     This function
@@ -295,29 +308,38 @@ def book_appointment(request_header, details):
         3. Returns True or False depending on Token Validity
     """
     try:
-        print('================================= ATTEMPTING BOOKING ==================================================')
+        valid_captcha = True
+        while valid_captcha:
+            captcha = generate_captcha(request_header)
+            details['captcha'] = captcha
 
-        resp = requests.post(BOOKING_URL, headers=request_header, json=details)
-        print(f'Booking Response Code: {resp.status_code}')
-        print(f'Booking Response : {resp.text}')
+            print('================================= ATTEMPTING BOOKING ==================================================')
 
-        if resp.status_code == 401:
-            print('TOKEN INVALID')
-            return False
+            resp = requests.post(BOOKING_URL, headers=request_header, json=details)
+            print(f'Booking Response Code: {resp.status_code}')
+            print(f'Booking Response : {resp.text}')
 
-        elif resp.status_code == 200:
-            beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
-            print('##############    BOOKED!  ############################    BOOKED!  ##############')
-            print("                        Hey, Hey, Hey! It's your lucky day!                       ")
-            print('\nPress any key thrice to exit program.')
-            os.system("pause")
-            os.system("pause")
-            os.system("pause")
-            sys.exit()
+            if resp.status_code == 401:
+                print('TOKEN INVALID')
+                return False
 
-        else:
-            print(f'Response: {resp.status_code} : {resp.text}')
-            return True
+            elif resp.status_code == 200:
+                beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
+                print('##############    BOOKED!  ############################    BOOKED!  ##############')
+                print("                        Hey, Hey, Hey! It's your lucky day!                       ")
+                print('\nPress any key thrice to exit program.')
+                os.system("pause")
+                os.system("pause")
+                os.system("pause")
+                sys.exit()
+
+            elif resp.status_code == 400:
+                print(f'Response: {resp.status_code} : {resp.text}')
+                pass
+
+            else:
+                print(f'Response: {resp.status_code} : {resp.text}')
+                return True
 
     except Exception as e:
         print(str(e))
