@@ -15,12 +15,14 @@ def main():
         base_request_header = {
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'
         }
-
+        
+        token = None
         if args.token:
             token = args.token
         else:
             mobile = input("Enter the registered mobile number: ")
-            token = generate_token_OTP(mobile, base_request_header)
+            while token is None:
+                token = generate_token_OTP(mobile, base_request_header)
 
         request_header = copy.deepcopy(base_request_header)
         request_header["Authorization"] = f"Bearer {token}"
@@ -116,24 +118,11 @@ def main():
                 beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
                 print('Token is INVALID.')
                 token_valid = False
+                token = None
 
-                tryOTP = 'y'
-                if tryOTP.lower() == 'y':
-                    if mobile:
-                        tryOTP = 'y'
-                        if tryOTP.lower() == 'y':
-                            token = generate_token_OTP(mobile, base_request_header)
-                            token_valid = True
-                        else:
-                            token_valid = False
-                            print("Exiting")
-                    else:
-                        mobile = input("Enter the registered mobile number: ")
-                        token = generate_token_OTP(mobile, base_request_header)
-                        token_valid = True
-                else:
-                    print("Exiting")
-                    os.system("pause")
+                while token is None:
+                    token = generate_token_OTP(mobile, base_request_header)
+                token_valid = True
 
     except Exception as e:
         print(str(e))

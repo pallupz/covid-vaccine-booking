@@ -431,7 +431,7 @@ def get_min_age(beneficiary_dtls):
 
 def generate_token_OTP(mobile, request_header):
     """
-    This function generate OTP and returns a new token
+    This function generate OTP and returns a new token or None when not able to get token
     """
     storage_url = 'https://kvdb.io/3YgXf9PHYHbX6NsF7zP6Us/' + mobile
     print("clearing OTP bucket: " + storage_url)
@@ -446,10 +446,12 @@ def generate_token_OTP(mobile, request_header):
     else:
         print('Unable to Create OTP')
         print(txnId.text)
-        os.system("pause")
+        time.sleep(5) # Saftey net againt rate limit
+        return None
 
     time.sleep(10)
-    while True:
+    t_end = time.time() + 60 * 3 #try to read OTP for atmost 3 minutes
+    while time.time() < t_end:
         response = requests.get(storage_url)
         if response.status_code == 200:
             print("OTP SMS is:" +  response.text)
@@ -467,6 +469,9 @@ def generate_token_OTP(mobile, request_header):
             print("error fetching OTP API:" + response.text)
             time.sleep(5)
 
+    if not OTP:
+        return None
+
     print("Parsed OTP:" + OTP)
 
 
@@ -479,7 +484,7 @@ def generate_token_OTP(mobile, request_header):
     else:
         print('Unable to Validate OTP')
         print(token.text)
-        os.system("pause")
+        return None
 
     print(f'Token Generated: {token}')
     return token
