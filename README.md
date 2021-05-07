@@ -45,8 +45,3 @@ python src\covid-vaccine-slot-booking.py --token=YOUR-TOKEN-HERE
 - ```tabulate``` : For displaying data in tabular format.
 - ```requests``` : For making GET and POST requests to the API.
 - ```inputimeout``` : For creating an input with timeout.
-
-Install all dependencies by running:
-```
-pip install -r requirements.txt
-```
