@@ -1,3 +1,9 @@
+This party is now officially over. They implemented captcha for appointment booking related APIs. 
+![image](https://user-images.githubusercontent.com/83712877/117435622-ae808b80-af4b-11eb-90db-be6b9d56945d.png)
+
+
+
+
 # Bombardier COVID-19 Vaccination Slot Booking Script
 This is a fork over the neat https://github.com/pallupz/covid-vaccine-booking Thanks for creating a playground for me to build on.
 
