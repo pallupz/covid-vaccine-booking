@@ -3,7 +3,7 @@
 This very basic CLI based script can be used to automate covid vaccination slot booking on Co-WIN Platform. 
 
 ### Update:
-- There won't be anymore commits to this repo for a while.
+- We are getting all kinds of attention now - which I don't want to handle. So there won't be anymore commits to this repo for a while.
 - To enter the captcha, you may have to close the image first. It is synchronous now.
 
 ### Important: 
