@@ -4,7 +4,7 @@ This very basic CLI based script can be used to automate covid vaccination slot 
 
 
 ### Important: 
-- POC project. **Use at your own risk**.
+- This is a proof of concept project. I do endorse or condone, in any shape or form, automating any monitoring/booking tasks. **Use at your own risk**.
 - Do NOT use unless all beneficiaries selected are supposed to get the same vaccine and dose. 
 - No option to register new user or add beneficiaries. This can be used only after beneficiary has been added through the official app/site
 - **Be careful if you choose to use the auto-book feature.** It will blindly book for first available center, date - both sorted ascending - and a RANDOM slot. I would recommend __against__ using this. Only added for the convenience of people in short supply areas.
