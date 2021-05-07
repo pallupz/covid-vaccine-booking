@@ -1,6 +1,6 @@
 # COVID-19 Vaccination Slot Booking Script
 ## Update:
-We are getting all kinds of attention now - which I don't want to handle. So there won't be anymore commits to this repo.
+**We are getting all kinds of attention now - which I don't want to handle. So there won't be anymore commits to this repo.**
 
 ### Important: 
 - This is a proof of concept project. I do NOT endorse or condone, in any shape or form, automating any monitoring/booking tasks. **Use at your own risk. Seriously, if you get into legal trouble for using this, I am not liable.**
