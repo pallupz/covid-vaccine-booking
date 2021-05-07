@@ -5,7 +5,7 @@
 
 
 ### Important: 
-- This is a proof of concept project. I do NOT endorse or condone, in any shape or form, automating any monitoring/booking tasks. **Use at your own risk. Seriously, if you get into legal trouble for using this, I am not liable.**
+- This is a proof of concept project. I do NOT endorse or condone, in any shape or form, automating any monitoring/booking tasks. **Use at your own risk.**
 - This CANNOT book slot automatically. You will need to enter the OTP and Captcha.
 - Do NOT use unless all the beneficiaries selected are supposed to get the same vaccine and dose. 
 - There is no option to register new mobile or add beneficiaries. This can be used only after beneficiary has been added through the official app/site.
