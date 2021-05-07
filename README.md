@@ -4,7 +4,6 @@ This very basic CLI based script can be used to automate covid vaccination slot 
 
 ### Update:
 - We are getting all kinds of attention now - which I don't want to handle. So there won't be anymore commits to this repo.
-- To enter the captcha, you may have to close the image first. It is synchronous now.
 
 ### Important: 
 - This is a proof of concept project. I do NOT endorse or condone, in any shape or form, automating any monitoring/booking tasks. **Use at your own risk. Seriously, if you get into legal trouble for using this, I am not liable.**
