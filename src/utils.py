@@ -26,7 +26,8 @@ except ImportError:
 
         def beep(freq, duration):
             # brew install SoX --> install SOund eXchange universal sound sample translator on mac
-            os.system(f"play -n synth {duration/1000} sin {freq}")
+            os.system(
+                f"play -n synth {duration/1000} sin {freq} >/dev/null 2>&1")
     else:
 
         def beep(freq, duration):
