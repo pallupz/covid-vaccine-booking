@@ -31,6 +31,7 @@ def main():
         if os.path.exists(filename):
             print("\n=================================== Note ===================================\n")
             print(f"Info from perhaps a previous run already exists in {filename} in this directory.")
+            print(f"IMPORTANT: If this is your first time running this version of the application, DO NOT USE THE FILE!")
             try_file = input("Would you like to see the details and confirm to proceed? (y/n Default y): ")
             try_file = try_file if try_file else 'y'
 
@@ -68,7 +69,8 @@ def main():
                                          ref_freq=info.refresh_freq,
                                          auto_book=info.auto_book,
                                          start_date=info.start_date,
-                                         vaccine_type=info.vaccine_type)
+                                         vaccine_type=info.vaccine_type,
+                                         fee_type=info.fee_type)
 
             # check if token is still valid
             beneficiaries_list = requests.get(BENEFICIARIES_URL, headers=request_header)
