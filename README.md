@@ -23,8 +23,11 @@ For the anyone not familiar with Python and using Windows, using the ```covid-va
 
 OR
 
-Run the script file as show below:
-
+Use Python 3.7 and install all the dependencies with:
+```
+pip install -r requirements.txt
+```
+Then, run the script file as show below:
 ```
 python src\covid-vaccine-slot-booking.py
 ```
