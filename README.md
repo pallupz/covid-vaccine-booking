@@ -49,7 +49,7 @@ How it works:
 16. Stay healthy and stay safe!
 
 Tips: I used this command to run the script as it was giving me Syntax error:_ python3 src/covid-vaccine-slot-booking.py_
-Also I used this command to install the dependencies _python3 pip install -r requirements.txt_
+Also I used this command to install the dependencies _python3 -m pip install -r requirements.txt_
 
 
 **Same steps in screenshots:**
