@@ -1,0 +1,15 @@
+..\__pycache__\pefile.cpython-38.pyc
+..\__pycache__\peutils.cpython-38.pyc
+..\ordlookup\__init__.py
+..\ordlookup\__pycache__\__init__.cpython-38.pyc
+..\ordlookup\__pycache__\oleaut32.cpython-38.pyc
+..\ordlookup\__pycache__\ws2_32.cpython-38.pyc
+..\ordlookup\oleaut32.py
+..\ordlookup\ws2_32.py
+..\pefile.py
+..\peutils.py
+PKG-INFO
+SOURCES.txt
+dependency_links.txt
+requires.txt
+top_level.txt

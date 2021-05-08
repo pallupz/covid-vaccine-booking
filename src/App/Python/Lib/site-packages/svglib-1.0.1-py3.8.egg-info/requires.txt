@@ -1,0 +1,4 @@
+reportlab
+lxml
+tinycss2>=0.6.0
+cssselect2>=0.2.0

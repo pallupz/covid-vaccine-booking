@@ -1,0 +1,16 @@
+.travis.yml
+LICENSE
+MANIFEST.in
+README
+pefile.py
+peutils.py
+setup.cfg
+setup.py
+ordlookup/__init__.py
+ordlookup/oleaut32.py
+ordlookup/ws2_32.py
+pefile.egg-info/PKG-INFO
+pefile.egg-info/SOURCES.txt
+pefile.egg-info/dependency_links.txt
+pefile.egg-info/requires.txt
+pefile.egg-info/top_level.txt

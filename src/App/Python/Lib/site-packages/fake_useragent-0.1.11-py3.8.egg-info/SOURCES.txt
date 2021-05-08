@@ -1,0 +1,16 @@
+LICENSE
+MANIFEST.in
+README.rst
+setup.cfg
+setup.py
+fake_useragent/__init__.py
+fake_useragent/errors.py
+fake_useragent/fake.py
+fake_useragent/log.py
+fake_useragent/settings.py
+fake_useragent/utils.py
+fake_useragent.egg-info/PKG-INFO
+fake_useragent.egg-info/SOURCES.txt
+fake_useragent.egg-info/dependency_links.txt
+fake_useragent.egg-info/not-zip-safe
+fake_useragent.egg-info/top_level.txt
