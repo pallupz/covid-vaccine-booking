@@ -35,7 +35,7 @@ except ImportError:
             message = "Attention required"
             title = "Covid booking"
             try:
-                os.system('notify-send "%s" -a "%s" -u critical -t %s' % (message, title, duration))
+                os.system('notify-send "{1} - {0}" -a "{1}" -u critical -t {2}'.format(message, title, duration))
             except:
                 os.system('echo "%s %s"' % (title, message))
             # apt-get install beep  --> install beep package on linux distros before running
