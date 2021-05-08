@@ -3,7 +3,7 @@ from hashlib import sha256
 from collections import Counter
 from inputimeout import inputimeout, TimeoutOccurred
 import tabulate, copy, time, datetime, requests, sys, os, random
-from captcha import captcha_buider
+from captcha import captcha_builder
 
 BOOKING_URL = "https://cdn-api.co-vin.in/api/v2/appointment/schedule"
 BENEFICIARIES_URL = "https://cdn-api.co-vin.in/api/v2/appointment/beneficiaries"
@@ -304,12 +304,10 @@ def check_calendar_by_pincode(request_header, vaccine_type, location_dtls, start
 def generate_captcha(request_header):
     print('================================= GETTING CAPTCHA ==================================================')
     resp = requests.post(CAPTCHA_URL, headers=request_header)
-    print(f'Booking Response Code: {resp.status_code}')
+    print(f'Captcha Response Code: {resp.status_code}')
 
     if resp.status_code == 200:
-        captcha_buider(resp.json())
-        captcha = input('Enter Captcha: ')
-        return captcha
+        return captcha_builder(resp.json())
 
 
 def book_appointment(request_header, details):
