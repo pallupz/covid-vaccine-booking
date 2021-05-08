@@ -1,18 +1,15 @@
 from svglib.svglib import svg2rlg
 from reportlab.graphics import renderPM
 import PySimpleGUI as sg
-import cv2
+import re
 
 
 def captcha_builder(resp):
     with open('captcha.svg', 'w') as f:
-        f.write(resp['captcha'])
+        f.write(re.sub('(<path d=)(.*?)(fill=\"none\"/>)', '', resp['captcha']))
 
     drawing = svg2rlg('captcha.svg')
     renderPM.drawToFile(drawing, "captcha.png", fmt="PNG")
-
-    img = cv2.imread("captcha.png", 0)
-    cv2.imwrite("captcha.png", img)
 
     layout = [[sg.Image('captcha.png')],
               [sg.Text("Enter Captcha Below")],
