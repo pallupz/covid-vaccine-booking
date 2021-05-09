@@ -477,7 +477,7 @@ def get_fee_type_preference():
 
 def get_pincodes():
     locations = []
-    pincodes = input("Enter comma separated index numbers of pincodes to monitor: ")
+    pincodes = input("Enter comma separated pincodes to monitor: ")
     for idx, pincode in enumerate(pincodes.split(',')):
         pincode = {
             'pincode': pincode,
