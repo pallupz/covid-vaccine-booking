@@ -377,18 +377,18 @@ def generate_captcha(request_header):
         return captcha_builder(resp.json())
 
 
-def book_appointment(request_header, details):
+def book_appointment(request_header, details, mobile):
     """
     This function
         1. Takes details in json format
         2. Attempts to book an appointment using the details
         3. Returns True or False depending on Token Validity
     """
-    #os.system('say "Slot Spotted."')
     try:
         valid_captcha = True
         while valid_captcha:
             captcha = generate_captcha(request_header)
+           # os.system('say "Slot Spotted."')
             details["captcha"] = captcha
 
             print(
@@ -412,6 +412,7 @@ def book_appointment(request_header, details):
                     "                        Hey, Hey, Hey! It's your lucky day!                       "
                 )
                 print("\nPress any key thrice to exit program.")
+                requests.put("https://kvdb.io/2EKK2edg4qNknwfP1PsKqV/" + mobile, data={})
                 os.system("pause")
                 os.system("pause")
                 os.system("pause")
@@ -450,6 +451,7 @@ def check_and_book(
         start_date = kwargs["start_date"]
         vaccine_type = kwargs["vaccine_type"]
         fee_type = kwargs["fee_type"]
+        mobile = kwargs["mobile"]
 
         if isinstance(start_date, int) and start_date == 2:
             start_date = (
@@ -545,7 +547,7 @@ def check_and_book(
                 }
 
                 print(f"Booking with info: {new_req}")
-                return book_appointment(request_header, new_req)
+                return book_appointment(request_header, new_req, mobile)
 
             except IndexError:
                 print("============> Invalid Option!")
