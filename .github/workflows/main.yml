@@ -56,4 +56,4 @@ jobs:
         run: |
           git add covid-vaccine-slot-booking.exe
           git commit -m "rebuilt via GitHub Actions"
-          git push
+          git push --force
