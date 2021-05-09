@@ -14,6 +14,10 @@ def main():
 
     filename = 'vaccine-booking-details.json'
     mobile = None
+
+    print('Running Script')
+    beep(500, 150)
+
     try:
         base_request_header = {
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36',
