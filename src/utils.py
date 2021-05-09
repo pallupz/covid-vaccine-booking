@@ -384,7 +384,7 @@ def book_appointment(request_header, details):
         2. Attempts to book an appointment using the details
         3. Returns True or False depending on Token Validity
     """
-    os.system('say "Slot Spotted."')
+    #os.system('say "Slot Spotted."')
     try:
         valid_captcha = True
         while valid_captcha:
