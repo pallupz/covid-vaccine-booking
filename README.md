@@ -11,6 +11,7 @@
 - There is no option to register new mobile or add beneficiaries. This can be used only after beneficiary has been added through the official app/site.
 - API Details (read the first paragraph at least): https://apisetu.gov.in/public/marketplace/api/cowin/cowin-public-v2
 - BMC Link: https://www.buymeacoffee.com/pallupz
+  All donations, as they materialize, will in turn be donated to a COVID Relief Fund (in all likelyhood that'll be Kerala CMDRF)
 - Discord ID for DMs: pallupz#5726
 - And finally, I know code quality isn't great. Suggestions are welcome.
 
