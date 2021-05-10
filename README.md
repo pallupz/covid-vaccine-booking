@@ -44,16 +44,18 @@ How it works:
 	Tip: If your IFTTT is not triggered when your SMS is received: https://www.androidpolice.com/2020/05/30/how-to-prevent-apps-sleeping-in-the-background-on-android/
 	Also a premium account is faster
 13. Clone this repository
-14. On mac I had to do the following too
-15. 	brew install python-tk
-16. 	brew install SoX
-17. Run the script, use the steps given below to enter your preferences
-18. Hopefully you get the slot
-19. Stay healthy and stay safe!
+14. Go to `src` directory and run the script  `cd src && python covid-vaccine-slot-booking.py`
+15. On Mac I had to do the following too
+     - `brew install python-tk`
+     - `brew install SoX`
+18. Run the script, use the steps given below to enter your preferences
+19. Hopefully you get the slot
+20. Stay healthy and stay safe!
 
-Tips: I used this command to run the script as it was giving me Syntax error:_ python3 src/covid-vaccine-slot-booking.py_
-Also I used this command to install the dependencies _python3 -m pip install -r requirements.txt_
+**Tips:** 
 
+I used this command to run the script as it was giving me Syntax error: `python3 src/covid-vaccine-slot-booking.py`
+Also I used this command to install the dependencies  `python3 -m pip install -r requirements.txt`
 
 **Same steps in screenshots:**
 ![image](https://user-images.githubusercontent.com/83712877/117159172-b0c4d780-addd-11eb-90f0-ab8438db4c8e.png)
