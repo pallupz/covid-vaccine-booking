@@ -683,3 +683,4 @@ def generate_token_OTP(mobile, request_header):
 
         except Exception as e:
             print(str(e))
+
