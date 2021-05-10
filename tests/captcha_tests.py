@@ -1,24 +1,29 @@
-from svglib.svglib import svg2rlg
-from reportlab.graphics import renderPM
-import PySimpleGUI as sg
-import re
 
 def test_captcha_builder():
+    from PIL import Image
+    from svglib.svglib import svg2rlg
+    from reportlab.graphics import renderPM
+    import PySimpleGUI as sg
+    import re
     #with open('captcha.svg', 'w') as f:
     #    f.write(re.sub('(<path d=)(.*?)(fill=\"none\"/>)', '', resp['captcha']))
-
     drawing = svg2rlg('captcha.svg')
     renderPM.drawToFile(drawing, "captcha.png", fmt="PNG")
-    print("window opening ...")
-    layout = [[sg.Image('captcha.png')],
-              [sg.Text("Enter Captcha Below")],
-              [sg.Input()],
-              [sg.Button('Submit', bind_return_key=True)]]
+
+    im = Image.open('captcha.png')
+    im = im.convert('RGB').convert('P', palette=Image.ADAPTIVE)
+    im.save('captcha.gif')
+
+    layout = [[sg.Image('captcha.gif')],
+          [sg.Text("Enter Captcha Below")],
+          [sg.Input()],
+          [sg.Button('Submit', bind_return_key=True)]]
 
     print("window opening ...")
     window = sg.Window('Enter Captcha', layout)
     event, values = window.read()
     window.close()
+
     captcha_value = values[1]
     expected_captcha_value = "SNNvu"
     if captcha_value == expected_captcha_value:
@@ -27,7 +32,27 @@ def test_captcha_builder():
         print("\nOhh NO !!! you have entered wrong captcha : %s while expected: %s" % (captcha_value, expected_captcha_value))
         print("Check if you are missing any required python packages\n\n")
 
+def test_python_packages():
+    try:
+        from PIL import Image
+        from svglib.svglib import svg2rlg
+        from reportlab.graphics import renderPM
+        import PySimpleGUI as sg
+        import re
+    except Exception:
+        print("\n!!!!! Looks like you are missing required python packages. Please look at requirements.txt !!!!")
+        exit(1)
+
 def test_tkinter_lib():
+    try:
+        from PIL import Image
+        from svglib.svglib import svg2rlg
+        from reportlab.graphics import renderPM
+        import PySimpleGUI as sg
+        import re
+    except Exception:
+        print("\n!!!!! Looks like you are missing required python packages. Please look at requirements.txt !!!!")
+        exit(1)
     try:
         import tkinter
         tkinter_version = tkinter.Tcl().eval('info patchlevel')
@@ -43,6 +68,6 @@ def test_tkinter_lib():
         exit(1)
 
 
-
+test_python_packages()
 test_tkinter_lib()
 test_captcha_builder()
