@@ -22,10 +22,10 @@ def test_captcha_builder():
     captcha_value = values[1]
     expected_captcha_value = "SNNvu"
     if captcha_value == expected_captcha_value:
-        print("Yeah !!! you have entered captcha. This means you are all set to render required captcha at the time of booking ...")
+        print("Yeah !!! you have entered captcha. This means you are all set to render required captcha at the time of booking ...\n")
     else:
-        print("Ohh NO !!! you have entered wrong captcha : %s while expected: %s" % (captcha_value, expected_captcha_value))
-        print("Check if you are missing any required packages")
+        print("\nOhh NO !!! you have entered wrong captcha : %s while expected: %s" % (captcha_value, expected_captcha_value))
+        print("Check if you are missing any required python packages\n\n")
 
 def test_tkinter_lib():
     try:
