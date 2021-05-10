@@ -1,6 +1,10 @@
-This party is NOT  over. Added captcha support (basically pulled changes from the main repo). Now you will hear a beep and then a captcha will popup like this:
-Note: The captcha is a bit buggy and I had to make 5-6 tries before I was able to book.
+Note: 
+If you are facing issues like:
+	Can't setFont(Times-Roman) missing the T1 files?
+	Originally <class 'TypeError'>: makeT1Font() argument 2 must be str, not None
+Then run the python script directly in the src folder after installing the required modules from requirements.txt. That solved it for me
 
+The captcha is a bit buggy and I had to make 5-6 tries before I was able to book.
 ![image](https://user-images.githubusercontent.com/83712877/117570457-cc82f300-b0e7-11eb-80a5-cd425afe4be9.png)
 
 
