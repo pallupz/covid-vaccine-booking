@@ -31,7 +31,7 @@ If you're on Linux, install the beep package before running the Python script. T
 ```
 sudo apt-get install beep
 ```
-If you're on MacOS, install the SoX (Sound eXchange) before running the Python script. To install, run:
+If you're on MacOS, install the SoX ([Sound eXchange](http://sox.sourceforge.net/ "Sound eXchange")) before running the Python script. To install, run:
 ```
 brew install sox
 ```
