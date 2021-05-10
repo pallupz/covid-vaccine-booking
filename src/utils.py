@@ -13,7 +13,7 @@ CAPTCHA_URL = "https://cdn-api.co-vin.in/api/v2/auth/getRecaptcha"
 OTP_PUBLIC_URL = "https://cdn-api.co-vin.in/api/v2/auth/public/generateOTP"
 OTP_PRO_URL = "https://cdn-api.co-vin.in/api/v2/auth/generateMobileOTP"
 
-WARNING_BEEP_DURATION = (1000, 2000)
+WARNING_BEEP_DURATION = (1000, 5000)
 
 
 try:
