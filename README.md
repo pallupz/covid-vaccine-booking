@@ -26,14 +26,21 @@ Use **Python 3.7** and install all the dependencies with:
 ```
 pip install -r requirements.txt
 ```
+
+If you're on Linux, install the beep package before running the Python script. To install, run:
+```
+sudo apt-get install beep
+```
+If you're on MacOS, install the SoX (Sound eXchange) before running the Python script. To install, run:
+```
+brew install sox
+```
+
 Then, run the script file as show below:
 ```
 python src\covid-vaccine-slot-booking.py
 ```
-If you're on Linux, install the beep package before running the Python script. To install beep, run:
-```
-sudo apt-get install beep
-```
+
 If you already have a bearer token, you can also use:
 ```
 python src\covid-vaccine-slot-booking.py --token=YOUR-TOKEN-HERE
