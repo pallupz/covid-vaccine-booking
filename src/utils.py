@@ -798,7 +798,7 @@ def generate_token_OTP(mobile, request_header):
 
     print("Parsed OTP:" + OTP)
 
-    data = {"otp": sha256(str(OTP).encode("utf-8")).hexdigest(), "txnId": txnId}
+    data = {"otp": sha256(str(OTP.strip()).encode("utf-8")).hexdigest(), "txnId": txnId}
     print(f"Validating OTP..")
 
     token = requests.post(
