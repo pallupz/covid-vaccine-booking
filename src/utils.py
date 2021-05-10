@@ -178,15 +178,16 @@ def collect_user_details(request_header):
 
     # Get search start date
     start_date = input(
-        '\nSearch for next seven day starting from when?\nUse 1 for today, 2 for tomorrow, or provide a date in the format yyyy-mm-dd. Default 2: ')
+        '\nSearch for next seven day starting from when?\nUse 1 for today, 2 for tomorrow, or provide a date in the format DD-MM-YYYY. Default 2: ')
     if not start_date:
         start_date = 2
     elif start_date in ['1', '2']:
         start_date = int(start_date)
     else:
         try:
-            datetime.datetime.strptime(start_date, '%Y-%m-%d')
+            datetime.datetime.strptime(start_date, '%d-%m-%Y')
         except ValueError:
+            print('Invalid Date! Proceeding with tomorrow.')
             start_date = 2
 
     # Get preference of Free/Paid option
