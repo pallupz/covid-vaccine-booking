@@ -11,3 +11,6 @@ This test is added to ensure that your setup is correct so don't have to know th
 1. Go to `tests` directory. `cd tests`
 2. `python captcha_tests.py` and follow the steps
 
+   If you see message then you are all set for booking :-)
+
+   `Yeah !!! you have entered captcha. This means you are all set to render required captcha at the time of booking ...`
