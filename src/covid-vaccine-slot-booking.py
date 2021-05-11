@@ -3,7 +3,7 @@
 import copy
 from types import SimpleNamespace
 import requests, sys, argparse, os, datetime
-from utils import generate_token_OTP, check_and_book, beep, BENEFICIARIES_URL, WARNING_BEEP_DURATION, \
+from utils import generate_token_OTP, generate_token_OTP_manual, check_and_book, beep, BENEFICIARIES_URL, WARNING_BEEP_DURATION, \
     display_info_dict, save_user_info, collect_user_details, get_saved_user_info, confirm_and_proceed
 
 
@@ -28,8 +28,13 @@ def main():
             token = args.token
         else:
             mobile = input("Enter the registered mobile number: ")
+            otp_pref = input("\nDo you want to enter OTP manually, instead of auto-read? \nRemember selecting n would require some setup described in README (y/n Default n): ")
+            otp_pref = otp_pref if otp_pref else "n"
             while token is None:
-                token = generate_token_OTP(mobile, base_request_header)
+                if otp_pref=="n":
+                    token = generate_token_OTP(mobile, base_request_header)
+                elif otp_pref=="y":
+                    token = generate_token_OTP_manual(mobile, base_request_header)
 
         request_header = copy.deepcopy(base_request_header)
         request_header["Authorization"] = f"Bearer {token}"
@@ -94,7 +99,10 @@ def main():
                 token = None
 
                 while token is None:
-                    token = generate_token_OTP(mobile, base_request_header)
+                    if mobile[-1]!=".":
+                        token = generate_token_OTP(mobile, base_request_header)
+                    elif mobile[-1]==".":
+                        token = generate_token_OTP_manual(mobile, base_request_header)
                 token_valid = True
 
     except Exception as e:
