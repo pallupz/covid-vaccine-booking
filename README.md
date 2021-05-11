@@ -1,9 +1,6 @@
-**Note: 
-If you are facing issues please refer to troubleshooting section at the end of this doc.**
-
-
-**Note: The captcha is a bit buggy and I had to make 5-6 tries before I was able to book.
-**
+**Note:** 
+1. If you are facing issues please refer to troubleshooting section at the end of this doc
+2. The captcha is a bit buggy and I had to make 5-6 tries before I was able to book
 
 # Bombardier fully automated COVID-19 Vaccination Slot Booking Script
 This is a fork over the neat https://github.com/pallupz/covid-vaccine-booking Thanks for creating a playground for me to build on.
