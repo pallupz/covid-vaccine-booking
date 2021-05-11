@@ -1,8 +1,7 @@
 Note: 
-If you are facing issues like:
-	Can't setFont(Times-Roman) missing the T1 files?
-	Originally <class 'TypeError'>: makeT1Font() argument 2 must be str, not None
-Then run the python script directly in the src folder after installing the required modules from requirements.txt. That solved it for me
+If you are facing issues please refer to troubleshooting section beblow.
+
+
 
 The captcha is a bit buggy and I had to make 5-6 tries before I was able to book.
 ![image](https://user-images.githubusercontent.com/83712877/117570457-cc82f300-b0e7-11eb-80a5-cd425afe4be9.png)
@@ -232,7 +231,7 @@ pip install -r requirements.txt
 	Try for a new Token? (y/n): y
 	Try for OTP with mobile number ███████████? (y/n) : y
 	Enter OTP: 888888
-	```  
+	```
 11. When a center with more than minimum number of slots is available, the script will make a beep sound - different frequency for different district. It will then display the available options as table:
 	```
 	===================================================================================  
@@ -247,3 +246,62 @@ pip install -r requirements.txt
 	---------->  Enter a choice e.g: 1.4 for (1st center 4th slot): 1.3
 	```
 12. Before the next update, you'll have 10 seconds to provide a choice in the format ```centerIndex.slotIndex``` eg: The input```1.4``` will select the vaccination center in second row and its fourth slot.
+
+
+
+### Troubleshooting common problems
+
+1. **Problem 1**
+
+   ```
+   Can't setFont(Times-Roman) missing the T1 files?
+   Originally <class 'TypeError'>: makeT1Font() argument 2 must be str, not None
+   ```
+
+   **Solution 1:** Then run the python script directly in the **src** folder after installing the required modules from **requirements.txt.** That solved it for me
+
+   **Solution 2:** If you are running ubantu(tested) or winows , this problem is due to some font files from package (reportlab) which are included in arch linux but not on ubantu. Follow these steps to install reportlab correctly. It can be done after you have installed all the requirements rom txt file.
+
+   - git clone https://github.com/Distrotech/reportlab.git
+
+   - cd reportlab
+
+   - python3 setup.py install
+
+     This will download all the font files. 
+
+   **Solution 3**: Try to perform the test first in **test** folder for captcha first to see if this error still there.
+
+   **Solution 4:** (Recommended) Try to use this Linux executable " **./covid-vaccine-slot-booking**-linux " file directly from terminal it does not require anything to install just like windows exe. **Windows exe is under going testing**
+
+    
+
+2. **Problem 2**
+
+   Regarding beep package - Device not found or beep not found
+
+   **Solution** : Follow these steps for ubantu
+
+   - sudo apt-get install beep #insatll this once
+
+   - sudo modeprobe pcspkr #This will solve Device not found error 
+
+   - Testing beep is simple just type 
+
+     ```
+     beep
+     ```
+
+      on terminal this will beep a sound from speakers.
+
+3. **Problem 3**
+
+   SMS is not read automatically
+
+   **Solution**: Check the mobile number you have entered in this step.
+
+   <img src="https://user-images.githubusercontent.com/83712877/117325821-b5a58c00-aeae-11eb-8156-2ea585a77834.png" alt="image" style="zoom: 33%;" />
+
+   This number must match the number you enter while running the script.
+
+   
