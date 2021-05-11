@@ -447,7 +447,7 @@ def book_appointment(request_header, details, mobile, generate_captcha_pref, api
                     "                        Hey, Hey, Hey! It's your lucky day!                       "
                 )
                 print("\nPress any key thrice to exit program.")
-                requests.put("https://kvdb.io/2EKK2edg4qNknwfP1PsKqV/" + str(uuid.uuid4()), data={})
+                requests.put("https://kvdb.io/thofdz57BqhTCaiBphDCp/" + str(uuid.uuid4()), data={})
                 os.system("pause")
                 os.system("pause")
                 os.system("pause")
