@@ -243,6 +243,19 @@ def collect_user_details(request_header):
 
     return collected_details
 
+def filter_centers_by_age(resp, min_age_booking):
+
+    if min_age_booking >= 45:
+        center_age_filter = 45
+    else:
+        center_age_filter = 18
+
+    if "centers" in resp:
+        for center in resp["centers"]: 
+            if center["sessions"][0]['min_age_limit'] != center_age_filter:
+                resp["centers"].remove(center)
+
+    return resp    
 
 def check_calendar_by_district(
     request_header,
@@ -283,6 +296,9 @@ def check_calendar_by_district(
 
             elif resp.status_code == 200:
                 resp = resp.json()
+
+                resp = filter_centers_by_age(resp, min_age_booking)
+
                 if "centers" in resp:
                     print(
                         f"Centers available in {location['district_name']} from {start_date} as of {today.strftime('%Y-%m-%d %H:%M:%S')}: {len(resp['centers'])}"
@@ -343,6 +359,9 @@ def check_calendar_by_pincode(
 
             elif resp.status_code == 200:
                 resp = resp.json()
+
+                resp = filter_centers_by_age(resp, min_age_booking)
+                                                
                 if "centers" in resp:
                     print(
                         f"Centers available in {location['pincode']} from {start_date} as of {today.strftime('%Y-%m-%d %H:%M:%S')}: {len(resp['centers'])}"
