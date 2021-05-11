@@ -3,24 +3,22 @@
 import copy
 from types import SimpleNamespace
 import requests, sys, argparse, os, datetime
-from utils import generate_token_OTP, check_and_book, beep, BENEFICIARIES_URL, WARNING_BEEP_DURATION, \
+from utils import say, generate_token_OTP, check_and_book, beep, BENEFICIARIES_URL, WARNING_BEEP_DURATION, \
     display_info_dict, save_user_info, collect_user_details, get_saved_user_info, confirm_and_proceed
 
 
 def main():
+
     parser = argparse.ArgumentParser()
     parser.add_argument('--token', help='Pass token directly')
     args = parser.parse_args()
 
     filename = 'vaccine-booking-details.json'
     mobile = None
-
-    print('Running Script')
-    beep(500, 150)
-
     try:
         base_request_header = {
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36',
+            'Cache-Control': 'max-age=0' #to invalidate cache
         }
 
         if args.token:
@@ -84,18 +82,12 @@ def main():
             else:
                 # if token invalid, regenerate OTP and new token
                 beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
+                #for mac
+                say("Token invalid, regenerating new  token")
                 print('Token is INVALID.')
                 token_valid = False
-
-                tryOTP = input('Try for a new Token? (y/n Default y): ')
-                if tryOTP.lower() == 'y' or not tryOTP:
-                    if not mobile:
-                        mobile = input("Enter the registered mobile number: ")
-                    token = generate_token_OTP(mobile, base_request_header)
-                    token_valid = True
-                else:
-                    print("Exiting")
-                    os.system("pause")
+                token = generate_token_OTP(mobile, base_request_header)
+                token_valid = True
 
     except Exception as e:
         print(str(e))

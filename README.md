@@ -59,3 +59,9 @@ python src\covid-vaccine-slot-booking.py --token=YOUR-TOKEN-HERE
 - Open command prompt and run ```python --version```. If everything went well it should say ```Python 3.7.3```
 - You're all set! 
 
+### Setup to autoread OTP in iPhone/iMessages
+- Please refer : https://spin.atomicobject.com/2020/05/22/search-imessage-sql/
+
+### Enable voice notification in MacBook Pro
+- Please refer : https://discussions.apple.com/thread/8504263
+

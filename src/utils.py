@@ -1,9 +1,11 @@
+import time
 import json
+import sqlite3, pandas as pd
 from hashlib import sha256
 from collections import Counter
 from inputimeout import inputimeout, TimeoutOccurred
 import tabulate, copy, time, datetime, requests, sys, os, random
-from captcha import captcha_builder
+from captcha import captcha_buider
 
 BOOKING_URL = "https://cdn-api.co-vin.in/api/v2/appointment/schedule"
 BENEFICIARIES_URL = "https://cdn-api.co-vin.in/api/v2/appointment/beneficiaries"
@@ -175,19 +177,18 @@ def collect_user_details(request_header):
     # Get refresh frequency
     refresh_freq = input('How often do you want to refresh the calendar (in seconds)? Default 15. Minimum 5. : ')
     refresh_freq = int(refresh_freq) if refresh_freq and int(refresh_freq) >= 5 else 15
-
+    
     # Get search start date
     start_date = input(
-        '\nSearch for next seven day starting from when?\nUse 1 for today, 2 for tomorrow, or provide a date in the format DD-MM-YYYY. Default 2: ')
+        '\nSearch for next seven day starting from when?\nUse 1 for today, 2 for tomorrow, or provide a date in the format yyyy-mm-dd. Default 2: ')
     if not start_date:
         start_date = 2
     elif start_date in ['1', '2']:
         start_date = int(start_date)
     else:
         try:
-            datetime.datetime.strptime(start_date, '%d-%m-%Y')
+            datetime.datetime.strptime(start_date, '%Y-%m-%d')
         except ValueError:
-            print('Invalid Date! Proceeding with tomorrow.')
             start_date = 2
 
     # Get preference of Free/Paid option
@@ -197,7 +198,6 @@ def collect_user_details(request_header):
     print("===== BE CAREFUL WITH THIS OPTION! AUTO-BOOKING WILL BOOK THE FIRST AVAILABLE CENTRE, DATE, AND A RANDOM SLOT! =====")
     auto_book = input("Do you want to enable auto-booking? (yes-please or no) Default no: ")
     auto_book = 'no' if not auto_book else auto_book
-
     collected_details = {
         'beneficiary_dtls': beneficiary_dtls,
         'location_dtls': location_dtls,
@@ -250,6 +250,7 @@ def check_calendar_by_district(request_header, vaccine_type, location_dtls, star
             if location['district_name'] in [option['district'] for option in options]:
                 for _ in range(2):
                     beep(location['alert_freq'], 150)
+                    
         return options
 
     except Exception as e:
@@ -305,11 +306,15 @@ def check_calendar_by_pincode(request_header, vaccine_type, location_dtls, start
 def generate_captcha(request_header):
     print('================================= GETTING CAPTCHA ==================================================')
     resp = requests.post(CAPTCHA_URL, headers=request_header)
-    print(f'Captcha Response Code: {resp.status_code}')
-
+    print(f'Booking Response Code: {resp.status_code}')
+    say('Generating Captcha')
     if resp.status_code == 200:
-        return captcha_builder(resp.json())
+        captcha_buider(resp.json())
+        captcha = input('Enter Captcha: ')
+        return captcha
 
+def say(msg = "Finish", voice = "Victoria"):
+    os.system(f'say -v {voice} {msg}')
 
 def book_appointment(request_header, details):
     """
@@ -325,7 +330,7 @@ def book_appointment(request_header, details):
             details['captcha'] = captcha
 
             print('================================= ATTEMPTING BOOKING ==================================================')
-
+            
             resp = requests.post(BOOKING_URL, headers=request_header, json=details)
             print(f'Booking Response Code: {resp.status_code}')
             print(f'Booking Response : {resp.text}')
@@ -334,11 +339,17 @@ def book_appointment(request_header, details):
                 print('TOKEN INVALID')
                 return False
 
+            if resp.status_code == 409:
+                print('Slots taken')
+                return False
+
             elif resp.status_code == 200:
                 beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
                 print('##############    BOOKED!  ############################    BOOKED!  ##############')
                 print("                        Hey, Hey, Hey! It's your lucky day!                       ")
                 print('\nPress any key thrice to exit program.')
+                say("Hey, Hey, Hey! It's your lucky day! , Press any key thrice to exit program!")
+            
                 os.system("pause")
                 os.system("pause")
                 os.system("pause")
@@ -484,7 +495,7 @@ def get_fee_type_preference():
 
 def get_pincodes():
     locations = []
-    pincodes = input("Enter comma separated pincodes to monitor: ")
+    pincodes = input("Enter comma separated index numbers of pincodes to monitor: ")
     for idx, pincode in enumerate(pincodes.split(',')):
         pincode = {
             'pincode': pincode,
@@ -623,6 +634,30 @@ def get_min_age(beneficiary_dtls):
     min_age = min(age_list)
     return min_age
 
+def readOTP():
+    """
+    This function reads latest OTP from imessages based on handle_id being 19.
+    :return: OTP
+    """
+    conn = sqlite3.connect("/Users/vidyanarayanan/Library/Messages/chat.db")
+    messages = pd.read_sql_query("select * from message order by ROWID desc limit 1", conn)
+    handles = pd.read_sql_query("select * from handle order by ROWID desc limit 1", conn)
+    messages.rename(columns={'ROWID': 'message_id'}, inplace=True)
+    handles.rename(columns={'id': 'phone_number', 'ROWID': 'handle_id'}, inplace=True)
+    imessage_df = pd.merge(messages[['text', 'handle_id', 'date', 'is_sent', 'message_id']], 
+        handles[['handle_id', 'phone_number']], on='handle_id', how='left')
+
+    for index, row in imessage_df.iterrows():
+        verification_code_text = row['text']
+        #This prints message and handle_id. Can be tweaked to figure out handle_id for OTP message.
+        print(verification_code_text)
+        print('Handle Id', row['handle_id'])
+        if row['handle_id'] == 19:
+            verification_code_text = row['text']
+            print(verification_code_text)
+            otp_text = verification_code_text.split(' ')
+            otp = otp_text[6]
+            return otp[:-1]
 
 def generate_token_OTP(mobile, request_header):
     """
@@ -645,8 +680,11 @@ def generate_token_OTP(mobile, request_header):
             if txnId.status_code == 200:
                 print(f"Successfully requested OTP for mobile number {mobile} at {datetime.datetime.today()}..")
                 txnId = txnId.json()['txnId']
-
-                OTP = input("Enter OTP (If this takes more than 2 minutes, press Enter to retry): ")
+                
+                time.sleep(30)
+                OTP = readOTP()
+                print("Retrieved OTP", OTP)
+                
                 if OTP:
                     data = {"otp": sha256(str(OTP).encode('utf-8')).hexdigest(), "txnId": txnId}
                     print(f"Validating OTP..")
@@ -662,25 +700,18 @@ def generate_token_OTP(mobile, request_header):
                     else:
                         print('Unable to Validate OTP')
                         print(f"Response: {token.text}")
-
-                        retry = input(f"Retry with {mobile} ? (y/n Default y): ")
-                        retry = retry if retry else 'y'
-                        if retry == 'y':
-                            pass
-                        else:
-                            sys.exit()
+                        while token.status_code != 200:
+                            token = generate_token_OTP(mobile, request_header)
+                            valid_token = True
+                            return token
 
             else:
                 print('Unable to Generate OTP')
                 print(txnId.status_code, txnId.text)
-
-                retry = input(f"Retry with {mobile} ? (y/n Default y): ")
-                retry = retry if retry else 'y'
-                if retry == 'y':
-                    pass
-                else:
-                    sys.exit()
-
+                while txnId.status_code != 200:
+                    token = generate_token_OTP(mobile, request_header)
+                    valid_token = True
+                    return token
+               
         except Exception as e:
             print(str(e))
-
