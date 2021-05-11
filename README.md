@@ -31,6 +31,11 @@ Install all the dependencies with the below. This is a one-time activity (for an
 pip install -r requirements.txt
 ```
 
+If you're on Windows, install dependencies with below command
+```
+python3 -m pip install -r requirements.txt
+```
+
 If you're on Linux, install the beep package before running the Python script. To install, run:
 ```
 sudo apt-get install beep
@@ -57,5 +62,6 @@ python src\covid-vaccine-slot-booking.py --token=YOUR-TOKEN-HERE
 - If so, download the installer from: https://www.python.org/ftp/python/3.7.3/python-3.7.3-amd64.exe
 - Run that. In the first screen of installer, there will be an option at the bottom to "Add Python 3.7 to Path". Make sure to select it.
 - Open command prompt and run ```python --version```. If everything went well it should say ```Python 3.7.3```
+- In case of problem for python is not recognied problem. Set system PATH for python.
 - You're all set! 
 
