@@ -1,8 +1,7 @@
-**Note: 
-If you are facing issues please refer to troubleshooting section at the end of this doc.**
-
-
-**Note: The captcha is a bit buggy and I had to make 5-6 tries before I was able to book.**
+**Note:** 
+1. If you are facing issues please refer to troubleshooting section at the end of this doc
+2. The captcha is a bit buggy and I had to make 5-6 tries before I was able to book
+3. If you are still facing errors and want to run this script on windows using exe, please see the section below "How to run on windows".
 
 **Update**: Instructions for iOS have also been added. See the **Steps to setup on iOS** for details. Please note that its not possible to automate the OTP auto read on iOS completely, however its possible to make it a 1 tap process, which is far better than seeing and entering the OTP manually.
 
@@ -286,7 +285,23 @@ pip install -r requirements.txt
 	```
 12. Before the next update, you'll have 10 seconds to provide a choice in the format ```centerIndex.slotIndex``` eg: The input```1.4``` will select the vaccination center in second row and its fourth slot.
 
+How to run on windows
 
+### How to run on windows
+
+1. **Step 1** - Download or clone this repo.
+
+2. **Step 2 -** Go to folder **tests** then **windows exe**.**zip**. Unzip the folder and Now run the program "**captcha_tests.exe**".  If you see a dialog box click on quit, and you will see a Captcha. If this is what happened you are all good to go. 
+
+   
+
+3. Now come back to main folder unzip "**windows exe.zip**"go to this "**windows exe**" folder 
+
+   ![image-20210511140608465](C:\Users\Hitesh\AppData\Roaming\Typora\typora-user-images\image-20210511140608465.png)
+
+   Now start the program "**covid-vaccine-slot-booking.exe**", you will not see any error.
+
+4. DO NOT DELETE ANY FOLDER OR FILE. 
 
 ### Troubleshooting common problems
 
