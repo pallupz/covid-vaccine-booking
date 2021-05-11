@@ -19,12 +19,9 @@
 - https://github.com/bombardier-gif/covid-vaccine-booking : I haven't tried this personally but, it looks like a promising, completely automated solution that would require a bit more setting up.
 
 ### Usage:
+If you don't already have Python and do not know to set it up, instructions are at the bottom. Do that and come back here.
 
-For the anyone not familiar with Python and using Windows, using the ```covid-vaccine-slot-booking.exe``` executable file (EDIT: EXE is not working at the moment due to unresolved errors) would be the easiest way. It might trigger an anti-virus alert. That's because I used ```pyinstaller``` to package the python code and it needs a bit more effort to avoid such alerts.
-
-OR
-
-Use **Python 3.7** and install all the dependencies with:
+Use **Python 3.7** and install all the dependencies with the below. This is a one-time activity (for anyone not familiar with Python)
 ```
 pip install -r requirements.txt
 ```
@@ -48,7 +45,16 @@ If you already have a bearer token, you can also use:
 python src\covid-vaccine-slot-booking.py --token=YOUR-TOKEN-HERE
 ```
 
-### Third-Party Package Dependency:
-- ```tabulate``` : For displaying data in tabular format.
-- ```requests``` : For making GET and POST requests to the API.
-- ```inputimeout``` : For creating an input with timeout.
+### Python Installation in Windows
+- Check if Python is already installed by opening command prompt and running ```python --version```.
+- If the above command returns ```Python <some-version-number>``` you're probably good - provided version number is above 3.6
+- If Python's not installed, command would say something like: ```'python' is not recognized as an internal or external command, operable program or batch file.```
+- If so, download the installer from: https://www.python.org/ftp/python/3.7.3/python-3.7.3-amd64.exe
+- Run that. In the first screen of installer, there will be an option at the bottom to "Add Python 3.7 to Path". Make sure to select it.
+- Open command prompt and run ```python --version```. If everything went well it should say ```Python 3.7.3```
+- You're all set! 
+- Download this code as zip, and extract it to some folder like ```C:\temp\covid-vaccine-booking```
+- The py files should be in ```C:\temp\covid-vaccine-booking\src```
+- Open command prompt and run ```cd C:\temp\covid-vaccine-booking``` and complete two more steps mentioned in Usage section.
+
+
