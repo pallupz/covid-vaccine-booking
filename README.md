@@ -35,7 +35,7 @@ If you're on MacOS, install the SoX ([Sound eXchange](http://sox.sourceforge.net
 brew install sox
 ```
 
-Finally, run the script file as show below:
+Finally, run the script file as shown below:
 ```
 python src\covid-vaccine-slot-booking.py
 ```
