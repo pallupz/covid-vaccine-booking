@@ -94,6 +94,20 @@ Go to `src` directory and run the script  `cd src && python covid-vaccine-slot-b
 
 **Same steps for iOS in screenshots:**
 
+![image1](https://user-images.githubusercontent.com/83958525/117808231-40550500-b27a-11eb-9f58-17c3c9f52dc5.PNG)
+![image2](https://user-images.githubusercontent.com/83958525/117808359-6a0e2c00-b27a-11eb-975b-cd3cbfda68b0.PNG)
+![image](https://user-images.githubusercontent.com/83958525/117808435-7db99280-b27a-11eb-933d-58a8af95dfaa.PNG)
+![image](https://user-images.githubusercontent.com/83958525/117808441-80b48300-b27a-11eb-92c4-e9e4eb144bef.PNG)
+![image](https://user-images.githubusercontent.com/83958525/117808450-8611cd80-b27a-11eb-9caa-b23a5a3c3509.PNG)
+![image](https://user-images.githubusercontent.com/83958525/117808480-8dd17200-b27a-11eb-986e-1405dec40e73.PNG)
+![image](https://user-images.githubusercontent.com/83958525/117808657-c6714b80-b27a-11eb-891a-0fbf5f933949.PNG)
+![image](https://user-images.githubusercontent.com/83958525/117808677-cbce9600-b27a-11eb-9e38-7213fdb5c9d1.PNG)
+![image](https://user-images.githubusercontent.com/83958525/117808695-d1c47700-b27a-11eb-897a-7a4ef7761889.PNG)
+![image](https://user-images.githubusercontent.com/83958525/117808764-e7d23780-b27a-11eb-90b4-bb9859d45379.PNG)
+![image](https://user-images.githubusercontent.com/83958525/117808824-01737f00-b27b-11eb-8937-a473107a3fcd.PNG)
+![image](https://user-images.githubusercontent.com/83958525/117809022-40a1d000-b27b-11eb-86bd-31b5e9669887.PNG)
+![image](https://user-images.githubusercontent.com/83958525/117809074-51524600-b27b-11eb-9b2f-82cab9a92f49.jpeg)
+
 
 **Tips:** 
 
