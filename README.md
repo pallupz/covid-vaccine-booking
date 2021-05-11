@@ -45,7 +45,7 @@ If you already have a bearer token, you can also use:
 python src\covid-vaccine-slot-booking.py --token=YOUR-TOKEN-HERE
 ```
 
-### Python Installation in Windows
+### Python 3.7.3 Installation in Windows
 - Check if Python is already installed by opening command prompt and running ```python --version```.
 - If the above command returns ```Python <some-version-number>``` you're probably good - provided version number is above 3.6
 - If Python's not installed, command would say something like: ```'python' is not recognized as an internal or external command, operable program or batch file.```
