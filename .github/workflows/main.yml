@@ -55,15 +55,15 @@ jobs:
       - name: copy fonts folder
         uses: MadaraUchiha/copy-action@0.0.1
         with:
-        source: libs\fonts
-        target: dist\covid-vaccine-slot-booking\reportlab\
+          source: libs\fonts
+          target: dist\covid-vaccine-slot-booking\reportlab\
       - name: make the zip file of dist folder
 
       # Make zip file
         uses: papeloto/action-zip@v1
         with:
-        files: dist/
-        dest: windows-exe.zip
+          files: dist/
+          dest: windows-exe.zip
 
       # Remove not required files
       - name: Package Script to EXE
