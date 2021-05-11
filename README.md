@@ -22,6 +22,10 @@
 
 EXE file does not work anymore but the Python code does. If you don't already have Python and do not know how to set it up, instructions are at the bottom. It's not complicated at all and takes literally 5 minutes. Please do that and come back here.
 
+Download this code as zip, and extract it to some folder like ```C:\temp\covid-vaccine-booking```. Going by this structure, the py files should be in ```C:\temp\covid-vaccine-booking\src```. 
+
+Open command prompt and run ```cd C:\temp\covid-vaccine-booking```
+
 Use **Python 3.7** and install all the dependencies with the below. This is a one-time activity (for anyone not familiar with Python)
 ```
 pip install -r requirements.txt
@@ -54,8 +58,4 @@ python src\covid-vaccine-slot-booking.py --token=YOUR-TOKEN-HERE
 - Run that. In the first screen of installer, there will be an option at the bottom to "Add Python 3.7 to Path". Make sure to select it.
 - Open command prompt and run ```python --version```. If everything went well it should say ```Python 3.7.3```
 - You're all set! 
-- Download this code as zip, and extract it to some folder like ```C:\temp\covid-vaccine-booking```
-- The py files should be in ```C:\temp\covid-vaccine-booking\src```
-- Open command prompt and run ```cd C:\temp\covid-vaccine-booking``` and complete two more steps mentioned in Usage section.
-
 
