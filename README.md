@@ -3,31 +3,36 @@
 2. The captcha is a bit buggy and I had to make 5-6 tries before I was able to book
 3. If you are still facing errors and want to run this script on windows using exe, please see the section below "How to run on windows".
 
+**Update**: Instructions for iOS have also been added. See the **Steps to setup on iOS** for details. Please note that its not possible to automate the OTP auto read on iOS completely, however its possible to make it a 1 tap process, which is far better than seeing and entering the OTP manually.
+
 # Bombardier fully automated COVID-19 Vaccination Slot Booking Script
 This is a fork over the neat https://github.com/pallupz/covid-vaccine-booking Thanks for creating a playground for me to build on.
 
-What this repository does:
-1. Automates OTP read from the SMS (Android only) after the token expires
-2. Randomly chooses one of the available slots instea of waiting for input from the user
+**What this repository does:**
+1. Automates OTP read from the SMS after the token expires.
+2. Randomly chooses one of the available slots instead of waiting for input from the user.
 3. Reduces the polling wait to optimize on the polling frequency (hence the name bombardier)
 ![image](https://user-images.githubusercontent.com/83712877/117467267-290fd200-af71-11eb-8461-d6e253c183d7.png)
 
 
-How it works:
+**How it works on Android:**
 1. https://ifttt.com/ is used to create a SMS trigger. The trigger happens when the OTP SMS is received
 2. The trigger sends the text of the SMS to a REST service, I have used a free service which needs 0 setup for a shared storage
 
+**How it works on iOS:**
+1. [Shortcuts app](https://apps.apple.com/us/app/shortcuts/id915249334) is used to create an SMS trigger. The trigger happens when the OTP SMS is received
+2. The trigger sends the text of the SMS to a REST service, I have used a free service which needs 0 setup for a shared storage
 
-**Parallely**
+**In Parallel**
 1. The script runs continuously to poll (same logic as the original repository)
-2. Whenever th OTP expires, an OTP is requested
-3. When the OTP SMS is received on the Android, phone, the above logic triggers to store the OTP SMS in the shared storage
+2. Whenever the OTP expires, an OTP is requested
+3. When the OTP SMS is received on the **Android**, phone, the above logic triggers to store the OTP SMS in the shared storage. On **iOS**, when the OTP SMS is received, the above logic triggers a notification which the user has to long press and confirm after which the OTP is stored in shared storage
 4. The script polls the shared storage to get the OTP
 5. Once the OTP is received, the polling resumes
 6. If a free slot is found, rather than waiting for an input, it randomly chooses a slot and attempts to book
 
 
-**Steps to setup**
+**Steps to setup on Android**
 1. Create an account in ifttt.com (A premium paid account is recommended for a quicker response)
 2.     Create a new applet
 3.     If this..... click on Android SMS trigger
@@ -51,12 +56,7 @@ How it works:
 19. Hopefully you get the slot
 20. Stay healthy and stay safe!
 
-**Tips:** 
-
-I used this command to run the script as it was giving me Syntax error: `python3 src/covid-vaccine-slot-booking.py`
-Also I used this command to install the dependencies  `python3 -m pip install -r requirements.txt`
-
-**Same steps in screenshots:**
+**Same steps for Android in screenshots:**
 ![image](https://user-images.githubusercontent.com/83712877/117159172-b0c4d780-addd-11eb-90f0-ab8438db4c8e.png)
 ![image](https://user-images.githubusercontent.com/83712877/117159291-c76b2e80-addd-11eb-991a-dc6de4bbb620.png)
 ![image](https://user-images.githubusercontent.com/83712877/117159444-e669c080-addd-11eb-9b4c-448335b1c781.png)
@@ -68,6 +68,48 @@ Also I used this command to install the dependencies  `python3 -m pip install -r
 ![image](https://user-images.githubusercontent.com/83712877/117325821-b5a58c00-aeae-11eb-8156-2ea585a77834.png)
 
 
+**Steps to setup on iOS**
+1. Open the shortcuts app
+2. Tap on the + button at the top right
+3. Tap on `Create Personal Automation`
+3. Select the `Message` option
+4. Put `CoWIN` in the Message Contains option & leave everything blank. Tap on Next button
+5. Tap on `Add action` and search for the option `Set Variable`. Give the variable name `text` and input as `Shortcut Input`
+6.     Then add another action and select `URL` and paste the url: https://kvdb.io/3YgXf9PHYHbX6NsF7zP6Us/99XXXXXXXX replace 99XXXXXXXX with your phone number
+7. Then add another action and select `Get Contents of Url`. Click on show more. Change the method to `PUT`. Request Body to `File` and in the file row tap on `Choose Variable` and select `text` which we defined in Step 6.
+8. Click Next and save this automation.
+9. Clone this repository
+Go to `src` directory and run the script  `cd src && python covid-vaccine-slot-booking.py`
+15. On Mac I had to do the following too
+     - `brew install python-tk`
+     - `brew install SoX`
+18. Run the script, enter your phone number. 
+19. Now as soon as OTP is recieved you will also get a notification from shortcuts app. Long press it and click on run. It will start OTP auto read process.
+20. Use the steps given below to enter your preferences. 
+21. Now whenever the script session expires, it will send the notification  described in step 13 and repeat the process to trigger OTP auto read. 
+22. It is recommended that you set a different notification tone for this notification to be able to distinguish.
+23. Hopefully you get the slot
+24. Stay healthy and stay safe!
+
+**Same steps for iOS in screenshots:**
+
+![image1](https://user-images.githubusercontent.com/83958525/117808231-40550500-b27a-11eb-9f58-17c3c9f52dc5.PNG)
+![image2](https://user-images.githubusercontent.com/83958525/117808359-6a0e2c00-b27a-11eb-975b-cd3cbfda68b0.PNG)
+![image](https://user-images.githubusercontent.com/83958525/117808435-7db99280-b27a-11eb-933d-58a8af95dfaa.PNG)
+![image](https://user-images.githubusercontent.com/83958525/117808441-80b48300-b27a-11eb-92c4-e9e4eb144bef.PNG)
+![image](https://user-images.githubusercontent.com/83958525/117808450-8611cd80-b27a-11eb-9caa-b23a5a3c3509.PNG)
+![image](https://user-images.githubusercontent.com/83958525/117808480-8dd17200-b27a-11eb-986e-1405dec40e73.PNG)
+![image](https://user-images.githubusercontent.com/83958525/117808695-d1c47700-b27a-11eb-897a-7a4ef7761889.PNG)
+![image](https://user-images.githubusercontent.com/83958525/117808764-e7d23780-b27a-11eb-90b4-bb9859d45379.PNG)
+![image](https://user-images.githubusercontent.com/83958525/117808824-01737f00-b27b-11eb-8937-a473107a3fcd.PNG)
+![image](https://user-images.githubusercontent.com/83958525/117809022-40a1d000-b27b-11eb-86bd-31b5e9669887.PNG)
+![image](https://user-images.githubusercontent.com/83958525/117809074-51524600-b27b-11eb-9b2f-82cab9a92f49.jpeg)
+
+
+**Tips:** 
+
+I used this command to run the script as it was giving me Syntax error: `python3 src/covid-vaccine-slot-booking.py`
+Also I used this command to install the dependencies  `python3 -m pip install -r requirements.txt`
 
 # COVID-19 Vaccination Slot Booking Script
 
