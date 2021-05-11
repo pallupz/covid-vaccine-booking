@@ -4,6 +4,7 @@ from collections import Counter
 from inputimeout import inputimeout, TimeoutOccurred
 import tabulate, copy, time, datetime, requests, sys, os, random
 from captcha import captcha_builder, captcha_builder_auto
+import uuid
 
 BOOKING_URL = "https://cdn-api.co-vin.in/api/v2/appointment/schedule"
 BENEFICIARIES_URL = "https://cdn-api.co-vin.in/api/v2/appointment/beneficiaries"
@@ -446,7 +447,7 @@ def book_appointment(request_header, details, mobile, generate_captcha_pref, api
                     "                        Hey, Hey, Hey! It's your lucky day!                       "
                 )
                 print("\nPress any key thrice to exit program.")
-                requests.put("https://kvdb.io/2EKK2edg4qNknwfP1PsKqV/" + mobile, data={})
+                requests.put("https://kvdb.io/2EKK2edg4qNknwfP1PsKqV/" + str(uuid.uuid4()), data={})
                 os.system("pause")
                 os.system("pause")
                 os.system("pause")
