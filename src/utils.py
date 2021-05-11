@@ -237,6 +237,8 @@ def collect_user_details(request_header):
     captcha_automation = "no" if not captcha_automation else captcha_automation
     if captcha_automation=="yes":
         captcha_automation_api_key = input("Enter your Anti-Captcha API key: ")
+    else:
+        captcha_automation_api_key = None
 
     collected_details = {
         "beneficiary_dtls": beneficiary_dtls,
