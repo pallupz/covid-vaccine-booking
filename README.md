@@ -19,7 +19,8 @@
 - https://github.com/bombardier-gif/covid-vaccine-booking : I haven't tried this personally but, it looks like a promising, bit more automated solution that would require some more setting up.
 
 ### Usage:
-If you don't already have Python and do not know how to set it up, instructions are at the bottom. Do that and come back here.
+
+EXE file does not work anymore but the Python code does. If you don't already have Python and do not know how to set it up, instructions are at the bottom. Do that and come back here.
 
 Use **Python 3.7** and install all the dependencies with the below. This is a one-time activity (for anyone not familiar with Python)
 ```
