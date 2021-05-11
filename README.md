@@ -16,7 +16,7 @@
 - And finally, I know code quality isn't great. Suggestions are welcome.
 
 ### Noteworthy Forks
-- https://github.com/bombardier-gif/covid-vaccine-booking : I haven't tried this personally but, it looks like a promising, bit more automated solution that would require a bit more setting up.
+- https://github.com/bombardier-gif/covid-vaccine-booking : I haven't tried this personally but, it looks like a promising, bit more automated solution that would require some more setting up.
 
 ### Usage:
 If you don't already have Python and do not know how to set it up, instructions are at the bottom. Do that and come back here.
