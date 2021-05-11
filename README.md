@@ -37,12 +37,12 @@ brew install sox
 
 Finally, run the script file as shown below:
 ```
-python src\covid-vaccine-slot-booking.py
+python src/covid-vaccine-slot-booking.py
 ```
 
 If you already have a bearer token, you can also use:
 ```
-python src\covid-vaccine-slot-booking.py --token=YOUR-TOKEN-HERE
+python src/covid-vaccine-slot-booking.py --token=YOUR-TOKEN-HERE
 ```
 
 ### Python 3.7.3 Installation in Windows
@@ -53,8 +53,8 @@ python src\covid-vaccine-slot-booking.py --token=YOUR-TOKEN-HERE
 - Run that. In the first screen of installer, there will be an option at the bottom to "Add Python 3.7 to Path". Make sure to select it.
 - Open command prompt and run ```python --version```. If everything went well it should say ```Python 3.7.3```
 - You're all set! 
-- Download this code as zip, and extract it to some folder like ```C:\temp\covid-vaccine-booking```
-- The py files should be in ```C:\temp\covid-vaccine-booking\src```
-- Open command prompt and run ```cd C:\temp\covid-vaccine-booking``` and complete two more steps mentioned in Usage section.
+- Download this code as zip, and extract it to some folder like ```C:/temp/covid-vaccine-booking```
+- The py files should be in ```C:/temp/covid-vaccine-booking/src```
+- Open command prompt and run ```cd C:/temp/covid-vaccine-booking``` and complete two more steps mentioned in Usage section.
 
 
