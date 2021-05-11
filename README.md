@@ -19,7 +19,7 @@
 - https://github.com/bombardier-gif/covid-vaccine-booking : I haven't tried this personally but, it looks like a promising, completely automated solution that would require a bit more setting up.
 
 ### Usage:
-If you don't already have Python and do not know to set it up, instructions are at the bottom. Do that and come back here.
+If you don't already have Python and do not know how to set it up, instructions are at the bottom. Do that and come back here.
 
 Use **Python 3.7** and install all the dependencies with the below. This is a one-time activity (for anyone not familiar with Python)
 ```
@@ -35,7 +35,7 @@ If you're on MacOS, install the SoX ([Sound eXchange](http://sox.sourceforge.net
 brew install sox
 ```
 
-Then, run the script file as show below:
+Finally, run the script file as show below:
 ```
 python src\covid-vaccine-slot-booking.py
 ```
