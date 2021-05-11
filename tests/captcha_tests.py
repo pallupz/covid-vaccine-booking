@@ -32,6 +32,32 @@ def test_captcha_builder():
         print("\nOhh NO !!! you have entered wrong captcha : %s while expected: %s" % (captcha_value, expected_captcha_value))
         print("Check if you are missing any required python packages\n\n")
 
+def test_captcha_builder_auto(api_key):
+    from PIL import Image
+    from svglib.svglib import svg2rlg
+    from reportlab.graphics import renderPM
+    from anticaptchaofficial.imagecaptcha import imagecaptcha
+    import re, time
+    drawing = svg2rlg('captcha.svg')
+    renderPM.drawToFile(drawing, "captcha.png", fmt="PNG")
+
+    solver = imagecaptcha()
+    solver.set_verbose(1)
+    solver.set_key(api_key)
+
+    print("Started solving captcha...")
+    tic = time.perf_counter()
+    captcha_text = solver.solve_and_return_solution("captcha.png")
+    toc = time.perf_counter()
+
+    if captcha_text == "SNNvu":
+        print(f"Captcha solve success: {captcha_text}")
+        print(f"It took {toc - tic:0.4f} seconds to solve captcha")
+    else:
+        print(f"Task finished with error: {solver.error_code} - {captcha_text}")
+
+    return captcha_text
+
 def test_python_packages():
     try:
         from PIL import Image
@@ -71,3 +97,4 @@ def test_tkinter_lib():
 test_python_packages()
 test_tkinter_lib()
 test_captcha_builder()
+test_captcha_builder_auto("APIKEY") #http://anti-captcha.com

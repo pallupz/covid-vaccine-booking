@@ -6,3 +6,4 @@ reportlab
 pyinstaller
 pysimplegui
 tk
+anticaptchaofficial
