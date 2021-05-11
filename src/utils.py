@@ -3,7 +3,7 @@ from hashlib import sha256
 from collections import Counter
 from inputimeout import inputimeout, TimeoutOccurred
 import tabulate, copy, time, datetime, requests, sys, os, random
-from captcha import captcha_builder
+from captcha import captcha_builder, captcha_builder_auto
 
 BOOKING_URL = "https://cdn-api.co-vin.in/api/v2/appointment/schedule"
 BENEFICIARIES_URL = "https://cdn-api.co-vin.in/api/v2/appointment/beneficiaries"
@@ -229,6 +229,15 @@ def collect_user_details(request_header):
     )
     auto_book = "yes-please"
 
+
+    print("\n================================= Captcha Automation =================================\n")
+    print("======== Caution: This will require a paid API key from anti-captcha.com =============")
+
+    captcha_automation = input("Do you want to automate captcha autofill? (yes or no) Default no: ")
+    captcha_automation = "no" if not captcha_automation else captcha_automation
+    if captcha_automation=="yes":
+        captcha_automation_api_key = input("Enter your Anti-Captcha API key: ")
+
     collected_details = {
         "beneficiary_dtls": beneficiary_dtls,
         "location_dtls": location_dtls,
@@ -239,6 +248,8 @@ def collect_user_details(request_header):
         "start_date": start_date,
         "vaccine_type": vaccine_type,
         "fee_type": fee_type,
+        'captcha_automation': captcha_automation,
+        'captcha_automation_api_key': captcha_automation_api_key
     }
 
     return collected_details
@@ -385,18 +396,20 @@ def check_calendar_by_pincode(
         beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
 
 
-def generate_captcha(request_header):
+def generate_captcha(request_header, captcha_automation, api_key):
     print(
         "================================= GETTING CAPTCHA =================================================="
     )
     resp = requests.post(CAPTCHA_URL, headers=request_header)
     print(f'Captcha Response Code: {resp.status_code}')
 
-    if resp.status_code == 200:
+    if resp.status_code == 200 and captcha_automation=="no":
         return captcha_builder(resp.json())
+    elif resp.status_code == 200 and captcha_automation=="yes":
+        return captcha_builder_auto(resp.json(), api_key)
 
 
-def book_appointment(request_header, details, mobile):
+def book_appointment(request_header, details, mobile, generate_captcha_pref, api_key=None):
     """
     This function
         1. Takes details in json format
@@ -406,7 +419,7 @@ def book_appointment(request_header, details, mobile):
     try:
         valid_captcha = True
         while valid_captcha:
-            captcha = generate_captcha(request_header)
+            captcha = generate_captcha(request_header, generate_captcha_pref, api_key)
            # os.system('say "Slot Spotted."')
             details["captcha"] = captcha
 
@@ -471,6 +484,8 @@ def check_and_book(
         vaccine_type = kwargs["vaccine_type"]
         fee_type = kwargs["fee_type"]
         mobile = kwargs["mobile"]
+        captcha_automation = kwargs['captcha_automation']
+        captcha_automation_api_key = kwargs['captcha_automation_api_key']
 
         if isinstance(start_date, int) and start_date == 2:
             start_date = (
@@ -566,7 +581,7 @@ def check_and_book(
                 }
 
                 print(f"Booking with info: {new_req}")
-                return book_appointment(request_header, new_req, mobile)
+                return book_appointment(request_header, new_req, mobile, captcha_automation, captcha_automation_api_key)
 
             except IndexError:
                 print("============> Invalid Option!")
