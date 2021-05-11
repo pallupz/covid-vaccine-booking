@@ -99,9 +99,9 @@ def main():
                 token = None
 
                 while token is None:
-                    if mobile[-1]!=".":
+                    if otp_pref=="n":
                         token = generate_token_OTP(mobile, base_request_header)
-                    elif mobile[-1]==".":
+                    elif otp_pref=="y":
                         token = generate_token_OTP_manual(mobile, base_request_header)
                 token_valid = True
 
