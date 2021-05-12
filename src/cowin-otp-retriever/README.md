@@ -8,5 +8,5 @@ CoWIN OTP Retriever
 ![image](https://user-images.githubusercontent.com/3753228/117892718-dc145e80-b2d6-11eb-9efe-59258b6807ca.png)  
 5. Switch ON the OTP Listener.  
 ![image](https://user-images.githubusercontent.com/3753228/117893063-56dd7980-b2d7-11eb-9671-e438d90d29d4.png)  
-5. if OTP is successfully sent to the key value store, you will see the status as shown below.  
+6. If the OTP is successfully sent to the key value store, you will see the status as shown below.  
 ![image](https://user-images.githubusercontent.com/3753228/117893191-9b691500-b2d7-11eb-9dfc-1984551f535c.png)

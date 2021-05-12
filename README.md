@@ -16,8 +16,12 @@ This is a fork over the neat https://github.com/pallupz/covid-vaccine-booking Th
 
 
 **How it works on Android:**
+##### Using the IFTTT Android app
 1. https://ifttt.com/ is used to create a SMS trigger. The trigger happens when the OTP SMS is received
 2. The trigger sends the text of the SMS to a REST service, I have used a free service which needs 0 setup for a shared storage
+##### Using the CoWIN OTP Retriever Android app
+1. The [CoWinOTPRetriever Android app](./CoWinOtpRetreiver.apk) has been created to automatically read the OTP SMS and then send it to the shared storage
+2. You only need to install and start the app, enter your CoWIN registered phone number, and then start the OTP listener.
 
 **How it works on iOS:**
 1. [Shortcuts app](https://apps.apple.com/us/app/shortcuts/id915249334) is used to create an SMS trigger. The trigger happens when the OTP SMS is received
@@ -33,6 +37,7 @@ This is a fork over the neat https://github.com/pallupz/covid-vaccine-booking Th
 
 
 **Steps to setup on Android**
+##### Using the IFTTT Android app
 1. Create an account in ifttt.com (A premium paid account is recommended for a quicker response)
 2.     Create a new applet
 3.     If this..... click on Android SMS trigger
@@ -67,18 +72,30 @@ This is a fork over the neat https://github.com/pallupz/covid-vaccine-booking Th
 ![image](https://user-images.githubusercontent.com/83712877/117159863-4496a380-adde-11eb-8874-40cc6f851cf6.png)
 ![image](https://user-images.githubusercontent.com/83712877/117325821-b5a58c00-aeae-11eb-8156-2ea585a77834.png)
 
+##### Using the CoWIN OTP Retriever Android app
+1. Install the [CoWinOTPRetriever Android app](./blob/main/CoWinOtpRetreiver.apk?raw=true).
+2. Grant sms access to allow the app to read CoWIN OTP sms.
+3. Enter 10 digit mobile number registered on the CoWIN portal.
+5. Switch ON the OTP Listener.
+6. If the OTP is successfully sent to the key value store, you will see the status as shown below.
+
+**Same steps for Android in screenshots:**
+1. ![image](https://user-images.githubusercontent.com/3753228/117892886-1b42af80-b2d7-11eb-9efa-5c0f9b2d5596.png)
+2. ![image](https://user-images.githubusercontent.com/3753228/117892718-dc145e80-b2d6-11eb-9efe-59258b6807ca.png)
+3. ![image](https://user-images.githubusercontent.com/3753228/117893063-56dd7980-b2d7-11eb-9671-e438d90d29d4.png)
+4. ![image](https://user-images.githubusercontent.com/3753228/117893191-9b691500-b2d7-11eb-9dfc-1984551f535c.png)
 
 **Steps to setup on iOS**
 1. Open the shortcuts app
 2. Tap on the + button at the top right
 3. Tap on `Create Personal Automation`
-3. Select the `Message` option
-4. Put `CoWIN` in the Message Contains option & leave everything blank. Tap on Next button
-5. Tap on `Add action` and search for the option `Set Variable`. Give the variable name `text` and input as `Shortcut Input`
-6.     Then add another action and select `URL` and paste the url: https://kvdb.io/3YgXf9PHYHbX6NsF7zP6Us/99XXXXXXXX replace 99XXXXXXXX with your phone number
-7. Then add another action and select `Get Contents of Url`. Click on show more. Change the method to `PUT`. Request Body to `File` and in the file row tap on `Choose Variable` and select `text` which we defined in Step 6.
-8. Click Next and save this automation.
-9. Clone this repository
+4. Select the `Message` option
+5. Put `CoWIN` in the Message Contains option & leave everything blank. Tap on Next button
+6. Tap on `Add action` and search for the option `Set Variable`. Give the variable name `text` and input as `Shortcut Input`
+7.     Then add another action and select `URL` and paste the url: https://kvdb.io/3YgXf9PHYHbX6NsF7zP6Us/99XXXXXXXX replace 99XXXXXXXX with your phone number
+8. Then add another action and select `Get Contents of Url`. Click on show more. Change the method to `PUT`. Request Body to `File` and in the file row tap on `Choose Variable` and select `text` which we defined in Step 6.
+9. Click Next and save this automation.
+10. Clone this repository
 Go to `src` directory and run the script  `cd src && python covid-vaccine-slot-booking.py`
 15. On Mac I had to do the following too
      - `brew install python-tk`
