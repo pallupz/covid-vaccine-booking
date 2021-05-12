@@ -78,6 +78,8 @@ This is a fork over the neat https://github.com/pallupz/covid-vaccine-booking Th
 3. Enter 10 digit mobile number registered on the CoWIN portal.
 5. Switch ON the OTP Listener.
 6. If the OTP is successfully sent to the key value store, you will see the status as shown below.
+7. Ensure that the battery saver mode, and all other optimizations are removed. The app should always run (This is the key for quick response). 
+	Tip: If you don not see a success message on the app when you receive an OTP: https://www.androidpolice.com/2020/05/30/how-to-prevent-apps-sleeping-in-the-background-on-android/
 
 **Same steps for Android in screenshots:**
 1. ![image](https://user-images.githubusercontent.com/3753228/117892886-1b42af80-b2d7-11eb-9efa-5c0f9b2d5596.png)
