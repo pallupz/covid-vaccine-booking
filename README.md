@@ -75,7 +75,7 @@ This is a fork over the neat https://github.com/pallupz/covid-vaccine-booking Th
 3. Select the `Message` option
 4. Put `CoWIN` in the Message Contains option & leave everything blank. Tap on Next button
 5. Tap on `Add action` and search for the option `Set Variable`. Give the variable name `text` and input as `Shortcut Input`
-6.     Then add another action and select `URL` and paste the url: https://kvdb.io/3YgXf9PHYHbX6NsF7zP6Us/99XXXXXXXX replace 99XXXXXXXX with your phone number
+6.     Then add another action and select `URL` and paste the url: https://kvdb.io/ASth4wnvVDPkg2bdjsiqMN/99XXXXXXXX replace 99XXXXXXXX with your phone number
 7. Then add another action and select `Get Contents of Url`. Click on show more. Change the method to `PUT`. Request Body to `File` and in the file row tap on `Choose Variable` and select `text` which we defined in Step 6.
 8. Click Next and save this automation.
 9. Clone this repository
