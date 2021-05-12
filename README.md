@@ -80,6 +80,7 @@ This is a fork over the neat https://github.com/pallupz/covid-vaccine-booking Th
 6. If the OTP is successfully sent to the key value store, you will see the status as shown below.
 7. Ensure that the battery saver mode, and all other optimizations are removed. The app should always run (This is the key for quick response). 
 	Tip: If you don not see a success message on the app when you receive an OTP: https://www.androidpolice.com/2020/05/30/how-to-prevent-apps-sleeping-in-the-background-on-android/
+8. Security tip: Make sure to change back your settings to disallow app installation from unknown sources.
 
 **Same steps for Android in screenshots:**
 1. ![image](https://user-images.githubusercontent.com/3753228/117923351-814c2880-b311-11eb-9008-fbf497271e08.png)
@@ -93,6 +94,9 @@ This is a fork over the neat https://github.com/pallupz/covid-vaccine-booking Th
 9. ![image](https://user-images.githubusercontent.com/3753228/117892718-dc145e80-b2d6-11eb-9efe-59258b6807ca.png)
 10. ![image](https://user-images.githubusercontent.com/3753228/117893063-56dd7980-b2d7-11eb-9671-e438d90d29d4.png)
 11. ![image](https://user-images.githubusercontent.com/3753228/117893191-9b691500-b2d7-11eb-9dfc-1984551f535c.png)
+12. ![image](https://user-images.githubusercontent.com/3753228/117925274-a1311b80-b314-11eb-9f77-ac6d83720de8.png)
+13. ![image](https://user-images.githubusercontent.com/3753228/117925321-b148fb00-b314-11eb-8b0a-7a4c55afae69.png)
+14. ![image](https://user-images.githubusercontent.com/3753228/117925366-c2920780-b314-11eb-8db5-e8f11325fa2e.png)
 
 **Steps to setup on iOS**
 1. Open the shortcuts app
