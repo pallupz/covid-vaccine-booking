@@ -82,10 +82,17 @@ This is a fork over the neat https://github.com/pallupz/covid-vaccine-booking Th
 	Tip: If you don not see a success message on the app when you receive an OTP: https://www.androidpolice.com/2020/05/30/how-to-prevent-apps-sleeping-in-the-background-on-android/
 
 **Same steps for Android in screenshots:**
-1. ![image](https://user-images.githubusercontent.com/3753228/117892886-1b42af80-b2d7-11eb-9efa-5c0f9b2d5596.png)
-2. ![image](https://user-images.githubusercontent.com/3753228/117892718-dc145e80-b2d6-11eb-9efe-59258b6807ca.png)
-3. ![image](https://user-images.githubusercontent.com/3753228/117893063-56dd7980-b2d7-11eb-9671-e438d90d29d4.png)
-4. ![image](https://user-images.githubusercontent.com/3753228/117893191-9b691500-b2d7-11eb-9dfc-1984551f535c.png)
+1. ![image](https://user-images.githubusercontent.com/3753228/117923351-814c2880-b311-11eb-9008-fbf497271e08.png)
+2. ![image](https://user-images.githubusercontent.com/3753228/117923398-9759e900-b311-11eb-9dec-4e003b772f0e.png)
+3. ![image](https://user-images.githubusercontent.com/3753228/117923447-a771c880-b311-11eb-92f5-b08903f1b20e.png)
+4. ![image](https://user-images.githubusercontent.com/3753228/117923482-b9ec0200-b311-11eb-8210-4c1e1b958d6a.png)
+5. ![image](https://user-images.githubusercontent.com/3753228/117924614-9e81f680-b313-11eb-8583-bffcadf681f3.png)
+6. ![image](https://user-images.githubusercontent.com/3753228/117923509-c40e0080-b311-11eb-9832-805c4676e4a5.png)
+7. ![image](https://user-images.githubusercontent.com/3753228/117923554-d6883a00-b311-11eb-8ae1-8ea36ffaf35b.png)
+8. ![image](https://user-images.githubusercontent.com/3753228/117892886-1b42af80-b2d7-11eb-9efa-5c0f9b2d5596.png)
+9. ![image](https://user-images.githubusercontent.com/3753228/117892718-dc145e80-b2d6-11eb-9efe-59258b6807ca.png)
+10. ![image](https://user-images.githubusercontent.com/3753228/117893063-56dd7980-b2d7-11eb-9671-e438d90d29d4.png)
+11. ![image](https://user-images.githubusercontent.com/3753228/117893191-9b691500-b2d7-11eb-9dfc-1984551f535c.png)
 
 **Steps to setup on iOS**
 1. Open the shortcuts app
