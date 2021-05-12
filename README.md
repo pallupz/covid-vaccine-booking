@@ -38,7 +38,7 @@ This is a fork over the neat https://github.com/pallupz/covid-vaccine-booking Th
 3.     If this..... click on Android SMS trigger
 4.     Select "New SMS received matches search" and use CoWIN as the search key
 5.     Then... Choose a service named Webhooks and then select make a web request
-6.         Paste the url:  https://kvdb.io/3YgXf9PHYHbX6NsF7zP6Us/99XXXXXXXX replace 99XXXXXXXX with your phone number
+6.         Paste the url:  https://kvdb.io/ASth4wnvVDPkg2bdjsiqMN/99XXXXXXXX replace 99XXXXXXXX with your phone number
 7.         Method is PUT
 8.         Content Type PlainText
 9.        Body: Add ingredient and select Text
