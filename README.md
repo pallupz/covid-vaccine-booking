@@ -38,29 +38,38 @@ This is a fork over the neat https://github.com/pallupz/covid-vaccine-booking Th
 
 **Steps to setup on Android**
 ##### Using the IFTTT Android app
+```
 1. Create an account in ifttt.com (A premium paid account is recommended for a quicker response)
-2.     Create a new applet
-3.     If this..... click on Android SMS trigger
-4.     Select "New SMS received matches search" and use CoWIN as the search key
-5.     Then... Choose a service named Webhooks and then select make a web request
-6.         Paste the url:  https://kvdb.io/ASth4wnvVDPkg2bdjsiqMN/99XXXXXXXX replace 99XXXXXXXX with your phone number
-7.         Method is PUT
-8.         Content Type PlainText
-9.        Body: Add ingredient and select Text
+2. Create a new applet
+3. If this..... click on Android SMS trigger
+4. Select "New SMS received matches search" and use CoWIN as the search key
+5. Then... Choose a service named Webhooks and then select make a web request
+6. Paste the url:  https://kvdb.io/ASth4wnvVDPkg2bdjsiqMN/99XXXXXXXX replace 99XXXXXXXX with your phone number
+7. Method is PUT
+8. Content Type PlainText
+9. Body: Add ingredient and select Text
 10. On your android phone, install ifttt app
-11.     Login 
-12.     Ensure that the battery saver mode, and all other optimizations are removed. The appshould always run (This is the key for quick response). 
-	Tip: If your IFTTT is not triggered when your SMS is received: https://www.androidpolice.com/2020/05/30/how-to-prevent-apps-sleeping-in-the-background-on-android/
-	Also a premium account is faster
+11. Login 
+12. Ensure that the battery saver mode, and all other optimizations are removed. The appshould always run (This is the key for quick response).
+``` 
+**Tip**: If your IFTTT is not triggered when your SMS is received: https://www.androidpolice.com/2020/05/30/how-to-prevent-apps-sleeping-in-the-background-on-android/
+Also a premium account is faster
+```
 13. Clone this repository
 14. Go to `src` directory and run the script  `cd src && python covid-vaccine-slot-booking.py`
+```
 15. On Mac I had to do the following too
-     - `brew install python-tk`
-     - `brew install SoX`
+```bash
+brew install python-tk
+```
+```bash
+brew install SoX
+```
+```
 18. Run the script, use the steps given below to enter your preferences
 19. Hopefully you get the slot
 20. Stay healthy and stay safe!
-
+```
 **Same steps for Android in screenshots:**
 ![image](https://user-images.githubusercontent.com/83712877/117159172-b0c4d780-addd-11eb-90f0-ab8438db4c8e.png)
 ![image](https://user-images.githubusercontent.com/83712877/117159291-c76b2e80-addd-11eb-991a-dc6de4bbb620.png)
@@ -282,7 +291,7 @@ pip install -r requirements.txt
 	```
 	Filter out centers with availability less than: 5
 	```
-8. Script will now start to monitor slots in these districts every 15 seconds.
+8. Script will now start to monitor slots in these districts every 15 seconds. `Note`: It will ask you monitor frequency `ProTip`: Do not select less than 5 seconds it will bombard cowin server and will get your request blocked, create issues in OTP generation for your number. #85
 	```
 	===================================================================================  
 	Centers available in Ernakulam from 01-05-2021 as of 2021-04-30 15:13:44: 0  
@@ -387,5 +396,3 @@ How to run on windows
    <img src="https://user-images.githubusercontent.com/83712877/117325821-b5a58c00-aeae-11eb-8156-2ea585a77834.png" alt="image" style="zoom: 33%;" />
 
    This number must match the number you enter while running the script.
-
-   
