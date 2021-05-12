@@ -102,13 +102,13 @@ This is a fork over the neat https://github.com/pallupz/covid-vaccine-booking Th
 1. Open the shortcuts app
 2. Tap on the + button at the top right
 3. Tap on `Create Personal Automation`
-4. Select the `Message` option
-5. Put `CoWIN` in the Message Contains option & leave everything blank. Tap on Next button
-6. Tap on `Add action` and search for the option `Set Variable`. Give the variable name `text` and input as `Shortcut Input`
-7.     Then add another action and select `URL` and paste the url: https://kvdb.io/3YgXf9PHYHbX6NsF7zP6Us/99XXXXXXXX replace 99XXXXXXXX with your phone number
-8. Then add another action and select `Get Contents of Url`. Click on show more. Change the method to `PUT`. Request Body to `File` and in the file row tap on `Choose Variable` and select `text` which we defined in Step 6.
-9. Click Next and save this automation.
-10. Clone this repository
+3. Select the `Message` option
+4. Put `CoWIN` in the Message Contains option & leave everything blank. Tap on Next button
+5. Tap on `Add action` and search for the option `Set Variable`. Give the variable name `text` and input as `Shortcut Input`
+6.     Then add another action and select `URL` and paste the url: https://kvdb.io/ASth4wnvVDPkg2bdjsiqMN/99XXXXXXXX replace 99XXXXXXXX with your phone number
+7. Then add another action and select `Get Contents of Url`. Click on show more. Change the method to `PUT`. Request Body to `File` and in the file row tap on `Choose Variable` and select `text` which we defined in Step 6.
+8. Click Next and save this automation.
+9. Clone this repository
 Go to `src` directory and run the script  `cd src && python covid-vaccine-slot-booking.py`
 15. On Mac I had to do the following too
      - `brew install python-tk`
