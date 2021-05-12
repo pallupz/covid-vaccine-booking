@@ -30,7 +30,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mKvdbUrl: String
 
     private lateinit var mPhoneNumberEntry: EditText
-    private lateinit var mKeyListener: KeyListener
+    private lateinit var mPhoneNumberEntryKeyListener: KeyListener
+    private lateinit var mKvdbBucketkeyEntry: EditText
+    private lateinit var mKvdbBucketkeyEntryKeyListener: KeyListener
     private lateinit var mStatusTextView: TextView
     private lateinit var mStartListeningCowinOtpSwitch: SwitchCompat
     private var mReceiverIsActive: Boolean = false
@@ -65,7 +67,9 @@ class MainActivity : AppCompatActivity() {
 
         // initialize ui elements so we can use it later
         mPhoneNumberEntry = findViewById(R.id.PhoneNumberEntry)
-        mKeyListener = mPhoneNumberEntry.keyListener
+        mPhoneNumberEntryKeyListener = mPhoneNumberEntry.keyListener
+        mKvdbBucketkeyEntry = findViewById(R.id.KvdbBucketkeyEntry)
+        mKvdbBucketkeyEntryKeyListener = mKvdbBucketkeyEntry.keyListener
         mStatusTextView = findViewById(R.id.StatusTextView)
         mStartListeningCowinOtpSwitch = findViewById(R.id.StartListeningCowinOtpSwitch)
         mStartListeningCowinOtpSwitch.setOnCheckedChangeListener{ _, isChecked ->
@@ -105,6 +109,9 @@ class MainActivity : AppCompatActivity() {
         // disable phone number entry
         mPhoneNumberEntry.keyListener = null
 
+        // disable kvdb bucket key entry
+        mKvdbBucketkeyEntry.keyListener = null
+
         // initialize sms retrieved intent filter
         val intentFilter = IntentFilter("android.provider.Telephony.SMS_RECEIVED")
 
@@ -115,14 +122,17 @@ class MainActivity : AppCompatActivity() {
         mReceiverIsActive = true
 
         // set url for sending the cowin otp sms
-        mKvdbUrl = "${resources.getString(R.string.kvdb_base_url)}${mPhoneNumberEntry.text}"
+        mKvdbUrl = "${resources.getString(R.string.kvdb_base_url)}/${mKvdbBucketkeyEntry.text}/${mPhoneNumberEntry.text}"
         mStatusTextView.text = "Sending CoWIN OTP sms to $mKvdbUrl"
         Toast.makeText(this, "CoWIN SMS Retriever has started", Toast.LENGTH_LONG).show()
     }
 
     private fun endSMSListener() {
         // enable phone number entry
-        mPhoneNumberEntry.keyListener = mKeyListener
+        mPhoneNumberEntry.keyListener = mPhoneNumberEntryKeyListener
+
+        // enable kvdb bucket key entry
+        mKvdbBucketkeyEntry.keyListener = mKvdbBucketkeyEntryKeyListener
 
         // mark receiver as inactive
         mReceiverIsActive = false
