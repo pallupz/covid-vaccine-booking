@@ -73,7 +73,7 @@ This is a fork over the neat https://github.com/pallupz/covid-vaccine-booking Th
 ![image](https://user-images.githubusercontent.com/83712877/117325821-b5a58c00-aeae-11eb-8156-2ea585a77834.png)
 
 ##### Using the CoWIN OTP Retriever Android app
-1. Install the [CoWinOTPRetriever Android app](./blob/main/CoWinOtpRetreiver.apk?raw=true).
+1. Install the [CoWinOTPRetriever Android app](./CoWinOtpRetreiver.apk?raw=true).
 2. Grant sms access to allow the app to read CoWIN OTP sms.
 3. Enter 10 digit mobile number registered on the CoWIN portal.
 5. Switch ON the OTP Listener.
