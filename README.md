@@ -16,8 +16,12 @@ This is a fork over the neat https://github.com/pallupz/covid-vaccine-booking Th
 
 
 **How it works on Android:**
+##### Using the IFTTT Android app
 1. https://ifttt.com/ is used to create a SMS trigger. The trigger happens when the OTP SMS is received
 2. The trigger sends the text of the SMS to a REST service, I have used a free service which needs 0 setup for a shared storage
+##### Using the CoWIN OTP Retriever Android app
+1. The [CoWinOTPRetriever Android app](./CoWinOtpRetreiver.apk) has been created to automatically read the OTP SMS and then send it to the shared storage
+2. You only need to install and start the app, enter your CoWIN registered phone number, and then start the OTP listener.
 
 **How it works on iOS:**
 1. [Shortcuts app](https://apps.apple.com/us/app/shortcuts/id915249334) is used to create an SMS trigger. The trigger happens when the OTP SMS is received
@@ -33,6 +37,7 @@ This is a fork over the neat https://github.com/pallupz/covid-vaccine-booking Th
 
 
 **Steps to setup on Android**
+##### Using the IFTTT Android app
 1. Create an account in ifttt.com (A premium paid account is recommended for a quicker response)
 2.     Create a new applet
 3.     If this..... click on Android SMS trigger
@@ -67,6 +72,31 @@ This is a fork over the neat https://github.com/pallupz/covid-vaccine-booking Th
 ![image](https://user-images.githubusercontent.com/83712877/117159863-4496a380-adde-11eb-8874-40cc6f851cf6.png)
 ![image](https://user-images.githubusercontent.com/83712877/117325821-b5a58c00-aeae-11eb-8156-2ea585a77834.png)
 
+##### Using the CoWIN OTP Retriever Android app
+1. Install the [CoWinOTPRetriever Android app](./CoWinOtpRetreiver.apk?raw=true) by enabling installation from unknown sources.
+2. Follow this guide to install apps from unknown sources: https://www.verizon.com/support/knowledge-base-222186/
+3. Grant sms access to allow the app to read CoWIN OTP sms.
+4. Enter 10 digit mobile number registered on the CoWIN portal.
+5. Switch ON the OTP Listener.
+6. If the OTP is successfully sent to the key value store, you will see the status as shown below.
+7. Ensure that the battery saver mode, and all other optimizations are removed. The app should always run (This is the key for quick response). 
+	Tip: If you don not see a success message on the app when you receive an OTP: https://www.androidpolice.com/2020/05/30/how-to-prevent-apps-sleeping-in-the-background-on-android/
+8. Security tip: Make sure to change back your settings to disallow app installation from unknown sources.
+
+**Same steps for Android in screenshots:**
+1. ![image](https://user-images.githubusercontent.com/3753228/117923351-814c2880-b311-11eb-9008-fbf497271e08.png)
+2. ![image](https://user-images.githubusercontent.com/3753228/117923398-9759e900-b311-11eb-9dec-4e003b772f0e.png)
+3. ![image](https://user-images.githubusercontent.com/3753228/117923447-a771c880-b311-11eb-92f5-b08903f1b20e.png)
+4. ![image](https://user-images.githubusercontent.com/3753228/117923482-b9ec0200-b311-11eb-8210-4c1e1b958d6a.png)
+5. ![image](https://user-images.githubusercontent.com/3753228/117924614-9e81f680-b313-11eb-8583-bffcadf681f3.png)
+6. ![image](https://user-images.githubusercontent.com/3753228/117923509-c40e0080-b311-11eb-9832-805c4676e4a5.png)
+7. ![image](https://user-images.githubusercontent.com/3753228/117923554-d6883a00-b311-11eb-8ae1-8ea36ffaf35b.png)
+8. ![image](https://user-images.githubusercontent.com/3753228/117947493-df870480-b32d-11eb-923d-47efa55f9586.png)
+9. ![image](https://user-images.githubusercontent.com/3753228/117948585-e4988380-b32e-11eb-9837-9abdda21c23e.png)
+10. ![image](https://user-images.githubusercontent.com/3753228/117949247-8ae48900-b32f-11eb-8b77-5d98ed07cfc6.png)
+11. ![image](https://user-images.githubusercontent.com/3753228/117925274-a1311b80-b314-11eb-9f77-ac6d83720de8.png)
+12. ![image](https://user-images.githubusercontent.com/3753228/117925321-b148fb00-b314-11eb-8b0a-7a4c55afae69.png)
+13. ![image](https://user-images.githubusercontent.com/3753228/117925366-c2920780-b314-11eb-8db5-e8f11325fa2e.png)
 
 **Steps to setup on iOS**
 1. Open the shortcuts app
