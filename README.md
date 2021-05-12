@@ -17,6 +17,7 @@
 
 ### Noteworthy Forks
 - https://github.com/bombardier-gif/covid-vaccine-booking : I haven't tried this personally but, it looks like a promising, bit more automated solution that would require some more setting up.
+- https://github.com/vishalv26/covid-vaccine-booking : Haven't personally tried this either. It uses portable python and simplifies running the code by avoiding the need for separate Python installation.
 
 ### Usage:
 
