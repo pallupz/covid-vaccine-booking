@@ -51,6 +51,11 @@ If you already have a bearer token, you can also use:
 python src\covid-vaccine-slot-booking.py --token=YOUR-TOKEN-HERE
 ```
 
+If you have it setup once and want to run it with OTP function if you own an iOS and macOS device:
+```shell
+python src\covid-vaccine-slot-booking.py --autofill YOUR-MOBILE-NUMBER-HERE
+```
+
 ### Python 3.7.3 Installation in Windows
 - Check if Python is already installed by opening command prompt and running ```python --version```.
 - If the above command returns ```Python <some-version-number>``` you're probably good - provided version number is above 3.6
@@ -60,3 +65,7 @@ python src\covid-vaccine-slot-booking.py --token=YOUR-TOKEN-HERE
 - Open command prompt and run ```python --version```. If everything went well it should say ```Python 3.7.3```
 - You're all set! 
 
+### Credits
+
+[@pallupz](https://github.com/pallupz) for this awesome effort
+[@nVidiaPriyadarshini](https://github.com/nVidiaPriyadarshini) for the initial PR on iOS OTP reader
