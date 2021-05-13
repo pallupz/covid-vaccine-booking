@@ -10,6 +10,7 @@ from utils import generate_token_OTP, check_and_book, beep, BENEFICIARIES_URL, W
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--token', help='Pass token directly')
+    parser.add_argument('--autofill', help='Pass mobile for autofill')
     args = parser.parse_args()
 
     filename = 'vaccine-booking-details.json'
@@ -25,6 +26,9 @@ def main():
 
         if args.token:
             token = args.token
+        elif args.autofill:
+            mobile = args.autofill
+            token = generate_token_OTP(mobile, base_request_header, True)
         else:
             mobile = input("Enter the registered mobile number: ")
             token = generate_token_OTP(mobile, base_request_header)
@@ -87,8 +91,13 @@ def main():
                 print('Token is INVALID.')
                 token_valid = False
 
-                tryOTP = input('Try for a new Token? (y/n Default y): ')
-                if tryOTP.lower() == 'y' or not tryOTP:
+                if args.autofill:
+                    token = generate_token_OTP(mobile, base_request_header, True)
+                    token_valid = True
+                    break
+
+                try_otp = input('Try for a new Token? (y/n Default y): ')
+                if try_otp.lower() == 'y' or not try_otp:
                     if not mobile:
                         mobile = input("Enter the registered mobile number: ")
                     token = generate_token_OTP(mobile, base_request_header)
