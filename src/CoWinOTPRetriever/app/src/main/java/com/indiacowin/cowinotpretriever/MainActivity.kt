@@ -20,7 +20,6 @@ import com.android.volley.RequestQueue
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 
-
 class MainActivity : AppCompatActivity() {
 
     companion object {
@@ -73,8 +72,6 @@ class MainActivity : AppCompatActivity() {
 
         // initialize shared preferences
         mSharedPrefrences = getPreferences(MODE_PRIVATE)
-        val savedPhoneNumber = mSharedPrefrences.getString(getString(R.string.phone_number_id), null)
-        val savedBucketKey = mSharedPrefrences.getString(getString(R.string.kvdb_bucket_key_id), getString(R.string.kvdb_default_key))
 
         // initialize simple request queue
         mRequestQueue = Volley.newRequestQueue(this)
@@ -82,13 +79,9 @@ class MainActivity : AppCompatActivity() {
         // initialize ui elements so we can use it later
         mPhoneNumberEntry = findViewById(R.id.PhoneNumberEntry)
         mPhoneNumberEntryKeyListener = mPhoneNumberEntry.keyListener
-        if(savedPhoneNumber != null) {
-            mPhoneNumberEntry.setText(savedPhoneNumber)
-        }
 
         mKvdbBucketkeyEntry = findViewById(R.id.KvdbBucketkeyEntry)
         mKvdbBucketkeyEntryKeyListener = mKvdbBucketkeyEntry.keyListener
-        mKvdbBucketkeyEntry.setText(savedBucketKey)
 
         mStatusTextView = findViewById(R.id.StatusTextView)
 
@@ -105,13 +98,22 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        val savedPhoneNumber = mSharedPrefrences.getString(getString(R.string.phone_number_id), null)
+        val savedBucketKey = mSharedPrefrences.getString(getString(R.string.kvdb_bucket_key_id), getString(R.string.kvdb_default_key))
+        if(savedPhoneNumber != null) {
+            mPhoneNumberEntry.setText(savedPhoneNumber)
+        }
+        mKvdbBucketkeyEntry.setText(savedBucketKey)
+    }
+
     override fun onPause() {
         super.onPause()
-
         val editor = mSharedPrefrences.edit()
         editor.putString(getString(R.string.phone_number_id), mPhoneNumberEntry.text.toString())
         editor.putString(getString(R.string.kvdb_bucket_key_id), mKvdbBucketkeyEntry.text.toString())
-        editor.commit()
+        editor.apply()
     }
 
     override fun onDestroy() {
