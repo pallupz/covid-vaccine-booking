@@ -438,7 +438,7 @@ def check_and_book(request_header, beneficiary_dtls, location_dtls, search_optio
                 try:
                     blank_inputimeout(timeout=1)
                     break
-                except:
+                except BlankTimeoutOccurred:
                     pass
             choice = '.'
 
