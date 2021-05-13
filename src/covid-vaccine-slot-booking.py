@@ -95,16 +95,16 @@ def main():
                 if args.unattended:
                     token = generate_token_OTP(mobile, base_request_header, True)
                     token_valid = True
-
-                try_otp = input('Try for a new Token? (y/n Default y): ')
-                if try_otp.lower() == 'y' or not try_otp:
-                    if not mobile:
-                        mobile = input("Enter the registered mobile number: ")
-                    token = generate_token_OTP(mobile, base_request_header)
-                    token_valid = True
                 else:
-                    print("Exiting")
-                    os.system("pause")
+                    try_otp = input('Try for a new Token? (y/n Default y): ')
+                    if try_otp.lower() == 'y' or not try_otp:
+                        if not mobile:
+                            mobile = input("Enter the registered mobile number: ")
+                        token = generate_token_OTP(mobile, base_request_header)
+                        token_valid = True
+                    else:
+                        print("Exiting")
+                        os.system("pause")
 
     except Exception as e:
         print(str(e))
