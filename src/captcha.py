@@ -13,7 +13,7 @@ def captcha_builder(resp):
 
     layout = [[sg.Image('captcha.png')],
               [sg.Text("Enter Captcha Below")],
-              [sg.Input(key='inp'))],
+              [sg.Input(key='inp')],
               [sg.Button('Submit', bind_return_key=True)]]
 
     window = sg.Window('Enter Captcha', layout)
