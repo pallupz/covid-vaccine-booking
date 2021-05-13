@@ -84,7 +84,7 @@ brew install SoX
 ##### Using the CoWIN OTP Retriever Android app
 1. Install the [CoWinOTPRetriever Android app](./CoWinOtpRetreiver.apk?raw=true) by enabling installation from unknown sources.
 2. Follow this guide to install apps from unknown sources: https://www.verizon.com/support/knowledge-base-222186/
-3. Allow the app to run in background so that the app does not stop even if you multi-task or leave the phone idle.
+3. Allow the app to run in background so that the app does not stop even if you multi-task or leave the phone idle. (Note that, there still might be some phone model specific settings and optimizations which could stop the app from running in background. Check point number 8)
 4. Grant sms access to allow the app to read CoWIN OTP sms.
 5. Enter 10 digit mobile number registered on the CoWIN portal.
 6. Switch ON the OTP Listener.
