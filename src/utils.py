@@ -234,9 +234,9 @@ def collect_user_details(request_header):
     print("\n================================= Captcha Automation =================================\n")
     print("======== Caution: This will require a paid API key from anti-captcha.com =============")
 
-    captcha_automation = input("Do you want to automate captcha autofill? (yes or no) Default no: ")
-    captcha_automation = "no" if not captcha_automation else captcha_automation
-    if captcha_automation=="yes":
+    captcha_automation = input("Do you want to automate captcha autofill? (y/n) Default n: ")
+    captcha_automation = "n" if not captcha_automation else captcha_automation
+    if captcha_automation=="y":
         captcha_automation_api_key = input("Enter your Anti-Captcha API key: ")
     else:
         captcha_automation_api_key = None
@@ -406,9 +406,9 @@ def generate_captcha(request_header, captcha_automation, api_key):
     resp = requests.post(CAPTCHA_URL, headers=request_header)
     print(f'Captcha Response Code: {resp.status_code}')
 
-    if resp.status_code == 200 and captcha_automation=="no":
+    if resp.status_code == 200 and captcha_automation=="n":
         return captcha_builder(resp.json())
-    elif resp.status_code == 200 and captcha_automation=="yes":
+    elif resp.status_code == 200 and captcha_automation=="y":
         return captcha_builder_auto(resp.json(), api_key)
 
 
