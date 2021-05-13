@@ -166,7 +166,7 @@ def collect_user_details(request_header):
     print("\n================================= Additional Info =================================\n")
 
     # Set filter condition
-    minimum_slots = input(f'Filter out centers with availability less than ? Minimum {len(beneficiary_dtls)} : ')
+    minimum_slots = input(f'Filter out centers with minimum availability of ? doses (Minimum {len(beneficiary_dtls)}) : ')
     if minimum_slots:
         minimum_slots = int(minimum_slots) if int(minimum_slots) >= len(beneficiary_dtls) else len(beneficiary_dtls)
     else:
