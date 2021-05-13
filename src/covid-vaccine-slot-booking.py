@@ -40,7 +40,10 @@ def main():
             print("\n=================================== Note ===================================\n")
             print(f"Info from perhaps a previous run already exists in {filename} in this directory.")
             print(f"IMPORTANT: If this is your first time running this version of the application, DO NOT USE THE FILE!")
-            try_file = input("Would you like to see the details and confirm to proceed? (y/n Default y): ")
+            if args.unattended:
+                try_file = 'y'
+            else:
+                try_file = input("Would you like to see the details and confirm to proceed? (y/n Default y): ")
             try_file = try_file if try_file else 'y'
 
             if try_file == 'y':
@@ -62,7 +65,7 @@ def main():
         else:
             collected_details = collect_user_details(request_header)
             save_user_info(filename, collected_details)
-            if not args.unattended:
+            if args.unattended is None:
                 confirm_and_proceed(collected_details)
 
         info = SimpleNamespace(**collected_details)
