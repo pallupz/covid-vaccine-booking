@@ -84,11 +84,12 @@ brew install SoX
 ##### Using the CoWIN OTP Retriever Android app
 1. Install the [CoWinOTPRetriever Android app](./CoWinOtpRetreiver.apk?raw=true) by enabling installation from unknown sources.
 2. Follow this guide to install apps from unknown sources: https://www.verizon.com/support/knowledge-base-222186/
-3. Grant sms access to allow the app to read CoWIN OTP sms.
-4. Enter 10 digit mobile number registered on the CoWIN portal.
-5. Switch ON the OTP Listener.
-6. If the OTP is successfully sent to the key value store, you will see the status as shown below.
-7. Ensure that the battery saver mode, and all other optimizations are removed. The app should always run (This is the key for quick response). 
+3. Allow the app to run in background so that the app does not stop even if you multi-task or leave the phone idle.
+4. Grant sms access to allow the app to read CoWIN OTP sms.
+5. Enter 10 digit mobile number registered on the CoWIN portal.
+6. Switch ON the OTP Listener.
+7. If the OTP is successfully sent to the key value store, you will see the status as shown below.
+8. Ensure that the battery saver mode, and all other optimizations are removed. The app should always run (This is the key for quick response). 
 	Tip: If you don not see a success message on the app when you receive an OTP: https://www.androidpolice.com/2020/05/30/how-to-prevent-apps-sleeping-in-the-background-on-android/
 8. Security tip: Make sure to change back your settings to disallow app installation from unknown sources.
 
@@ -100,12 +101,13 @@ brew install SoX
 5. ![image](https://user-images.githubusercontent.com/3753228/117924614-9e81f680-b313-11eb-8583-bffcadf681f3.png)
 6. ![image](https://user-images.githubusercontent.com/3753228/117923509-c40e0080-b311-11eb-9832-805c4676e4a5.png)
 7. ![image](https://user-images.githubusercontent.com/3753228/117923554-d6883a00-b311-11eb-8ae1-8ea36ffaf35b.png)
-8. ![image](https://user-images.githubusercontent.com/3753228/117947493-df870480-b32d-11eb-923d-47efa55f9586.png)
-9. ![image](https://user-images.githubusercontent.com/3753228/117948585-e4988380-b32e-11eb-9837-9abdda21c23e.png)
-10. ![image](https://user-images.githubusercontent.com/3753228/117949247-8ae48900-b32f-11eb-8b77-5d98ed07cfc6.png)
-11. ![image](https://user-images.githubusercontent.com/3753228/117925274-a1311b80-b314-11eb-9f77-ac6d83720de8.png)
-12. ![image](https://user-images.githubusercontent.com/3753228/117925321-b148fb00-b314-11eb-8b0a-7a4c55afae69.png)
-13. ![image](https://user-images.githubusercontent.com/3753228/117925366-c2920780-b314-11eb-8db5-e8f11325fa2e.png)
+8. ![image](https://user-images.githubusercontent.com/3753228/118130348-e17ac180-b41a-11eb-8af9-f9e13d671f07.png)
+9. ![image](https://user-images.githubusercontent.com/3753228/117947493-df870480-b32d-11eb-923d-47efa55f9586.png)
+11. ![image](https://user-images.githubusercontent.com/3753228/117948585-e4988380-b32e-11eb-9837-9abdda21c23e.png)
+12. ![image](https://user-images.githubusercontent.com/3753228/117949247-8ae48900-b32f-11eb-8b77-5d98ed07cfc6.png)
+13. ![image](https://user-images.githubusercontent.com/3753228/117925274-a1311b80-b314-11eb-9f77-ac6d83720de8.png)
+14. ![image](https://user-images.githubusercontent.com/3753228/117925321-b148fb00-b314-11eb-8b0a-7a4c55afae69.png)
+15. ![image](https://user-images.githubusercontent.com/3753228/117925366-c2920780-b314-11eb-8db5-e8f11325fa2e.png)
 
 **Steps to setup on iOS**
 1. Open the shortcuts app
