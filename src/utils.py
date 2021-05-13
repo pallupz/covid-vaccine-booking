@@ -234,8 +234,8 @@ def collect_user_details(request_header):
     print("\n================================= Captcha Automation =================================\n")
     print("======== Caution: This will require a paid API key from anti-captcha.com =============")
 
-    captcha_automation = input("Do you want to automate captcha autofill? (yes or no) Default no: ")
-    captcha_automation = "no" if not captcha_automation else captcha_automation
+    captcha_automation = input("Do you want to automate captcha autofill? (y/n) Default n: ")
+    captcha_automation = "n" if not captcha_automation else captcha_automation
     if captcha_automation=="yes":
         captcha_automation_api_key = input("Enter your Anti-Captcha API key: ")
     else:
