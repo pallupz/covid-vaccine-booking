@@ -265,7 +265,7 @@ def filter_centers_by_age(resp, min_age_booking):
         center_age_filter = 18
 
     if "centers" in resp:
-        for center in resp["centers"]: 
+        for center in list(resp["centers"]): 
             if center["sessions"][0]['min_age_limit'] != center_age_filter:
                 resp["centers"].remove(center)
 
