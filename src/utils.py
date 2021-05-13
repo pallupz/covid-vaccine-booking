@@ -3,7 +3,7 @@ from hashlib import sha256
 from inputimeout import inputimeout, TimeoutOccurred
 import tabulate, copy, time, datetime, requests, sys, os, random
 from captcha import captcha_builder
-from blank_inputimeout import blank_inputimeout, TimeoutOccurred
+from blank_inputimeout import blank_inputimeout, BlankTimeoutOccurred
 
 BOOKING_URL = "https://cdn-api.co-vin.in/api/v2/appointment/schedule"
 BENEFICIARIES_URL = "https://cdn-api.co-vin.in/api/v2/appointment/beneficiaries"

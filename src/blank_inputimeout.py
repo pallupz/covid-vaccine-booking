@@ -9,7 +9,7 @@ LF = '\n'
 CRLF = CR + LF
 
 
-class TimeoutOccurred(Exception):
+class BlankTimeoutOccurred(Exception):
     pass
 
 def posix_inputimeout(timeout=DEFAULT_TIMEOUT):
@@ -22,7 +22,7 @@ def posix_inputimeout(timeout=DEFAULT_TIMEOUT):
         return key.fileobj.readline().rstrip(LF)
     else:
         termios.tcflush(sys.stdin, termios.TCIFLUSH)
-        raise TimeoutOccurred
+        raise BlankTimeoutOccurred
 
 
 def win_inputimeout(prompt='', timeout=DEFAULT_TIMEOUT):
@@ -44,7 +44,7 @@ def win_inputimeout(prompt='', timeout=DEFAULT_TIMEOUT):
                 line += c
         time.sleep(INTERVAL)
 
-    raise TimeoutOccurred
+    raise BlankTimeoutOccurred
 
 
 try:
