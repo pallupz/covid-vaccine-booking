@@ -627,7 +627,7 @@ def get_min_age(beneficiary_dtls):
     return min_age
 
 
-def generate_token_OTP(mobile, request_header, autofill = False):
+def generate_token_OTP(mobile, request_header, unattended = False):
     """
     This function generate OTP and returns a new token
     """
@@ -649,7 +649,7 @@ def generate_token_OTP(mobile, request_header, autofill = False):
                 print(f"Successfully requested OTP for mobile number {mobile} at {datetime.datetime.today()}..")
                 txnId = txnId.json()['txnId']
 
-                if autofill:
+                if unattended:
                     OTP = readOTPfromMacOS()
                 else:
                     OTP = input("Enter OTP (If this takes more than 2 minutes, press Enter to retry): ")
