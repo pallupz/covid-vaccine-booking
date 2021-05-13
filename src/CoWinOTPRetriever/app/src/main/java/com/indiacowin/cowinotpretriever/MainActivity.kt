@@ -50,6 +50,9 @@ class MainActivity : AppCompatActivity() {
         // get read sms permission
         getReadSmsPermission()
 
+        // get battery optimization
+        createPromptForDisablingBatteryOptimization()
+
         // initialize CoWIN sms broadcast receiver
         mCoWinSmsBroadcastReceiver = CoWinSmsBroadcastReceiver()
 
