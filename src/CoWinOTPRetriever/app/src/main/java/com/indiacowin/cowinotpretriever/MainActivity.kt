@@ -1,12 +1,14 @@
 package com.indiacowin.cowinotpretriever
 
 import android.Manifest
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.annotation.SuppressLint
+import android.content.*
 import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.PowerManager
+import android.provider.Settings
 import android.text.method.KeyListener
 import android.widget.EditText
 import android.widget.TextView
@@ -18,6 +20,7 @@ import com.android.volley.RequestQueue
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 
+
 class MainActivity : AppCompatActivity() {
 
     companion object {
@@ -28,6 +31,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mMainActivityReceiver: BroadcastReceiver
     private lateinit var mRequestQueue: RequestQueue
     private lateinit var mKvdbUrl: String
+    private var mReceiverIsActive: Boolean = false
 
     private lateinit var mPhoneNumberEntry: EditText
     private lateinit var mPhoneNumberEntryKeyListener: KeyListener
@@ -35,7 +39,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mKvdbBucketkeyEntryKeyListener: KeyListener
     private lateinit var mStatusTextView: TextView
     private lateinit var mStartListeningCowinOtpSwitch: SwitchCompat
-    private var mReceiverIsActive: Boolean = false
+
+    private lateinit var mSharedPrefrences : SharedPreferences
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +49,9 @@ class MainActivity : AppCompatActivity() {
 
         // get read sms permission
         getReadSmsPermission()
+
+        // get battery optimization
+        createPromptForDisablingBatteryOptimization()
 
         // initialize CoWIN sms broadcast receiver
         mCoWinSmsBroadcastReceiver = CoWinSmsBroadcastReceiver()
@@ -62,15 +71,27 @@ class MainActivity : AppCompatActivity() {
         }
         registerReceiver(mMainActivityReceiver, intentFilter)
 
+        // initialize shared preferences
+        mSharedPrefrences = getPreferences(MODE_PRIVATE)
+        val savedPhoneNumber = mSharedPrefrences.getString(getString(R.string.phone_number_id), null)
+        val savedBucketKey = mSharedPrefrences.getString(getString(R.string.kvdb_bucket_key_id), getString(R.string.kvdb_default_key))
+
         // initialize simple request queue
         mRequestQueue = Volley.newRequestQueue(this)
 
         // initialize ui elements so we can use it later
         mPhoneNumberEntry = findViewById(R.id.PhoneNumberEntry)
         mPhoneNumberEntryKeyListener = mPhoneNumberEntry.keyListener
+        if(savedPhoneNumber != null) {
+            mPhoneNumberEntry.setText(savedPhoneNumber)
+        }
+
         mKvdbBucketkeyEntry = findViewById(R.id.KvdbBucketkeyEntry)
         mKvdbBucketkeyEntryKeyListener = mKvdbBucketkeyEntry.keyListener
+        mKvdbBucketkeyEntry.setText(savedBucketKey)
+
         mStatusTextView = findViewById(R.id.StatusTextView)
+
         mStartListeningCowinOtpSwitch = findViewById(R.id.StartListeningCowinOtpSwitch)
         mStartListeningCowinOtpSwitch.setOnCheckedChangeListener{ _, isChecked ->
             if(isChecked)
@@ -82,6 +103,15 @@ class MainActivity : AppCompatActivity() {
                 endSMSListener()
             }
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        val editor = mSharedPrefrences.edit()
+        editor.putString(getString(R.string.phone_number_id), mPhoneNumberEntry.text.toString())
+        editor.putString(getString(R.string.kvdb_bucket_key_id), mKvdbBucketkeyEntry.text.toString())
+        editor.commit()
     }
 
     override fun onDestroy() {
@@ -102,6 +132,25 @@ class MainActivity : AppCompatActivity() {
         {
             // request permission for receiving sms
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECEIVE_SMS), REQUEST_RECEIVE_SMS)
+        }
+    }
+
+    @SuppressLint("BatteryLife")
+    private fun createPromptForDisablingBatteryOptimization()
+    {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val intent = Intent()
+
+            // get power manager
+            val pm = getSystemService(POWER_SERVICE) as PowerManager
+
+            // check if the system is ignoring battery optimization
+            if (!pm.isIgnoringBatteryOptimizations(packageName))
+            {
+                intent.action = Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
+                intent.data = Uri.parse("package:$packageName")
+                startActivity(intent)
+            }
         }
     }
 
