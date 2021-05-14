@@ -16,15 +16,17 @@ def test_captcha_builder():
 
     layout = [[sg.Image('captcha.gif')],
           [sg.Text("Enter Captcha Below")],
-          [sg.Input()],
+          [sg.Input(key='input')],
           [sg.Button('Submit', bind_return_key=True)]]
 
     print("window opening ...")
-    window = sg.Window('Enter Captcha', layout)
+    window = sg.Window('Enter Captcha', layout, finalize=True)
+    window.TKroot.focus_force()         # focus on window
+    window.Element('input').SetFocus()  # focus on field
     event, values = window.read()
     window.close()
 
-    captcha_value = values[1]
+    captcha_value = values['input']
     expected_captcha_value = "SNNvu"
     if captcha_value == expected_captcha_value:
         print("Yeah !!! you have entered captcha. This means you are all set to render required captcha at the time of booking ...\n")
