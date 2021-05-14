@@ -21,5 +21,5 @@ def captcha_builder(resp):
     window.Element('inp').SetFocus()    # focus on field
     event, values = window.read()
     window.close()
-    return values[1]
+    return values['inp']
 
