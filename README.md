@@ -1,33 +1,59 @@
-**Note:** 
-1. If you are facing issues please refer to troubleshooting section at the end of this doc
-2. The captcha is a bit buggy and I had to make 5-6 tries before I was able to book
-3. If you are still facing errors and want to run this script on windows using exe, please see the section below "How to run on windows".
+<h1 align="center"> Bombardier Fully Automated COVID-19 Vaccination Slot Booking Script</h1>
 
-**Update**: Instructions for iOS have also been added. See the **Steps to setup on iOS** for details. Please note that its not possible to automate the OTP auto read on iOS completely, however its possible to make it a 1 tap process, which is far better than seeing and entering the OTP manually.
+<div align="center">
 
-# Bombardier fully automated COVID-19 Vaccination Slot Booking Script
-This is a fork over the neat https://github.com/pallupz/covid-vaccine-booking Thanks for creating a playground for me to build on.
+<i>This is a fork over the neat [covid-vaccine-booking](https://github.com/pallupz/covid-vaccine-booking). Thanks for creating a playground for me to build on :metal:</i>
 
-**What this repository does:**
+<i>Loved the project? Please consider [donating](http://buymeacoff.ee/bombardier) to help it improve!</i>
+
+</div>
+
+### Contents
+  - [Before you start](#before-you-start)
+  - [What this repository does](#what-this-repository-does)
+  - [Setup Guide: Android](#setup-guide-for-android)
+    - [Option 1: IFTTT app](#option-1-ifttt)
+      - [Screenshots](#ifttt-steps-in-screenshots)
+    - [Option 2: CoWIN OTP Retriever app](#option-2-cowin-otp-retriever) 
+      - [Screenshots](#cowin-otp-retriever-steps-in-screenshots)
+  - [Setup Guide: iOS](#setup-guide-for-ios)
+    - [Using Shortcuts app](#using-shortcuts-app)
+      - [Screenshots](#shortcuts-steps-in-screenshots)   
+  - [COVID-19 Vaccination Slot Booking Script](#covid-19-vaccination-slot-booking-script)
+    - [Important](#important)
+    - [Usage](#usage)
+    - [Third-Party Package Dependency](#third-party-package-dependency)
+    - [Steps](#steps)
+    - [How to run on windows](#how-to-run-on-windows)
+  - [Troubleshooting common problems](#troubleshooting-common-problems)
+
+
+## Before you start
+1. If you face any issues please refer to the [troubleshooting section](#troubleshooting-common-problems) at the end of this doc
+2. The captcha is a bit buggy and you may be required to make 5-6 tries before you are able to book
+3. If you are still facing errors and want to run this script on windows using exe, please see the section below [How to run on windows](#how-to-run-on-windows)
+4. Instructions for iOS have also been added. See the [Setup Guide for iOS](#setup-guide-for-ios) for details. Please note that its not possible to automate the OTP auto read on iOS completely, however its possible to make it a 1 tap process, which is far better than seeing and entering the OTP manually.
+
+
+## What this repository does
 1. Automates OTP read from the SMS after the token expires.
 2. Randomly chooses one of the available slots instead of waiting for input from the user.
 3. Reduces the polling wait to optimize on the polling frequency (hence the name bombardier)
 ![image](https://user-images.githubusercontent.com/83712877/117467267-290fd200-af71-11eb-8461-d6e253c183d7.png)
 
-
-**How it works on Android:**
-##### Using the IFTTT Android app
+#### How it works via IFTTT app on Android
 1. https://ifttt.com/ is used to create a SMS trigger. The trigger happens when the OTP SMS is received
 2. The trigger sends the text of the SMS to a REST service, I have used a free service which needs 0 setup for a shared storage
-##### Using the CoWIN OTP Retriever Android app
+
+#### How it works via CoWIN OTP Retriever app on Android
 1. The [CoWinOTPRetriever Android app](./CoWinOtpRetreiver.apk) has been created to automatically read the OTP SMS and then send it to the shared storage
 2. You only need to install and start the app, enter your CoWIN registered phone number, and then start the OTP listener.
 
-**How it works on iOS:**
+#### How it works via Shortcuts app on iOS
 1. [Shortcuts app](https://apps.apple.com/us/app/shortcuts/id915249334) is used to create an SMS trigger. The trigger happens when the OTP SMS is received
 2. The trigger sends the text of the SMS to a REST service, I have used a free service which needs 0 setup for a shared storage
 
-**In Parallel**
+#### In Parallel
 1. The script runs continuously to poll (same logic as the original repository)
 2. Whenever the OTP expires, an OTP is requested
 3. When the OTP SMS is received on the **Android**, phone, the above logic triggers to store the OTP SMS in the shared storage. On **iOS**, when the OTP SMS is received, the above logic triggers a notification which the user has to long press and confirm after which the OTP is stored in shared storage
@@ -35,10 +61,10 @@ This is a fork over the neat https://github.com/pallupz/covid-vaccine-booking Th
 5. Once the OTP is received, the polling resumes
 6. If a free slot is found, rather than waiting for an input, it randomly chooses a slot and attempts to book
 
+## Setup Guide for Android
 
-**Steps to setup on Android**
-##### Using the IFTTT Android app
-```
+### Option 1: IFTTT
+
 1. Create an account in ifttt.com (A premium paid account is recommended for a quicker response)
 2. Create a new applet
 3. If this..... click on Android SMS trigger
@@ -51,26 +77,21 @@ This is a fork over the neat https://github.com/pallupz/covid-vaccine-booking Th
 10. On your android phone, install ifttt app
 11. Login 
 12. Ensure that the battery saver mode, and all other optimizations are removed. The appshould always run (This is the key for quick response).
-``` 
-**Tip**: If your IFTTT is not triggered when your SMS is received: https://www.androidpolice.com/2020/05/30/how-to-prevent-apps-sleeping-in-the-background-on-android/
-Also a premium account is faster
-```
+    1. **Tip**: If your IFTTT is not triggered when your SMS is received: https://www.androidpolice.com/2020/05/30/how-to-prevent-apps-sleeping-in-the-background-on-android/
+       Also a premium account is faster
 13. Clone this repository
 14. Go to `src` directory and run the script  `cd src && python covid-vaccine-slot-booking.py`
-```
 15. On Mac I had to do the following too
-```bash
-brew install python-tk
-```
-```bash
-brew install SoX
-```
-```
+    ```bash
+    brew install python-tk
+    brew install SoX
+    ```
 18. Run the script, use the steps given below to enter your preferences
 19. Hopefully you get the slot
 20. Stay healthy and stay safe!
-```
-**Same steps for Android in screenshots:**
+
+
+#### IFTTT steps in screenshots:
 ![image](https://user-images.githubusercontent.com/83712877/117159172-b0c4d780-addd-11eb-90f0-ab8438db4c8e.png)
 ![image](https://user-images.githubusercontent.com/83712877/117159291-c76b2e80-addd-11eb-991a-dc6de4bbb620.png)
 ![image](https://user-images.githubusercontent.com/83712877/117159444-e669c080-addd-11eb-9b4c-448335b1c781.png)
@@ -81,7 +102,7 @@ brew install SoX
 ![image](https://user-images.githubusercontent.com/83712877/117159863-4496a380-adde-11eb-8874-40cc6f851cf6.png)
 ![image](https://user-images.githubusercontent.com/83712877/117325821-b5a58c00-aeae-11eb-8156-2ea585a77834.png)
 
-##### Using the CoWIN OTP Retriever Android app
+### Option 2: CoWIN OTP Retriever
 1. Install the [CoWinOTPRetriever Android app](./CoWinOtpRetreiver.apk?raw=true) by enabling installation from unknown sources.
 2. Follow this guide to install apps from unknown sources: https://www.verizon.com/support/knowledge-base-222186/
 3. Allow the app to run in background so that the app does not stop even if you multi-task or leave the phone idle. (Note that, there still might be some phone model specific settings and optimizations which could stop the app from running in background. Check point number 8)
@@ -93,7 +114,7 @@ brew install SoX
 	Tip: If you don not see a success message on the app when you receive an OTP: https://www.androidpolice.com/2020/05/30/how-to-prevent-apps-sleeping-in-the-background-on-android/
 8. Security tip: Make sure to change back your settings to disallow app installation from unknown sources.
 
-**Same steps for Android in screenshots:**
+#### CoWIN OTP Retriever steps in screenshots
 1. ![image](https://user-images.githubusercontent.com/3753228/117923351-814c2880-b311-11eb-9008-fbf497271e08.png)
 2. ![image](https://user-images.githubusercontent.com/3753228/117923398-9759e900-b311-11eb-9dec-4e003b772f0e.png)
 3. ![image](https://user-images.githubusercontent.com/3753228/117923447-a771c880-b311-11eb-92f5-b08903f1b20e.png)
@@ -109,7 +130,9 @@ brew install SoX
 14. ![image](https://user-images.githubusercontent.com/3753228/117925321-b148fb00-b314-11eb-8b0a-7a4c55afae69.png)
 15. ![image](https://user-images.githubusercontent.com/3753228/117925366-c2920780-b314-11eb-8db5-e8f11325fa2e.png)
 
-**Steps to setup on iOS**
+## Setup Guide for iOS
+
+### Using Shortcuts app
 1. Open the shortcuts app
 2. Tap on the + button at the top right
 3. Tap on `Create Personal Automation`
@@ -132,7 +155,7 @@ Go to `src` directory and run the script  `cd src && python covid-vaccine-slot-b
 23. Hopefully you get the slot
 24. Stay healthy and stay safe!
 
-**Same steps for iOS in screenshots:**
+#### Shortcuts steps in screenshots
 
 ![image1](https://user-images.githubusercontent.com/83958525/117808231-40550500-b27a-11eb-9f58-17c3c9f52dc5.PNG)
 ![image2](https://user-images.githubusercontent.com/83958525/117808359-6a0e2c00-b27a-11eb-975b-cd3cbfda68b0.PNG)
@@ -152,7 +175,7 @@ Go to `src` directory and run the script  `cd src && python covid-vaccine-slot-b
 I used this command to run the script as it was giving me Syntax error: `python3 src/covid-vaccine-slot-booking.py`
 Also I used this command to install the dependencies  `python3 -m pip install -r requirements.txt`
 
-# COVID-19 Vaccination Slot Booking Script
+## COVID-19 Vaccination Slot Booking Script
 
 This very basic CLI based script can be used to automate covid vaccination slot booking on Co-WIN Platform. 
 
