@@ -783,12 +783,7 @@ def get_min_age(beneficiary_dtls):
     min_age = min(age_list)
     return min_age
 
-
-def generate_token_OTP(mobile, request_header):
-    """
-    This function generate OTP and returns a new token or None when not able to get token
-    """
-    storage_url = "https://kvdb.io/ASth4wnvVDPkg2bdjsiqMN/" + mobile
+def clear_bucket_and_send_OTP(storage_url,mobile, request_header):
     print("clearing OTP bucket: " + storage_url)
     response = requests.put(storage_url, data={})
     data = {
@@ -808,7 +803,20 @@ def generate_token_OTP(mobile, request_header):
         print("Unable to Create OTP")
         print(txnId.text)
         time.sleep(5)  # Saftey net againt rate limit
-        return None
+        txnId = None
+
+    return txnId
+
+def generate_token_OTP(mobile, request_header):
+    """
+    This function generate OTP and returns a new token or None when not able to get token
+    """
+    storage_url = "https://kvdb.io/ASth4wnvVDPkg2bdjsiqMN/" + mobile
+
+    txnId = clear_bucket_and_send_OTP(storage_url,mobile, request_header)
+
+    if txnId is None:
+        return txnId
 
     time.sleep(10)
     t_end = time.time() + 60 * 3  # try to read OTP for atmost 3 minutes
