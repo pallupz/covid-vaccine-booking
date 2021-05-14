@@ -14,6 +14,7 @@
     - All donations, as they materialize, will be split equally between COVID Kerala CMDRF and a centre for cerebral palsied children with multiple handicaps.
 - Discord ID for DMs: pallupz#5726
 - And finally, I know code quality isn't great. Suggestions are welcome.
+- Added a telegram client for listening to notification from BOT and then running the script.
 
 ### Noteworthy Forks
 - https://github.com/bombardier-gif/covid-vaccine-booking : I haven't tried this personally but, it looks like a promising, bit more automated solution that would require some more setting up.
@@ -28,27 +29,32 @@ Download this code as zip, and extract it to some folder like ```C:\temp\covid-v
 Open command prompt and run ```cd C:\temp\covid-vaccine-booking```
 
 Install all the dependencies with the below. This is a one-time activity (for anyone not familiar with Python)
-```
+```shell
 pip install -r requirements.txt
 ```
 
 If you're on Linux, install the beep package before running the Python script. To install, run:
-```
+```shell
 sudo apt-get install beep
 ```
 If you're on MacOS, install the SoX ([Sound eXchange](http://sox.sourceforge.net/ "Sound eXchange")) before running the Python script. To install, run:
-```
+```shell
 brew install sox
 ```
 
 Finally, run the script file as shown below:
-```
+```shell
 python src\covid-vaccine-slot-booking.py
 ```
 
 If you already have a bearer token, you can also use:
-```
+```shell
 python src\covid-vaccine-slot-booking.py --token=YOUR-TOKEN-HERE
+```
+
+If you want to run the telegram client:
+```shell
+python src\telegram-bot-client.py
 ```
 
 ### Python 3.7.3 Installation in Windows

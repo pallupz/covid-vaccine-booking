@@ -1,8 +1,16 @@
+import copy
+import datetime
 import json
-from hashlib import sha256
+import random
+import sys
+import time
 from collections import Counter
+from hashlib import sha256
+
+import requests
+import tabulate
 from inputimeout import inputimeout, TimeoutOccurred
-import tabulate, copy, time, datetime, requests, sys, os, random
+
 from captcha import captcha_builder
 
 BOOKING_URL = "https://cdn-api.co-vin.in/api/v2/appointment/schedule"
