@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import copy
+import time
 from types import SimpleNamespace
 import requests, sys, argparse, os, datetime
 from utils import generate_token_OTP, generate_token_OTP_manual, check_and_book, beep, BENEFICIARIES_URL, WARNING_BEEP_DURATION, \
@@ -12,7 +13,7 @@ def main():
     parser.add_argument('--token', help='Pass token directly')
     args = parser.parse_args()
 
-    filename = 'vaccine-booking-details.json'
+    filename = 'vaccine-booking-details-'
     mobile = None
 
     print('Running Script')
@@ -28,11 +29,17 @@ def main():
             token = args.token
         else:
             mobile = input("Enter the registered mobile number: ")
+            filename = filename + mobile + ".json"
             otp_pref = input("\nDo you want to enter OTP manually, instead of auto-read? \nRemember selecting n would require some setup described in README (y/n Default n): ")
             otp_pref = otp_pref if otp_pref else "n"
             while token is None:
                 if otp_pref=="n":
-                    token = generate_token_OTP(mobile, base_request_header)
+                    try:
+                        token = generate_token_OTP(mobile, base_request_header)
+                    except Exception as e:
+                        print(str(e))
+                        print('OTP Retrying in 5 seconds')
+                        time.sleep(5)
                 elif otp_pref=="y":
                     token = generate_token_OTP_manual(mobile, base_request_header)
 
@@ -75,35 +82,45 @@ def main():
             request_header["Authorization"] = f"Bearer {token}"
 
             # call function to check and book slots
-            token_valid = check_and_book(request_header, info.beneficiary_dtls, info.location_dtls, info.search_option,
-                                         min_slots=info.minimum_slots,
-                                         ref_freq=info.refresh_freq,
-                                         auto_book=info.auto_book,
-                                         start_date=info.start_date,
-                                         vaccine_type=info.vaccine_type,
-                                         fee_type=info.fee_type,
-                                         mobile=mobile,
-                                         captcha_automation=info.captcha_automation,
-                                         captcha_automation_api_key=info.captcha_automation_api_key,)
+            try:
+                token_valid = check_and_book(request_header, info.beneficiary_dtls, info.location_dtls, info.search_option,
+                                             min_slots=info.minimum_slots,
+                                             ref_freq=info.refresh_freq,
+                                             auto_book=info.auto_book,
+                                             start_date=info.start_date,
+                                             vaccine_type=info.vaccine_type,
+                                             fee_type=info.fee_type,
+                                             mobile=mobile,
+                                             captcha_automation=info.captcha_automation,
+                                             captcha_automation_api_key=info.captcha_automation_api_key,)
 
-            # check if token is still valid
-            beneficiaries_list = requests.get(BENEFICIARIES_URL, headers=request_header)
-            if beneficiaries_list.status_code == 200:
-                token_valid = True
+                # check if token is still valid
+                beneficiaries_list = requests.get(BENEFICIARIES_URL, headers=request_header)
+                if beneficiaries_list.status_code == 200:
+                    token_valid = True
 
-            else:
-                # if token invalid, regenerate OTP and new token
-               # beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
-                print('Token is INVALID.')
-                token_valid = False
-                token = None
+                else:
+                    # if token invalid, regenerate OTP and new token
+                   # beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
+                    print('Token is INVALID.')
+                    token_valid = False
+                    token = None
 
-                while token is None:
-                    if otp_pref=="n":
-                        token = generate_token_OTP(mobile, base_request_header)
-                    elif otp_pref=="y":
-                        token = generate_token_OTP_manual(mobile, base_request_header)
-                token_valid = True
+                    while token is None:
+                        if otp_pref=="n":
+                            try:
+                                token = generate_token_OTP(mobile, base_request_header)
+                            except Exception as e:
+                                print(str(e))
+                                print('OTP Retrying in 5 seconds')
+                                time.sleep(5)
+                        elif otp_pref=="y":
+                            token = generate_token_OTP_manual(mobile, base_request_header)
+                    token_valid = True
+            except Exception as e:
+                print(str(e))
+                print('Retryin in 5 seconds')
+                time.sleep(5)
 
     except Exception as e:
         print(str(e))
