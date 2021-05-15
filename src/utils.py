@@ -257,6 +257,7 @@ def collect_user_details(request_header):
 
     return collected_details
 
+
 def filter_centers_by_age(resp, min_age_booking):
 
     if min_age_booking >= 45:
@@ -265,11 +266,15 @@ def filter_centers_by_age(resp, min_age_booking):
         center_age_filter = 18
 
     if "centers" in resp:
-        for center in list(resp["centers"]): 
-            if center["sessions"][0]['min_age_limit'] != center_age_filter:
-                resp["centers"].remove(center)
+        for center in list(resp["centers"]):
+            for session in list(center["sessions"]):
+                if session['min_age_limit'] != center_age_filter:
+                    center["sessions"].remove(session)
+                    if(len(center["sessions"]) == 0):
+                        resp["centers"].remove(center)
 
     return resp    
+
 
 def check_calendar_by_district(
     request_header,
