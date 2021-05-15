@@ -119,8 +119,8 @@ def save_user_info(filename, details):
     save_info = save_info if save_info else "y"
     if save_info == "y":
         with open(filename, "w") as f:
-            json.dump(details, f)
-
+            # JSON pretty save to file
+            json.dump(details, f, sort_keys=True, indent=4)
         print(f"Info saved to {filename} in {os.getcwd()}")
 
 
