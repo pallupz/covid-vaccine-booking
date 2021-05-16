@@ -228,6 +228,7 @@ def collect_user_details(request_header):
             datetime.datetime.strptime(start_date, "%Y-%m-%d")
         except ValueError:
             start_date = 2
+            print('Invalid Date! Proceeding with tomorrow.')
 
     # Get preference of Free/Paid option
     fee_type = get_fee_type_preference()
