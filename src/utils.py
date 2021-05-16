@@ -1,6 +1,5 @@
 import json
 from hashlib import sha256
-from collections import Counter
 from inputimeout import inputimeout, TimeoutOccurred
 import tabulate, copy, time, datetime, requests, sys, os, random
 from captcha import captcha_builder
@@ -44,7 +43,8 @@ def viable_options(resp, minimum_slots, min_age_booking, fee_type, dose):
     if len(resp['centers']) >= 0:
         for center in resp['centers']:
             for session in center['sessions']:
-                availability = session['available_capacity_dose1'] if dose == 1 else session['available_capacity_dose2']
+                availability = session['available_capacity']
+                # availability = session['available_capacity_dose1'] if dose == 1 else session['available_capacity_dose2']
                 if (availability >= minimum_slots) \
                         and (session['min_age_limit'] <= min_age_booking)\
                         and (center['fee_type'] in fee_type):
@@ -134,14 +134,30 @@ def collect_user_details(request_header):
 
     # Make sure all beneficiaries have the same type of vaccine
     vaccine_types = [beneficiary['vaccine'] for beneficiary in beneficiary_dtls]
-    vaccines = Counter(vaccine_types)
+    statuses = [beneficiary['status'] for beneficiary in beneficiary_dtls]
 
-    if len(vaccines.keys()) != 1:
-        print(f"All beneficiaries in one attempt should have the same vaccine type. Found {len(vaccines.keys())}")
+    if len(set(statuses)) > 1:
+        print("\n================================= Important =================================\n")
+        print(f"All beneficiaries in one attempt should be of same vaccination status (same dose). Found {statuses}")
         os.system("pause")
         sys.exit(1)
 
-    vaccine_type = vaccine_types[0] # if all([beneficiary['status'] == 'Partially Vaccinated' for beneficiary in beneficiary_dtls]) else None
+    vaccines = set(vaccine_types)
+    if len(vaccines) > 1 and ('' in vaccines):
+        vaccines.remove('')
+        vaccine_types.remove('')
+        print("\n================================= Important =================================\n")
+        print(f"Some of the beneficiaries have a set vaccine preference ({vaccines}) and some do not.")
+        print("Results will be filtered to show only the set vaccine preference.")
+        os.system("pause")
+
+    if len(vaccines) != 1:
+        print("\n================================= Important =================================\n")
+        print(f"All beneficiaries in one attempt should have the same vaccine type. Found {len(vaccines)}")
+        os.system("pause")
+        sys.exit(1)
+
+    vaccine_type = vaccine_types[0]
     if not vaccine_type:
         print("\n================================= Vaccine Info =================================\n")
         vaccine_type = get_vaccine_preference()
