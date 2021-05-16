@@ -39,12 +39,13 @@ else:
         winsound.Beep(freq, duration)
 
 
-def viable_options(resp, minimum_slots, min_age_booking, fee_type):
+def viable_options(resp, minimum_slots, min_age_booking, fee_type, dose):
     options = []
     if len(resp['centers']) >= 0:
         for center in resp['centers']:
             for session in center['sessions']:
-                if (session['available_capacity'] >= minimum_slots) \
+                availability = session['available_capacity_dose1'] if dose == 1 else session['available_capacity_dose2']
+                if (availability >= minimum_slots) \
                         and (session['min_age_limit'] <= min_age_booking)\
                         and (center['fee_type'] in fee_type):
                     out = {
@@ -52,7 +53,7 @@ def viable_options(resp, minimum_slots, min_age_booking, fee_type):
                         'district': center['district_name'],
                         'pincode': center['pincode'],
                         'center_id': center['center_id'],
-                        'available': session['available_capacity'],
+                        'available': availability,
                         'date': session['date'],
                         'slots': session['slots'],
                         'session_id': session['session_id']
@@ -213,7 +214,7 @@ def collect_user_details(request_header):
     return collected_details
 
 
-def check_calendar_by_district(request_header, vaccine_type, location_dtls, start_date, minimum_slots, min_age_booking, fee_type):
+def check_calendar_by_district(request_header, vaccine_type, location_dtls, start_date, minimum_slots, min_age_booking, fee_type, dose):
     """
     This function
         1. Takes details required to check vaccination calendar
@@ -241,7 +242,7 @@ def check_calendar_by_district(request_header, vaccine_type, location_dtls, star
                 resp = resp.json()
                 if 'centers' in resp:
                     print(f"Centers available in {location['district_name']} from {start_date} as of {today.strftime('%Y-%m-%d %H:%M:%S')}: {len(resp['centers'])}")
-                    options += viable_options(resp, minimum_slots, min_age_booking, fee_type)
+                    options += viable_options(resp, minimum_slots, min_age_booking, fee_type, dose)
 
             else:
                 pass
@@ -257,7 +258,7 @@ def check_calendar_by_district(request_header, vaccine_type, location_dtls, star
         beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
 
 
-def check_calendar_by_pincode(request_header, vaccine_type, location_dtls, start_date, minimum_slots, min_age_booking, fee_type):
+def check_calendar_by_pincode(request_header, vaccine_type, location_dtls, start_date, minimum_slots, min_age_booking, fee_type, dose):
     """
     This function
         1. Takes details required to check vaccination calendar
@@ -285,7 +286,7 @@ def check_calendar_by_pincode(request_header, vaccine_type, location_dtls, start
                 resp = resp.json()
                 if 'centers' in resp:
                     print(f"Centers available in {location['pincode']} from {start_date} as of {today.strftime('%Y-%m-%d %H:%M:%S')}: {len(resp['centers'])}")
-                    options += viable_options(resp, minimum_slots, min_age_booking, fee_type)
+                    options += viable_options(resp, minimum_slots, min_age_booking, fee_type, dose)
 
             else:
                 pass
@@ -375,6 +376,9 @@ def check_and_book(request_header, beneficiary_dtls, location_dtls, search_optio
         start_date = kwargs['start_date']
         vaccine_type = kwargs['vaccine_type']
         fee_type = kwargs['fee_type']
+        dose = 2 if [beneficiary['status'] for beneficiary in beneficiary_dtls][0] == 'Partially Vaccinated' else 1
+
+        print(f"Dose: {dose}")
 
         if isinstance(start_date, int) and start_date == 2:
             start_date = (datetime.datetime.today() + datetime.timedelta(days=1)).strftime("%d-%m-%Y")
@@ -385,10 +389,10 @@ def check_and_book(request_header, beneficiary_dtls, location_dtls, search_optio
 
         if search_option == 2:
             options = check_calendar_by_district(request_header, vaccine_type, location_dtls, start_date,
-                                                 minimum_slots, min_age_booking, fee_type)
+                                                 minimum_slots, min_age_booking, fee_type, dose)
         else:
             options = check_calendar_by_pincode(request_header, vaccine_type, location_dtls, start_date,
-                                                minimum_slots, min_age_booking, fee_type)
+                                                minimum_slots, min_age_booking, fee_type, dose)
 
         if isinstance(options, bool):
             return False
