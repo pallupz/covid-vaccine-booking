@@ -618,14 +618,16 @@ def get_vaccine_preference():
         "It seems you're trying to find a slot for your first dose. Do you have a vaccine preference?"
     )
     preference = input(
-        "Enter 0 for No Preference, 1 for COVISHIELD, or 2 for COVAXIN. Default 0 : "
+        "Enter 0 for No Preference, 1 for COVISHIELD, 2 for COVAXIN, or 3 for SPUTNIK V. Default 0 : "
     )
-    preference = int(preference) if preference and int(preference) in [0, 1, 2] else 0
+    preference = int(preference) if preference and int(preference) in [0, 1, 2, 3] else 0
 
     if preference == 1:
         return "COVISHIELD"
     elif preference == 2:
         return "COVAXIN"
+    elif preference == 3:
+        return "SPUTNIK V"
     else:
         return None
 
