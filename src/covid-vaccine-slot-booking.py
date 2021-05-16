@@ -5,7 +5,7 @@ import time
 from types import SimpleNamespace
 import requests, sys, argparse, os, datetime
 from utils import generate_token_OTP, generate_token_OTP_manual, check_and_book, beep, BENEFICIARIES_URL, WARNING_BEEP_DURATION, \
-    display_info_dict, save_user_info, collect_user_details, get_saved_user_info, confirm_and_proceed
+    display_info_dict, save_user_info, collect_user_details, get_saved_user_info, confirm_and_proceed, get_dose_num
 
 
 def main():
@@ -92,7 +92,8 @@ def main():
                                              fee_type=info.fee_type,
                                              mobile=mobile,
                                              captcha_automation=info.captcha_automation,
-                                             captcha_automation_api_key=info.captcha_automation_api_key,)
+                                             captcha_automation_api_key=info.captcha_automation_api_key,
+                                             dose_num=get_dose_num(collected_details))
 
                 # check if token is still valid
                 beneficiaries_list = requests.get(BENEFICIARIES_URL, headers=request_header)
