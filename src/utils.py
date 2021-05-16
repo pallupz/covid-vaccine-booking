@@ -43,8 +43,8 @@ def viable_options(resp, minimum_slots, min_age_booking, fee_type, dose):
     if len(resp['centers']) >= 0:
         for center in resp['centers']:
             for session in center['sessions']:
-                availability = session['available_capacity']
-                # availability = session['available_capacity_dose1'] if dose == 1 else session['available_capacity_dose2']
+                # availability = session['available_capacity']
+                availability = session['available_capacity_dose1'] if dose == 1 else session['available_capacity_dose2']
                 if (availability >= minimum_slots) \
                         and (session['min_age_limit'] <= min_age_booking)\
                         and (center['fee_type'] in fee_type):
