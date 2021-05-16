@@ -41,13 +41,15 @@ else:
         winsound.Beep(freq, duration)
 
 
-def viable_options(resp, minimum_slots, min_age_booking, fee_type):
+def viable_options(resp, minimum_slots, min_age_booking, fee_type, dose_num):
     options = []
     if len(resp["centers"]) >= 0:
         for center in resp["centers"]:
             for session in center["sessions"]:
+                # Cowin uses slot number for display post login, but checks available_capacity before booking appointment is allowed
+                available_capacity = min(session[f'available_capacity_dose{dose_num}'], session['available_capacity'])
                 if (
-                    (session["available_capacity"] >= minimum_slots)
+                    (available_capacity >= minimum_slots)
                     and (session["min_age_limit"] <= min_age_booking)
                     and (center["fee_type"] in fee_type)
                 ):
@@ -56,7 +58,7 @@ def viable_options(resp, minimum_slots, min_age_booking, fee_type):
                         "district": center["district_name"],
                         "pincode": center["pincode"],
                         "center_id": center["center_id"],
-                        "available": session["available_capacity"],
+                        "available": available_capacity,
                         "date": session["date"],
                         "slots": session["slots"],
                         "session_id": session["session_id"],
@@ -130,6 +132,14 @@ def get_saved_user_info(filename):
 
     return data
 
+def get_dose_num(collected_details):
+    # If any person has vaccine detail populated, we imply that they'll be taking second dose
+    # Note: Based on the assumption that everyone have the *EXACT SAME* vaccine status 
+    if any(detail['vaccine']
+           for detail in collected_details["beneficiary_dtls"]):
+        return 2
+
+    return 1
 
 def collect_user_details(request_header):
     # Get Beneficiaries
@@ -284,6 +294,7 @@ def check_calendar_by_district(
     minimum_slots,
     min_age_booking,
     fee_type,
+    dose_num
 ):
     """
     This function
@@ -323,7 +334,7 @@ def check_calendar_by_district(
                         f"Centers available in {location['district_name']} from {start_date} as of {today.strftime('%Y-%m-%d %H:%M:%S')}: {len(resp['centers'])}"
                     )
                     options += viable_options(
-                        resp, minimum_slots, min_age_booking, fee_type
+                        resp, minimum_slots, min_age_booking, fee_type, dose_num
                     )
 
             else:
@@ -348,6 +359,7 @@ def check_calendar_by_pincode(
     minimum_slots,
     min_age_booking,
     fee_type,
+    dose_num
 ):
     """
     This function
@@ -386,7 +398,7 @@ def check_calendar_by_pincode(
                         f"Centers available in {location['pincode']} from {start_date} as of {today.strftime('%Y-%m-%d %H:%M:%S')}: {len(resp['centers'])}"
                     )
                     options += viable_options(
-                        resp, minimum_slots, min_age_booking, fee_type
+                        resp, minimum_slots, min_age_booking, fee_type, dose_num
                     )
 
             else:
@@ -494,6 +506,7 @@ def check_and_book(
         mobile = kwargs["mobile"]
         captcha_automation = kwargs['captcha_automation']
         captcha_automation_api_key = kwargs['captcha_automation_api_key']
+        dose_num = kwargs['dose_num']
 
         if isinstance(start_date, int) and start_date == 2:
             start_date = (
@@ -513,6 +526,7 @@ def check_and_book(
                 minimum_slots,
                 min_age_booking,
                 fee_type,
+                dose_num
             )
         else:
             options = check_calendar_by_pincode(
@@ -523,6 +537,7 @@ def check_and_book(
                 minimum_slots,
                 min_age_booking,
                 fee_type,
+                dose_num
             )
 
         if isinstance(options, bool):
