@@ -378,8 +378,6 @@ def check_and_book(request_header, beneficiary_dtls, location_dtls, search_optio
         fee_type = kwargs['fee_type']
         dose = 2 if [beneficiary['status'] for beneficiary in beneficiary_dtls][0] == 'Partially Vaccinated' else 1
 
-        print(f"Dose: {dose}")
-
         if isinstance(start_date, int) and start_date == 2:
             start_date = (datetime.datetime.today() + datetime.timedelta(days=1)).strftime("%d-%m-%Y")
         elif isinstance(start_date, int) and start_date == 1:
