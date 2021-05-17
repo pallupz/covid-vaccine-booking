@@ -722,6 +722,8 @@ def get_districts(request_header):
         os.system("pause")
         sys.exit(1)
 
+def fetch_beneficiaries(request_header):
+    return requests.get(BENEFICIARIES_URL, headers=request_header)
 
 def get_beneficiaries(request_header):
     """
@@ -730,7 +732,7 @@ def get_beneficiaries(request_header):
         2. Prompts user to select the applicable beneficiaries, and
         3. Returns the list of beneficiaries as list(dict)
     """
-    beneficiaries = requests.get(BENEFICIARIES_URL, headers=request_header)
+    beneficiaries = fetch_beneficiaries(request_header)
 
     if beneficiaries.status_code == 200:
         beneficiaries = beneficiaries.json()["beneficiaries"]

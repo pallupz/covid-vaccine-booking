@@ -5,7 +5,7 @@ import time
 from types import SimpleNamespace
 import requests, sys, argparse, os, datetime
 from utils import generate_token_OTP, generate_token_OTP_manual, check_and_book, beep, BENEFICIARIES_URL, WARNING_BEEP_DURATION, \
-    display_info_dict, save_user_info, collect_user_details, get_saved_user_info, confirm_and_proceed, get_dose_num
+    display_info_dict, save_user_info, collect_user_details, get_saved_user_info, confirm_and_proceed, get_dose_num, display_table, fetch_beneficiaries
 
 
 def main():
@@ -60,7 +60,6 @@ def main():
 
                 file_acceptable = input("\nProceed with above info? (y/n Default n): ")
                 file_acceptable = file_acceptable if file_acceptable else 'n'
-
                 if file_acceptable != 'y':
                     collected_details = collect_user_details(request_header)
                     save_user_info(filename, collected_details)
@@ -73,6 +72,35 @@ def main():
             collected_details = collect_user_details(request_header)
             save_user_info(filename, collected_details)
             confirm_and_proceed(collected_details)
+
+        # HACK: Temporary workaround for not supporting reschedule appointments
+        beneficiary_ref_ids = [beneficiary["bref_id"]
+                               for beneficiary in collected_details["beneficiary_dtls"]]
+        beneficiary_dtls    = fetch_beneficiaries(request_header)
+        if beneficiary_dtls.status_code == 200:
+            beneficiary_dtls    = [beneficiary
+                                   for beneficiary in beneficiary_dtls.json()['beneficiaries']
+                                   if  beneficiary['beneficiary_reference_id'] in beneficiary_ref_ids]
+            active_appointments = []
+            for beneficiary in beneficiary_dtls:
+                expected_appointments = (1 if beneficiary['vaccination_status'] == "Partially Vaccinated" else 0)
+                if len(beneficiary['appointments']) > expected_appointments:
+                    data             = beneficiary['appointments'][expected_appointments]
+                    beneficiary_data = {'name': data['name'],
+                                        'state_name': data['state_name'],
+                                        'dose': data['dose'],
+                                        'date': data['date'],
+                                        'slot': data['slot']}
+                    active_appointments.append({"beneficiary": beneficiary['name'], **beneficiary_data})
+
+            if active_appointments:
+                print("The following appointments are active! Please cancel them manually first to continue")
+                display_table(active_appointments)
+                beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
+                return
+        else:
+            print("WARNING: Failed to check if any beneficiary has active appointments. Please cancel before using this script")
+            input("Press any key to continue execution...")
 
         info = SimpleNamespace(**collected_details)
 
