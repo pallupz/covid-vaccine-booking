@@ -21,17 +21,10 @@ try:
 except ImportError:
     import os
 
-    if sys.platform == "darwin":
-
-        def beep(freq, duration):
-            # brew install SoX --> install SOund eXchange universal sound sample translator on mac
-            os.system(
+    def beep(freq, duration):
+        # apt install sox/brew install sox
+        os.system(
                 f"play -n synth {duration/1000} sin {freq} >/dev/null 2>&1")
-    else:
-
-        def beep(freq, duration):
-            # apt-get install beep  --> install beep package on linux distros before running
-            os.system('beep -f %s -l %s' % (freq, duration))
 
 else:
     def beep(freq, duration):
