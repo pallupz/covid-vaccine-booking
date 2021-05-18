@@ -34,11 +34,11 @@ pip install -r requirements.txt
 
 If you're on Linux or MacOS, install the SoX ([Sound eXchange](http://sox.sourceforge.net/ "Sound eXchange")) before running the Python script. To install, run:
 
-Ubuntu
+Ubuntu:
 ```
 sudo apt install sox
 ```
-MacOS
+MacOS:
 ```
 brew install sox
 ```
