@@ -58,6 +58,9 @@ def viable_options(resp, minimum_slots, min_age_booking, fee_type, dose_num):
                         "district": center["district_name"],
                         "pincode": center["pincode"],
                         "center_id": center["center_id"],
+                        "vaccine": session["vaccine"],
+                        "fee_type": session["fee_type"],
+                        "fee": session.get("fee", "0"),
                         "available": available_capacity,
                         "date": session["date"],
                         "slots": session["slots"],
@@ -755,6 +758,7 @@ def get_districts(request_header):
 
 def fetch_beneficiaries(request_header):
     return requests.get(BENEFICIARIES_URL, headers=request_header)
+
     
 def vaccine_dose2_duedate(vaccine_type):
     """
@@ -773,6 +777,7 @@ def vaccine_dose2_duedate(vaccine_type):
     elif vaccine_type=="SPUTNIK V":
         return sputnikV_due_date
 
+
 def get_beneficiaries(request_header):
     """
     This function
@@ -781,7 +786,9 @@ def get_beneficiaries(request_header):
         3. Returns the list of beneficiaries as list(dict)
     """
     beneficiaries = fetch_beneficiaries(request_header)
+
     vaccinated=False
+
     if beneficiaries.status_code == 200:
         beneficiaries = beneficiaries.json()["beneficiaries"]
         
