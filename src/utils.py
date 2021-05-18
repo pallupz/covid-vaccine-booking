@@ -41,13 +41,15 @@ else:
         winsound.Beep(freq, duration)
 
 
-def viable_options(resp, minimum_slots, min_age_booking, fee_type):
+def viable_options(resp, minimum_slots, min_age_booking, fee_type, dose_num):
     options = []
     if len(resp["centers"]) >= 0:
         for center in resp["centers"]:
             for session in center["sessions"]:
+                # Cowin uses slot number for display post login, but checks available_capacity before booking appointment is allowed
+                available_capacity = min(session[f'available_capacity_dose{dose_num}'], session['available_capacity'])
                 if (
-                    (session["available_capacity"] >= minimum_slots)
+                    (available_capacity >= minimum_slots)
                     and (session["min_age_limit"] <= min_age_booking)
                     and (center["fee_type"] in fee_type)
                 ):
@@ -59,7 +61,7 @@ def viable_options(resp, minimum_slots, min_age_booking, fee_type):
                         "vaccine": session["vaccine"],
                         "fee_type": session["fee_type"],
                         "fee": session.get("fee", "0"),
-                        "available": session["available_capacity"],
+                        "available": available_capacity,
                         "date": session["date"],
                         "slots": session["slots"],
                         "session_id": session["session_id"],
@@ -133,6 +135,14 @@ def get_saved_user_info(filename):
 
     return data
 
+def get_dose_num(collected_details):
+    # If any person has vaccine detail populated, we imply that they'll be taking second dose
+    # Note: Based on the assumption that everyone have the *EXACT SAME* vaccine status 
+    if any(detail['vaccine']
+           for detail in collected_details["beneficiary_dtls"]):
+        return 2
+
+    return 1
 
 def collect_user_details(request_header):
     # Get Beneficiaries
@@ -210,7 +220,7 @@ def collect_user_details(request_header):
 
     # Get search start date
     start_date = input(
-        "\nSearch for next seven day starting from when?\nUse 1 for today, 2 for tomorrow, or provide a date in the format yyyy-mm-dd. Default 2: "
+        "\nSearch for next seven day starting from when?\nUse 1 for today, 2 for tomorrow, or provide a date in the format dd-mm-yyyy. Default 2: "
     )
     if not start_date:
         start_date = 2
@@ -218,9 +228,10 @@ def collect_user_details(request_header):
         start_date = int(start_date)
     else:
         try:
-            datetime.datetime.strptime(start_date, "%Y-%m-%d")
+            datetime.datetime.strptime(start_date, "%d-%m-%Y")
         except ValueError:
             start_date = 2
+            print('Invalid Date! Proceeding with tomorrow.')
 
     # Get preference of Free/Paid option
     fee_type = get_fee_type_preference()
@@ -260,6 +271,7 @@ def collect_user_details(request_header):
 
     return collected_details
 
+
 def filter_centers_by_age(resp, min_age_booking):
 
     if min_age_booking >= 45:
@@ -268,11 +280,15 @@ def filter_centers_by_age(resp, min_age_booking):
         center_age_filter = 18
 
     if "centers" in resp:
-        for center in list(resp["centers"]): 
-            if center["sessions"][0]['min_age_limit'] != center_age_filter:
-                resp["centers"].remove(center)
+        for center in list(resp["centers"]):
+            for session in list(center["sessions"]):
+                if session['min_age_limit'] != center_age_filter:
+                    center["sessions"].remove(session)
+                    if(len(center["sessions"]) == 0):
+                        resp["centers"].remove(center)
 
     return resp    
+
 
 def check_calendar_by_district(
     request_header,
@@ -282,6 +298,7 @@ def check_calendar_by_district(
     minimum_slots,
     min_age_booking,
     fee_type,
+    dose_num
 ):
     """
     This function
@@ -321,7 +338,7 @@ def check_calendar_by_district(
                         f"Centers available in {location['district_name']} from {start_date} as of {today.strftime('%Y-%m-%d %H:%M:%S')}: {len(resp['centers'])}"
                     )
                     options += viable_options(
-                        resp, minimum_slots, min_age_booking, fee_type
+                        resp, minimum_slots, min_age_booking, fee_type, dose_num
                     )
 
             else:
@@ -346,6 +363,7 @@ def check_calendar_by_pincode(
     minimum_slots,
     min_age_booking,
     fee_type,
+    dose_num
 ):
     """
     This function
@@ -384,7 +402,7 @@ def check_calendar_by_pincode(
                         f"Centers available in {location['pincode']} from {start_date} as of {today.strftime('%Y-%m-%d %H:%M:%S')}: {len(resp['centers'])}"
                     )
                     options += viable_options(
-                        resp, minimum_slots, min_age_booking, fee_type
+                        resp, minimum_slots, min_age_booking, fee_type, dose_num
                     )
 
             else:
@@ -492,6 +510,7 @@ def check_and_book(
         mobile = kwargs["mobile"]
         captcha_automation = kwargs['captcha_automation']
         captcha_automation_api_key = kwargs['captcha_automation_api_key']
+        dose_num = kwargs['dose_num']
 
         if isinstance(start_date, int) and start_date == 2:
             start_date = (
@@ -511,6 +530,7 @@ def check_and_book(
                 minimum_slots,
                 min_age_booking,
                 fee_type,
+                dose_num
             )
         else:
             options = check_calendar_by_pincode(
@@ -521,6 +541,7 @@ def check_and_book(
                 minimum_slots,
                 min_age_booking,
                 fee_type,
+                dose_num
             )
 
         if isinstance(options, bool):
@@ -600,14 +621,16 @@ def get_vaccine_preference():
         "It seems you're trying to find a slot for your first dose. Do you have a vaccine preference?"
     )
     preference = input(
-        "Enter 0 for No Preference, 1 for COVISHIELD, or 2 for COVAXIN. Default 0 : "
+        "Enter 0 for No Preference, 1 for COVISHIELD, 2 for COVAXIN, or 3 for SPUTNIK V. Default 0 : "
     )
-    preference = int(preference) if preference and int(preference) in [0, 1, 2] else 0
+    preference = int(preference) if preference and int(preference) in [0, 1, 2, 3] else 0
 
     if preference == 1:
         return "COVISHIELD"
     elif preference == 2:
         return "COVAXIN"
+    elif preference == 3:
+        return "SPUTNIK V"
     else:
         return None
 
@@ -705,6 +728,8 @@ def get_districts(request_header):
         os.system("pause")
         sys.exit(1)
 
+def fetch_beneficiaries(request_header):
+    return requests.get(BENEFICIARIES_URL, headers=request_header)
 
 def get_beneficiaries(request_header):
     """
@@ -713,7 +738,7 @@ def get_beneficiaries(request_header):
         2. Prompts user to select the applicable beneficiaries, and
         3. Returns the list of beneficiaries as list(dict)
     """
-    beneficiaries = requests.get(BENEFICIARIES_URL, headers=request_header)
+    beneficiaries = fetch_beneficiaries(request_header)
 
     if beneficiaries.status_code == 200:
         beneficiaries = beneficiaries.json()["beneficiaries"]
