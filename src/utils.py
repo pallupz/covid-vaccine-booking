@@ -5,6 +5,7 @@ import tabulate, copy, time, datetime, requests, sys, os, random
 from captcha import captcha_builder
 
 BOOKING_URL = "https://cdn-api.co-vin.in/api/v2/appointment/schedule"
+RESCHEDULE_URL = "https://cdn-api.co-vin.in/api/v2/appointment/reschedule"
 BENEFICIARIES_URL = "https://cdn-api.co-vin.in/api/v2/appointment/beneficiaries"
 CALENDAR_URL_DISTRICT = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByDistrict?district_id={0}&date={1}"
 CALENDAR_URL_PINCODE = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByPin?pincode={0}&date={1}"
@@ -366,6 +367,46 @@ def book_appointment(request_header, details):
         print(str(e))
         beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
 
+def reschedule_appointment(request_header, details):
+    """
+    This function
+        1. Takes details in json format
+        2. Attempts to reschedule an appointment using the details
+        3. Returns True or False depending on Token Validity
+    """
+    try:
+        valid_captcha = True
+        while valid_captcha:
+            captcha = generate_captcha(request_header)
+            details['captcha'] = captcha
+
+            print('================================= ATTEMPTING Rescheduling ==================================================')
+
+            resp = requests.post(RESCHEDULE_URL, headers=request_header, json=details)
+            print(f'Booking Response Code: {resp.status_code}')
+            print(f'Booking Response : {resp.text}')
+
+            if resp.status_code == 401:
+                print('TOKEN INVALID')
+                return False
+
+            elif resp.status_code == 200:
+                print('##############    Rescheduled!  ############################    Rescheduled!  ##############')
+                print("                        Hey, Hey, Hey! It's your lucky day!                       ")
+                return True
+
+            elif resp.status_code == 400:
+                print(f'Response: {resp.status_code} : {resp.text}')
+                pass
+
+            else:
+                print(f'Response: {resp.status_code} : {resp.text}')
+                return True
+
+    except Exception as e:
+        print(str(e))
+        beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
+
 
 def check_and_book(request_header, beneficiary_dtls, location_dtls, search_option, **kwargs):
     """
@@ -449,17 +490,45 @@ def check_and_book(request_header, beneficiary_dtls, location_dtls, search_optio
                 choice = choice.split('.')
                 choice = [int(item) for item in choice]
                 print(f'============> Got Choice: Center #{choice[0]}, Slot #{choice[1]}')
-
+                new_booking_beneficiaries = [beneficiary['bref_id'] for beneficiary in beneficiary_dtls]
                 new_req = {
-                    'beneficiaries': [beneficiary['bref_id'] for beneficiary in beneficiary_dtls],
+                    'beneficiaries': new_booking_beneficiaries,
                     'dose': 2 if [beneficiary['status'] for beneficiary in beneficiary_dtls][0] == 'Partially Vaccinated' else 1,
                     'center_id' : options[choice[0] - 1]['center_id'],
                     'session_id': options[choice[0] - 1]['session_id'],
                     'slot'      : options[choice[0] - 1]['slots'][choice[1] - 1]
                 }
 
+                token_valid = True
+                # Logic for handling Rescheduling of existing first dose appointment.
+                for beneficiary in beneficiary_dtls:
+                    if beneficiary['existing_appointment_id']!='':
+                        reschedule_proceed = input(f"Do you want to go for reschedule for {beneficiary['name']} ? (y/n Default y): ")
+                        reschedule_proceed = reschedule_proceed if reschedule_proceed else 'y'
+                        if reschedule_proceed == 'y':
+                            res_req = {
+                                'session_id': options[choice[0] - 1]['session_id'],
+                                'slot': options[choice[0] - 1]['slots'][choice[1] - 1],
+                                'center_id': options[choice[0] - 1]['center_id'],
+                                'dose': 2 if beneficiary['status'] == 'Partially Vaccinated' else 1,
+                                'appointment_id': beneficiary['existing_appointment_id']
+                            }
+                            print(f'Rescheduling for {beneficiary["name"]} with info: {res_req}')
+                            token_valid = reschedule_appointment(request_header, res_req)
+                            if (token_valid != True):
+                                return token_valid
+                        new_booking_beneficiaries.remove(beneficiary['bref_id'])
+                        new_req['beneficiaries'] = new_booking_beneficiaries
+
                 print(f'Booking with info: {new_req}')
-                return book_appointment(request_header, new_req)
+                if len(new_booking_beneficiaries) > 0:
+                    return book_appointment(request_header, new_req)
+                else:
+                    print('\nPress any key thrice to exit program.')
+                    os.system("pause")
+                    os.system("pause")
+                    os.system("pause")
+                    sys.exit()
 
             except IndexError:
                 print("============> Invalid Option!")
@@ -589,6 +658,13 @@ def get_beneficiaries(request_header):
                 'age': beneficiary['age'],
                 'status': beneficiary['vaccination_status']
             }
+            if (len(beneficiary['appointments']) == 1) and (beneficiary['vaccination_status'] == 'Not Vaccinated') :
+                print(f'===> Already scheduled appointment exist for : #{tmp["name"]} so it will be asked at booking.')
+                tmp['existing_appointment_date'] = beneficiary['appointments'][0]['date']
+                tmp['existing_appointment_id'] = beneficiary['appointments'][0]['appointment_id']
+            else :
+                tmp['existing_appointment_id'] = ''
+
             refined_beneficiaries.append(tmp)
 
         display_table(refined_beneficiaries)
@@ -607,12 +683,13 @@ def get_beneficiaries(request_header):
         reqd_beneficiaries = input('Enter comma separated index numbers of beneficiaries to book for : ')
         beneficiary_idx = [int(idx) - 1 for idx in reqd_beneficiaries.split(',')]
         reqd_beneficiaries = [{
-            'bref_id': item['beneficiary_reference_id'],
+            'bref_id': item['bref_id'],
             'name': item['name'],
             'vaccine': item['vaccine'],
             'age': item['age'],
-            'status': item['vaccination_status']
-        } for idx, item in enumerate(beneficiaries) if idx in beneficiary_idx]
+            'status': item['status'],
+            'existing_appointment_id': item['existing_appointment_id']
+        } for idx, item in enumerate(refined_beneficiaries) if idx in beneficiary_idx]
 
         print(f'Selected beneficiaries: ')
         display_table(reqd_beneficiaries)
