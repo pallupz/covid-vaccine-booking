@@ -59,7 +59,7 @@ def viable_options(resp, minimum_slots, min_age_booking, fee_type, dose_num):
                         "pincode": center["pincode"],
                         "center_id": center["center_id"],
                         "vaccine": session["vaccine"],
-                        "fee_type": session["fee_type"],
+                        "fee_type": center["fee_type"],
                         "fee": session.get("fee", "0"),
                         "available": available_capacity,
                         "date": session["date"],
