@@ -424,7 +424,7 @@ def check_calendar_by_pincode(
         beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
 
 
-def generate_captcha(request_header, captcha_automation, api_key):
+def generate_captcha(request_header, captcha_automation, api_key, captcha_api_choice):
     print(
         "================================= GETTING CAPTCHA =================================================="
     )
@@ -434,10 +434,10 @@ def generate_captcha(request_header, captcha_automation, api_key):
     if resp.status_code == 200 and captcha_automation=="n":
         return captcha_builder(resp.json())
     elif resp.status_code == 200 and captcha_automation=="y":
-        return captcha_builder_auto(resp.json(), api_key)
+        return captcha_builder_auto(resp.json(), api_key, captcha_api_choice)
 
 
-def book_appointment(request_header, details, mobile, generate_captcha_pref, api_key=None):
+def book_appointment(request_header, details, mobile, generate_captcha_pref, api_key=None, captcha_api_choice=None):
     """
     This function
         1. Takes details in json format
@@ -447,7 +447,7 @@ def book_appointment(request_header, details, mobile, generate_captcha_pref, api
     try:
         valid_captcha = True
         while valid_captcha:
-            captcha = generate_captcha(request_header, generate_captcha_pref, api_key)
+            captcha = generate_captcha(request_header, generate_captcha_pref, api_key, captcha_api_choice)
            # os.system('say "Slot Spotted."')
             details["captcha"] = captcha
 
