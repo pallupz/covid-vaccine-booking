@@ -120,6 +120,7 @@ def main():
                                              fee_type=info.fee_type,
                                              mobile=mobile,
                                              captcha_automation=info.captcha_automation,
+                                             captcha_api_choice=info.captcha_api_choice,
                                              captcha_automation_api_key=info.captcha_automation_api_key,
                                              dose_num=get_dose_num(collected_details))
 
