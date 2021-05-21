@@ -1,10 +1,8 @@
-requests
-tabulate
-inputimeout
+requests~=2.25.1
+tabulate~=0.8.9
+inputimeout~=1.0.4
 svglib==1.0.1
-reportlab
-pyinstaller
-pysimplegui
-tk
-anticaptchaofficial
-twocaptchaapi
+reportlab~=3.5.67
+pysimplegui~=4.41.2
+Pillow~=8.2.0
+beautifulsoup4~=4.9.3
