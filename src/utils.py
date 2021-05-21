@@ -247,7 +247,7 @@ def collect_user_details(request_header):
 
     print("\n================================= Captcha Automation =================================\n")
 
-    captcha_automation = input("Do you want to automate captcha autofill? (y/n) Default n: ")
+    captcha_automation = input("Do you want to automate captcha autofill? (y/n) Default y: ")
     captcha_automation = "y" if not captcha_automation else captcha_automation
 
     collected_details = {
