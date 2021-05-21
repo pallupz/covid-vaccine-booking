@@ -5,9 +5,7 @@ import android.annotation.SuppressLint
 import android.content.*
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
-import android.os.Bundle
-import android.os.PowerManager
+import android.os.*
 import android.provider.Settings
 import android.text.method.KeyListener
 import android.util.Log
@@ -17,12 +15,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
 import androidx.core.app.ActivityCompat
-import com.android.volley.RequestQueue
 import com.android.volley.toolbox.StringRequest
-import com.android.volley.toolbox.Volley
-import java.lang.Exception
-import java.util.regex.Matcher
-import java.util.regex.Pattern
+import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
 
@@ -32,7 +26,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var mCoWinSmsBroadcastReceiver: CoWinSmsBroadcastReceiver
     private lateinit var mMainActivityReceiver: BroadcastReceiver
-    private lateinit var mRequestQueue: RequestQueue
     private lateinit var mKvdbUrl: String
     private var mReceiverIsActive: Boolean = false
     private var mCurrentOTP: Int = 0
@@ -45,6 +38,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mStartListeningCowinOtpSwitch: SwitchCompat
 
     private lateinit var mSharedPrefrences : SharedPreferences
+    private lateinit var mHandler: Handler
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,11 +63,14 @@ class MainActivity : AppCompatActivity() {
                 {
                     val sender = intent!!.getStringExtra("sender").toString()
                     val sms = intent!!.getStringExtra("sms").toString()
-                    val time = System.currentTimeMillis()
-                    try { mCurrentOTP = sms.substring(37,43).toInt() }
-                    catch (e: Exception) { Log.d(packageName, "Error in getting OTP: $e") }
+                    try {
+                        mCurrentOTP = sms.substring(37,43).toInt()
+                    }
+                    catch (e: Exception) {
+                        Log.d(packageName, "Error in getting OTP: $e")
+                    }
                     mStatusTextView.text = getString(R.string.status_otp_received)
-                    onOTPReceived(sender, sms, time, 0, mCurrentOTP)
+                    onOTPReceived(sender, sms, mCurrentOTP, 0)
                 }
             }
         }
@@ -81,9 +78,6 @@ class MainActivity : AppCompatActivity() {
 
         // initialize shared preferences
         mSharedPrefrences = getPreferences(MODE_PRIVATE)
-
-        // initialize simple request queue
-        mRequestQueue = Volley.newRequestQueue(this)
 
         // initialize ui elements so we can use it later
         mPhoneNumberEntry = findViewById(R.id.PhoneNumberEntry)
@@ -93,6 +87,7 @@ class MainActivity : AppCompatActivity() {
         mKvdbBucketkeyEntryKeyListener = mKvdbBucketkeyEntry.keyListener
 
         mStatusTextView = findViewById(R.id.StatusTextView)
+        mHandler = Handler(Looper.getMainLooper())
 
         mStartListeningCowinOtpSwitch = findViewById(R.id.StartListeningCowinOtpSwitch)
         mStartListeningCowinOtpSwitch.setOnCheckedChangeListener{ _, isChecked ->
@@ -127,6 +122,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+
+        // Remove all callbacks on the handler
+        mHandler.removeCallbacksAndMessages(null)
+        // Cancel any pending volley requests
+        ApplicationController.getInstance().cancelPendingRequests()
         // Unregister main activity receiver
         unregisterReceiver(mMainActivityReceiver)
 
@@ -204,8 +204,11 @@ class MainActivity : AppCompatActivity() {
         Toast.makeText(this, "CoWIN SMS Retriever has stopped", Toast.LENGTH_SHORT).show()
     }
 
-    private fun onOTPReceived(sender: String, sms: String, time: Long, i: Int, otp: Int) {
-        if(i==0) Toast.makeText(this, "Sending OTP to $mKvdbUrl from CoWIN: $sender", Toast.LENGTH_LONG).show()
+    private fun onOTPReceived(sender: String, sms: String, otp: Int, retryCounter: Int) {
+        if(retryCounter == 0) {
+            //Log.d("Debug", "New OTP is $otp.")
+            Toast.makeText(this, getString(R.string.otp_received_toast, mKvdbUrl, sender), Toast.LENGTH_LONG).show()
+        }
         // request a string response from the provided URL.
         val stringRequest = object : StringRequest(
             Method.PUT,
@@ -216,11 +219,16 @@ class MainActivity : AppCompatActivity() {
                 mStatusTextView.text = getString(R.string.otp_send_success, trimmedResponse)
             },
             { response ->
-                Thread.sleep(10000)
-                // Retry every 10 seconds for 3 minutes until new OTP is received
-                if((System.currentTimeMillis() - time) < 180000 && otp == mCurrentOTP) {
-                    mStatusTextView.text = getString(R.string.otp_send_fail, i+1)
-                    onOTPReceived(sender, sms, time, i+1, otp)
+                mStatusTextView.text = getString(R.string.send_otp_fail_message,
+                    VolleyErrorHelper.getMessage(response, this), retryCounter + 1)
+
+                // Retry every 10 seconds for 3 minutes (18 times) or until new OTP is received
+                if(retryCounter < 18 && otp == mCurrentOTP) {
+                    //Log.d("Debug", "RetryCounter value is $retryCounter. OTP is $otp. Retrying in 10 seconds..")
+                    mHandler = Handler(Looper.getMainLooper())
+                    mHandler.postDelayed({
+                        onOTPReceived(sender, sms, otp, retryCounter + 1)
+                    }, TimeUnit.SECONDS.toMillis(10))
                 }
             })
         {
@@ -239,9 +247,7 @@ class MainActivity : AppCompatActivity() {
                 return headers
             }
         }
-        mRequestQueue.cancelAll(otp)
-        stringRequest.tag = otp
         // add the request to the RequestQueue.
-        mRequestQueue.add(stringRequest)
+        ApplicationController.getInstance().addToRequestQueue(stringRequest)
     }
 }

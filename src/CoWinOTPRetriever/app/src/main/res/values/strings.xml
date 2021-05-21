@@ -11,5 +11,9 @@
     <string name="status_listening">Listening for CoWIN OTP SMS</string>
     <string name="status_stopped_listening">Stopped listening for CoWIN SMS</string>
     <string name="otp_send_success">Successfully sent CoWIN OTP: %1$s</string>
-    <string name="otp_send_fail">Failed to send CoWIN OTP SMS. Retry attempt #%1$d..</string>
+    <string name="send_otp_fail_message">Sending OTP failed with reason: %1$s. Retry attempt #%2$d..</string>
+    <string name="otp_received_toast">Sending OTP to %1$s from CoWIN: %2$s</string>
+    <string name="generic_server_down">KVDB server is down</string>
+    <string name="no_internet">No internet connection</string>
+    <string name="generic_error">An unknown error occurred</string>
 </resources>
