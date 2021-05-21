@@ -4,6 +4,7 @@ import PySimpleGUI as sg
 import re
 from PIL import Image
 from anticaptchaofficial.imagecaptcha import imagecaptcha
+from twocaptchaapi import TwoCaptchaApi
 
 def captcha_builder(resp):
     with open('captcha.svg', 'w') as f:
@@ -29,7 +30,7 @@ def captcha_builder(resp):
     return values['input']
 
 
-def captcha_builder_auto(resp, api_key):
+def captcha_builder_auto(resp, api_key, which_captcha):
     with open('captcha.svg', 'w') as f:
         f.write(re.sub('(<path d=)(.*?)(fill=\"none\"/>)', '', resp['captcha']))
 
@@ -37,10 +38,19 @@ def captcha_builder_auto(resp, api_key):
     renderPM.drawToFile(drawing, "captcha.png", fmt="PNG")
 
     
-    solver = imagecaptcha()
-    solver.set_verbose(1)
-    solver.set_key(api_key)
-    captcha_text = solver.solve_and_return_solution("captcha.png")
+    if which_captcha=='0': #anticaptchaofficial
+        solver = imagecaptcha()
+        solver.set_verbose(1)
+        solver.set_key(api_key)
+        captcha_text = solver.solve_and_return_solution("captcha.png")
+
+    elif which_captcha=='1': #twocaptchaapi
+        api = TwoCaptchaApi(api_key)
+        captcha_predicted = api.solve("captcha.png")
+        captcha_text = captcha_predicted.await_result()
+
+    else:
+        print("Invalid captcha API choice")
 
     if captcha_text != 0:
         print(f"Captcha text: {captcha_text}")
