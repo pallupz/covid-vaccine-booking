@@ -58,6 +58,9 @@ def viable_options(resp, minimum_slots, min_age_booking, fee_type, dose_num):
                         "district": center["district_name"],
                         "pincode": center["pincode"],
                         "center_id": center["center_id"],
+                        "vaccine": session["vaccine"],
+                        "fee_type": center["fee_type"],
+                        "fee": session.get("fee", "0"),
                         "available": available_capacity,
                         "date": session["date"],
                         "slots": session["slots"],
@@ -134,7 +137,7 @@ def get_saved_user_info(filename):
 
 def get_dose_num(collected_details):
     # If any person has vaccine detail populated, we imply that they'll be taking second dose
-    # Note: Based on the assumption that everyone have the *EXACT SAME* vaccine status 
+    # Note: Based on the assumption that everyone have the *EXACT SAME* vaccine status
     if any(detail['vaccine']
            for detail in collected_details["beneficiary_dtls"]):
         return 2
@@ -222,7 +225,7 @@ def collect_user_details(request_header):
     if all([beneficiary['status'] == 'Partially Vaccinated' for beneficiary in beneficiary_dtls]):
         today=datetime.datetime.today()
         today=today.strftime("%d-%m-%Y")
-        due_date = [beneficiary["due_date"] for beneficiary in beneficiary_dtls]
+        due_date = [beneficiary["dose2_due_date"] for beneficiary in beneficiary_dtls]
         dates=Counter(due_date)
         if len(dates.keys()) != 1:
             print(
@@ -312,7 +315,7 @@ def filter_centers_by_age(resp, min_age_booking):
                     if(len(center["sessions"]) == 0):
                         resp["centers"].remove(center)
 
-    return resp    
+    return resp
 
 
 def check_calendar_by_district(
@@ -755,6 +758,7 @@ def get_districts(request_header):
 
 def fetch_beneficiaries(request_header):
     return requests.get(BENEFICIARIES_URL, headers=request_header)
+
     
 def vaccine_dose2_duedate(vaccine_type):
     """
@@ -773,6 +777,7 @@ def vaccine_dose2_duedate(vaccine_type):
     elif vaccine_type=="SPUTNIK V":
         return sputnikV_due_date
 
+
 def get_beneficiaries(request_header):
     """
     This function
@@ -781,7 +786,9 @@ def get_beneficiaries(request_header):
         3. Returns the list of beneficiaries as list(dict)
     """
     beneficiaries = fetch_beneficiaries(request_header)
+
     vaccinated=False
+
     if beneficiaries.status_code == 200:
         beneficiaries = beneficiaries.json()["beneficiaries"]
         
@@ -805,12 +812,14 @@ def get_beneficiaries(request_header):
                 "vaccine": beneficiary["vaccine"],
                 "age": beneficiary["age"],
                 "status": beneficiary["vaccination_status"],
+                "dose1_date":beneficiary["dose1_date"]
             }
             if vaccinated:
                 tmp["due_date"]=beneficiary["dose2_due_date"]
             refined_beneficiaries.append(tmp)
 
         display_table(refined_beneficiaries)
+        print(refined_beneficiaries)
         print(
             """
         ################# IMPORTANT NOTES #################
@@ -836,14 +845,20 @@ def get_beneficiaries(request_header):
                 "vaccine": item["vaccine"],
                 "age": item["age"],
                 "status": item["vaccination_status"],
-                "due_date":item["dose2_due_date"].strftime("%d-%m-%Y")
+                "dose1_date":item["dose1_date"]
             }
                                 
             for idx, item in enumerate(beneficiaries)
-            if idx in beneficiary_idx if vaccinated
+            if idx in beneficiary_idx
         ]
-     #   for i in reqd_beneficiaries if vaccinated:
-      #      reqd_beneficiaries[i]["due_date"]=beneficiary["dose2_due_date"].strftime("%d-%m-%Y")
+
+        for beneficiary in reqd_beneficiaries:
+                if vaccinated:
+                    days_remaining=vaccine_dose2_duedate(beneficiary["vaccine"])
+                        
+                    dose1_date=datetime.datetime.strptime(beneficiary["dose1_date"], "%d-%m-%Y")
+                    dose2DueDate=dose1_date+datetime.timedelta(days=days_remaining)
+                    beneficiary["dose2_due_date"]=dose2DueDate.strftime("%d-%m-%Y")
 
         print(f"Selected beneficiaries: ")
         display_table(reqd_beneficiaries)
