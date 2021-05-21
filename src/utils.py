@@ -503,7 +503,9 @@ def check_and_book(request_header, beneficiary_dtls, location_dtls, search_optio
                 # Logic for handling Rescheduling of existing first dose appointment.
                 for beneficiary in beneficiary_dtls:
                     if beneficiary['existing_appointment_id']!='':
-                        reschedule_proceed = input(f"Do you want to go for reschedule for {beneficiary['name']} ? (y/n Default y): ")
+                        reschedule_proceed = 'y'
+                        if auto_book != 'yes-please':
+                            reschedule_proceed = input(f"Do you want to go for reschedule for {beneficiary['name']} ? (y/n Default y): ")
                         reschedule_proceed = reschedule_proceed if reschedule_proceed else 'y'
                         if reschedule_proceed == 'y':
                             res_req = {
