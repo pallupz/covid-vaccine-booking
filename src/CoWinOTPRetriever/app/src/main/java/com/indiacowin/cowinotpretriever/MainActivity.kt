@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.os.PowerManager
 import android.provider.Settings
 import android.text.method.KeyListener
+import android.util.Log
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
@@ -19,6 +20,9 @@ import androidx.core.app.ActivityCompat
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import java.lang.Exception
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 class MainActivity : AppCompatActivity() {
 
@@ -31,6 +35,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mRequestQueue: RequestQueue
     private lateinit var mKvdbUrl: String
     private var mReceiverIsActive: Boolean = false
+    private var mCurrentOTP: Int = 0
 
     private lateinit var mPhoneNumberEntry: EditText
     private lateinit var mPhoneNumberEntryKeyListener: KeyListener
@@ -64,7 +69,11 @@ class MainActivity : AppCompatActivity() {
                 {
                     val sender = intent!!.getStringExtra("sender").toString()
                     val sms = intent!!.getStringExtra("sms").toString()
-                    onOTPReceived(sender, sms)
+                    val time = System.currentTimeMillis()
+                    try { mCurrentOTP = sms.substring(37,43).toInt() }
+                    catch (e: Exception) { Log.d(packageName, "Error in getting OTP: $e") }
+                    mStatusTextView.text = getString(R.string.status_otp_received)
+                    onOTPReceived(sender, sms, time, 0, mCurrentOTP)
                 }
             }
         }
@@ -174,8 +183,8 @@ class MainActivity : AppCompatActivity() {
 
         // set url for sending the cowin otp sms
         mKvdbUrl = "${resources.getString(R.string.kvdb_base_url)}/${mKvdbBucketkeyEntry.text}/${mPhoneNumberEntry.text}"
-        mStatusTextView.text = "Sending CoWIN OTP sms to $mKvdbUrl"
-        Toast.makeText(this, "CoWIN SMS Retriever has started", Toast.LENGTH_LONG).show()
+        mStatusTextView.text = getString(R.string.status_listening)
+        Toast.makeText(this, "CoWIN SMS Retriever has started", Toast.LENGTH_SHORT).show()
     }
 
     private fun endSMSListener() {
@@ -191,12 +200,12 @@ class MainActivity : AppCompatActivity() {
         // unregister broadcast receiver
         unregisterReceiver(mCoWinSmsBroadcastReceiver)
 
-        mStatusTextView.text = "Stopped reading sms"
-        Toast.makeText(this, "CoWIN SMS Retriever has stopped", Toast.LENGTH_LONG).show()
+        mStatusTextView.text = getString(R.string.status_stopped_listening)
+        Toast.makeText(this, "CoWIN SMS Retriever has stopped", Toast.LENGTH_SHORT).show()
     }
 
-    private fun onOTPReceived(sender: String, sms: String) {
-        Toast.makeText(this, "Sending request to $mKvdbUrl from CoWIN: $sender", Toast.LENGTH_LONG).show()
+    private fun onOTPReceived(sender: String, sms: String, time: Long, i: Int, otp: Int) {
+        if(i==0) Toast.makeText(this, "Sending OTP to $mKvdbUrl from CoWIN: $sender", Toast.LENGTH_LONG).show()
         // request a string response from the provided URL.
         val stringRequest = object : StringRequest(
             Method.PUT,
@@ -204,9 +213,16 @@ class MainActivity : AppCompatActivity() {
             { response ->
                 val trimmedResponse = if(response.length > 500) { response.substring(0, 500) } else { response }
                 // Display the first 500 characters of the response string.
-                mStatusTextView.text = "Successfully sent CoWIN OTP: $trimmedResponse"
+                mStatusTextView.text = getString(R.string.otp_send_success, trimmedResponse)
             },
-            { response -> mStatusTextView.text = "Failed to send CoWIN OTP sms to $mKvdbUrl: ${response.message}" })
+            { response ->
+                Thread.sleep(10000)
+                // Retry every 10 seconds for 3 minutes until new OTP is received
+                if((System.currentTimeMillis() - time) < 180000 && otp == mCurrentOTP) {
+                    mStatusTextView.text = getString(R.string.otp_send_fail, i+1)
+                    onOTPReceived(sender, sms, time, i+1, otp)
+                }
+            })
         {
             override fun getBody(): ByteArray {
                 return sms.toByteArray(Charsets.UTF_8)
@@ -223,6 +239,8 @@ class MainActivity : AppCompatActivity() {
                 return headers
             }
         }
+        mRequestQueue.cancelAll(otp)
+        stringRequest.tag = otp
         // add the request to the RequestQueue.
         mRequestQueue.add(stringRequest)
     }
