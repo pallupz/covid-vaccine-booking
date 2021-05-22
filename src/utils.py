@@ -3,7 +3,7 @@ from hashlib import sha256
 from collections import Counter
 from inputimeout import inputimeout, TimeoutOccurred
 import tabulate, copy, time, datetime, requests, sys, os, random
-from captcha import captcha_builder, captcha_builder_auto
+from captcha import captcha_builder_manual, captcha_builder_auto
 import uuid
 
 BOOKING_URL = "https://cdn-api.co-vin.in/api/v2/appointment/schedule"
@@ -15,7 +15,6 @@ OTP_PUBLIC_URL = "https://cdn-api.co-vin.in/api/v2/auth/public/generateOTP"
 OTP_PRO_URL = "https://cdn-api.co-vin.in/api/v2/auth/generateMobileOTP"
 
 WARNING_BEEP_DURATION = (1000, 5000)
- 
 
 try:
     import winsound
@@ -28,7 +27,7 @@ except ImportError:
         def beep(freq, duration):
             # brew install SoX --> install SOund eXchange universal sound sample translator on mac
             os.system(
-                f"play -n synth {duration/1000} sin {freq} >/dev/null 2>&1")
+                f"play -n synth {duration / 1000} sin {freq} >/dev/null 2>&1")
     else:
 
         def beep(freq, duration):
@@ -49,9 +48,9 @@ def viable_options(resp, minimum_slots, min_age_booking, fee_type, dose_num):
                 # Cowin uses slot number for display post login, but checks available_capacity before booking appointment is allowed
                 available_capacity = min(session[f'available_capacity_dose{dose_num}'], session['available_capacity'])
                 if (
-                    (available_capacity >= minimum_slots)
-                    and (session["min_age_limit"] <= min_age_booking)
-                    and (center["fee_type"] in fee_type)
+                        (available_capacity >= minimum_slots)
+                        and (session["min_age_limit"] <= min_age_booking)
+                        and (center["fee_type"] in fee_type)
                 ):
                     out = {
                         "name": center["name"],
@@ -135,14 +134,16 @@ def get_saved_user_info(filename):
 
     return data
 
+
 def get_dose_num(collected_details):
     # If any person has vaccine detail populated, we imply that they'll be taking second dose
-    # Note: Based on the assumption that everyone have the *EXACT SAME* vaccine status 
+    # Note: Based on the assumption that everyone have the *EXACT SAME* vaccine status
     if any(detail['vaccine']
            for detail in collected_details["beneficiary_dtls"]):
         return 2
 
     return 1
+
 
 def collect_user_details(request_header):
     # Get Beneficiaries
@@ -244,19 +245,10 @@ def collect_user_details(request_header):
     )
     auto_book = "yes-please"
 
-
     print("\n================================= Captcha Automation =================================\n")
-    print("======== Caution: This will require a paid API key from anti-captcha.com =============")
 
-    captcha_automation = input("Do you want to automate captcha autofill? (y/n) Default n: ")
-    captcha_automation = "n" if not captcha_automation else captcha_automation
-    if captcha_automation=="y":
-        captcha_api_choice = input("Select your preferred API service, 0 for https://anti-captcha.com and 1 for https://2captcha.com/ (Default 0) :")
-        if captcha_api_choice not in ['0', '1']: captcha_api_choice='0'
-        captcha_automation_api_key = input("Enter your Anti-Captcha or 2Captcha API key: ")
-    else:
-        captcha_api_choice = None
-        captcha_automation_api_key = None
+    captcha_automation = input("Do you want to automate captcha autofill? (y/n) Default y: ")
+    captcha_automation = "y" if not captcha_automation else captcha_automation
 
     collected_details = {
         "beneficiary_dtls": beneficiary_dtls,
@@ -269,15 +261,12 @@ def collect_user_details(request_header):
         "vaccine_type": vaccine_type,
         "fee_type": fee_type,
         'captcha_automation': captcha_automation,
-        'captcha_api_choice': captcha_api_choice,
-        'captcha_automation_api_key': captcha_automation_api_key
     }
 
     return collected_details
 
 
 def filter_centers_by_age(resp, min_age_booking):
-
     if min_age_booking >= 45:
         center_age_filter = 45
     else:
@@ -288,21 +277,21 @@ def filter_centers_by_age(resp, min_age_booking):
             for session in list(center["sessions"]):
                 if session['min_age_limit'] != center_age_filter:
                     center["sessions"].remove(session)
-                    if(len(center["sessions"]) == 0):
+                    if (len(center["sessions"]) == 0):
                         resp["centers"].remove(center)
 
-    return resp    
+    return resp
 
 
 def check_calendar_by_district(
-    request_header,
-    vaccine_type,
-    location_dtls,
-    start_date,
-    minimum_slots,
-    min_age_booking,
-    fee_type,
-    dose_num
+        request_header,
+        vaccine_type,
+        location_dtls,
+        start_date,
+        minimum_slots,
+        min_age_booking,
+        fee_type,
+        dose_num
 ):
     """
     This function
@@ -360,14 +349,14 @@ def check_calendar_by_district(
 
 
 def check_calendar_by_pincode(
-    request_header,
-    vaccine_type,
-    location_dtls,
-    start_date,
-    minimum_slots,
-    min_age_booking,
-    fee_type,
-    dose_num
+        request_header,
+        vaccine_type,
+        location_dtls,
+        start_date,
+        minimum_slots,
+        min_age_booking,
+        fee_type,
+        dose_num
 ):
     """
     This function
@@ -400,7 +389,7 @@ def check_calendar_by_pincode(
                 resp = resp.json()
 
                 resp = filter_centers_by_age(resp, min_age_booking)
-                                                
+
                 if "centers" in resp:
                     print(
                         f"Centers available in {location['pincode']} from {start_date} as of {today.strftime('%Y-%m-%d %H:%M:%S')}: {len(resp['centers'])}"
@@ -424,20 +413,20 @@ def check_calendar_by_pincode(
         beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
 
 
-def generate_captcha(request_header, captcha_automation, api_key, captcha_api_choice):
+def generate_captcha(request_header, captcha_automation):
     print(
         "================================= GETTING CAPTCHA =================================================="
     )
     resp = requests.post(CAPTCHA_URL, headers=request_header)
     print(f'Captcha Response Code: {resp.status_code}')
 
-    if resp.status_code == 200 and captcha_automation=="n":
-        return captcha_builder(resp.json())
-    elif resp.status_code == 200 and captcha_automation=="y":
-        return captcha_builder_auto(resp.json(), api_key, captcha_api_choice)
+    if resp.status_code == 200 and captcha_automation == "n":
+        return captcha_builder_manual(resp.json())
+    elif resp.status_code == 200 and captcha_automation == "y":
+        return captcha_builder_auto(resp.json())
 
 
-def book_appointment(request_header, details, mobile, generate_captcha_pref, api_key=None, captcha_api_choice=None):
+def book_appointment(request_header, details, mobile, generate_captcha_pref):
     """
     This function
         1. Takes details in json format
@@ -447,8 +436,8 @@ def book_appointment(request_header, details, mobile, generate_captcha_pref, api
     try:
         valid_captcha = True
         while valid_captcha:
-            captcha = generate_captcha(request_header, generate_captcha_pref, api_key, captcha_api_choice)
-           # os.system('say "Slot Spotted."')
+            captcha = generate_captcha(request_header, generate_captcha_pref)
+            # os.system('say "Slot Spotted."')
             details["captcha"] = captcha
 
             print(
@@ -492,7 +481,7 @@ def book_appointment(request_header, details, mobile, generate_captcha_pref, api
 
 
 def check_and_book(
-    request_header, beneficiary_dtls, location_dtls, search_option, **kwargs
+        request_header, beneficiary_dtls, location_dtls, search_option, **kwargs
 ):
     """
     This function
@@ -513,13 +502,11 @@ def check_and_book(
         fee_type = kwargs["fee_type"]
         mobile = kwargs["mobile"]
         captcha_automation = kwargs['captcha_automation']
-        captcha_api_choice = kwargs['captcha_api_choice']
-        captcha_automation_api_key = kwargs['captcha_automation_api_key']
         dose_num = kwargs['dose_num']
 
         if isinstance(start_date, int) and start_date == 2:
             start_date = (
-                datetime.datetime.today() + datetime.timedelta(days=1)
+                    datetime.datetime.today() + datetime.timedelta(days=1)
             ).strftime("%d-%m-%Y")
         elif isinstance(start_date, int) and start_date == 1:
             start_date = datetime.datetime.today().strftime("%d-%m-%Y")
@@ -605,7 +592,7 @@ def check_and_book(
                     ],
                     "dose": 2
                     if [beneficiary["status"] for beneficiary in beneficiary_dtls][0]
-                    == "Partially Vaccinated"
+                       == "Partially Vaccinated"
                     else 1,
                     "center_id": options[choice[0] - 1]["center_id"],
                     "session_id": options[choice[0] - 1]["session_id"],
@@ -613,7 +600,7 @@ def check_and_book(
                 }
 
                 print(f"Booking with info: {new_req}")
-                return book_appointment(request_header, new_req, mobile, captcha_automation, captcha_automation_api_key, captcha_api_choice)
+                return book_appointment(request_header, new_req, mobile, captcha_automation)
 
             except IndexError:
                 print("============> Invalid Option!")
@@ -733,8 +720,10 @@ def get_districts(request_header):
         os.system("pause")
         sys.exit(1)
 
+
 def fetch_beneficiaries(request_header):
     return requests.get(BENEFICIARIES_URL, headers=request_header)
+
 
 def get_beneficiaries(request_header):
     """
@@ -816,7 +805,8 @@ def get_min_age(beneficiary_dtls):
     min_age = min(age_list)
     return min_age
 
-def clear_bucket_and_send_OTP(storage_url,mobile, request_header):
+
+def clear_bucket_and_send_OTP(storage_url, mobile, request_header):
     print("clearing OTP bucket: " + storage_url)
     response = requests.put(storage_url, data={})
     data = {
@@ -840,13 +830,14 @@ def clear_bucket_and_send_OTP(storage_url,mobile, request_header):
 
     return txnId
 
+
 def generate_token_OTP(mobile, request_header):
     """
     This function generate OTP and returns a new token or None when not able to get token
     """
     storage_url = "https://kvdb.io/ASth4wnvVDPkg2bdjsiqMN/" + mobile
 
-    txnId = clear_bucket_and_send_OTP(storage_url,mobile, request_header)
+    txnId = clear_bucket_and_send_OTP(storage_url, mobile, request_header)
 
     if txnId is None:
         return txnId
@@ -895,7 +886,6 @@ def generate_token_OTP(mobile, request_header):
     return token
 
 
-
 def generate_token_OTP_manual(mobile, request_header):
     """
     This function generate OTP and returns a new token
@@ -911,7 +901,7 @@ def generate_token_OTP_manual(mobile, request_header):
         try:
             data = {"mobile": mobile,
                     "secret": "U2FsdGVkX1+z/4Nr9nta+2DrVJSv7KS6VoQUSQ1ZXYDx/CJUkWxFYG6P3iM/VW+6jLQ9RDQVzp/RcZ8kbT41xw=="
-            }
+                    }
             txnId = requests.post(url=OTP_PRO_URL, json=data, headers=request_header)
 
             if txnId.status_code == 200:
@@ -955,4 +945,3 @@ def generate_token_OTP_manual(mobile, request_header):
 
         except Exception as e:
             print(str(e))
-
