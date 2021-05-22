@@ -584,7 +584,7 @@ def check_and_book(
                 print(msg, end="\r", flush=True)
                 sys.stdout.flush()
                 time.sleep(1)
-            slots_available = True
+            slots_available = False
 
     except TimeoutOccurred:
         time.sleep(1)
