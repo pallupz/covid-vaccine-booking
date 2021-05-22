@@ -272,10 +272,7 @@ def collect_user_details(request_header):
     print(
         "===== BE CAREFUL WITH THIS OPTION! AUTO-BOOKING WILL BOOK THE FIRST AVAILABLE CENTRE, DATE, AND A RANDOM SLOT! ====="
     )
-    auto_book = input(
-        "Do you want to Enable the Auto-Booking Function? (y/n) Default y: "
-    )
-    auto_book = "y" if not auto_book else auto_book
+    auto_book = "yes-please"
 
     print("\n================================= Captcha Automation =================================\n")
 
@@ -610,16 +607,6 @@ def check_and_book(
                 cleaned_options_for_display.append(item)
 
             display_table(cleaned_options_for_display)
-            if auto_book=="y":
-                randrow = random.randint(1, len(options))
-                randcol = random.randint(1, len(options[randrow - 1]["slots"]))
-                choice = str(randrow) + "." + str(randcol)
-                print("Random Rows.Column:" + choice)
-            else:
-                choice = inputimeout(
-                    prompt="----------> Wait 20 seconds for Updated Options OR \n----------> Enter a choice e.g: 1.4 for (1st Centre & 4th Slot): ",
-                    timeout=20,
-                )
             slots_available = True
         else:
             for i in range(refresh_freq, 0, -1):
@@ -883,6 +870,8 @@ def get_beneficiaries(request_header):
                                
                 dose1_date=datetime.datetime.strptime(beneficiary["dose1_date"], "%d-%m-%Y")
                 beneficiary["dose2_due_date"]=dose1_date+datetime.timedelta(days=days_remaining)
+            else:
+                vaccinated=False
                 #print(beneficiary_2)
 
             tmp = {
@@ -898,7 +887,7 @@ def get_beneficiaries(request_header):
             refined_beneficiaries.append(tmp)
 
         display_table(refined_beneficiaries)
-        print(refined_beneficiaries)
+        #print(refined_beneficiaries)
         print(
             """
         ################# IMPORTANT NOTES #################
@@ -932,7 +921,7 @@ def get_beneficiaries(request_header):
         ]
 
         for beneficiary in reqd_beneficiaries:
-                if vaccinated:
+                if beneficiary["status"]=="Partially Vaccinated":
                     days_remaining=vaccine_dose2_duedate(beneficiary["vaccine"])
                         
                     dose1_date=datetime.datetime.strptime(beneficiary["dose1_date"], "%d-%m-%Y")
