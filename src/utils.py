@@ -149,11 +149,13 @@ def collect_user_details(request_header):
     print("Fetching registered beneficiaries.. ")
     beneficiary_dtls = get_beneficiaries(request_header)
 
+
     if len(beneficiary_dtls) == 0:
         print("There should be at least one beneficiary. Exiting.")
         os.system("pause")
         sys.exit(1)
-
+    
+    
     # Make sure all beneficiaries have the same type of vaccine
     vaccine_types = [beneficiary["vaccine"] for beneficiary in beneficiary_dtls]
     vaccines = Counter(vaccine_types)
@@ -216,23 +218,51 @@ def collect_user_details(request_header):
     refresh_freq = input(
         "How often do you want to refresh the calendar (in seconds)? Default 10. Minimum 5. (You might be blocked if the value is too low, in that case please try after a while with a lower frequency) : "
     )
-    refresh_freq = int(refresh_freq) if refresh_freq and int(refresh_freq) >= 1 else 10
 
-    # Get search start date
-    start_date = input(
-        "\nSearch for next seven day starting from when?\nUse 1 for today, 2 for tomorrow, or provide a date in the format dd-mm-yyyy. Default 2: "
-    )
-    if not start_date:
-        start_date = 2
-    elif start_date in ["1", "2"]:
-        start_date = int(start_date)
+    refresh_freq = int(refresh_freq) if refresh_freq and int(refresh_freq) >= 1 else 15
+    
+    
+    #Checking if partially vaccinated and thereby checking the the due date for dose2
+    if all([beneficiary['status'] == 'Partially Vaccinated' for beneficiary in beneficiary_dtls]):
+        today=datetime.datetime.today()
+        today=today.strftime("%d-%m-%Y")
+        due_date = [beneficiary["dose2_due_date"] for beneficiary in beneficiary_dtls]
+        dates=Counter(due_date)
+        if len(dates.keys()) != 1:
+            print(
+                f"All beneficiaries in one attempt should have the same due date. Found {len(dates.keys())}"
+            )
+            os.system("pause")
+            sys.exit(1)
+            
+            
+        if (datetime.datetime.strptime(due_date[0], "%d-%m-%Y")-datetime.datetime.strptime(str(today), "%d-%m-%Y")).days > 0:
+            print("\nHaven't reached the due date for your second dose")
+            search_due_date=input(
+                "\nDo you want to search for the week starting from your due date(y/n) Default n:"
+            )
+            if search_due_date=="y":
+                
+                start_date=due_date[0]
+            else:
+                os.system("pause")
+                sys.exit(1)
+
     else:
-        try:
-            datetime.datetime.strptime(start_date, "%d-%m-%Y")
-        except ValueError:
+        # Get search start date
+        start_date = input(
+                "\nSearch for next seven day starting from when?\nUse 1 for today, 2 for tomorrow, or provide a date in the format dd-mm-yyyy. Default 2: "
+            )
+        if not start_date:
             start_date = 2
-            print('Invalid Date! Proceeding with tomorrow.')
-
+        elif start_date in ["1", "2"]:
+            start_date = int(start_date)
+        else:
+            try:
+                datetime.datetime.strptime(start_date, "%d-%m-%Y")
+            except ValueError:
+                start_date = 2
+                print('Invalid Date! Proceeding with tomorrow.')
     # Get preference of Free/Paid option
     fee_type = get_fee_type_preference()
 
@@ -794,6 +824,26 @@ def fetch_beneficiaries(request_header):
     return requests.get(BENEFICIARIES_URL, headers=request_header)
 
 
+    
+def vaccine_dose2_duedate(vaccine_type):
+    """
+    This function
+        1.Checks the vaccine type
+        2.Returns the appropriate due date for the vaccine type
+    """
+    covishield_due_date=84
+    covaxin_due_date=28
+    sputnikV_due_date=21
+    
+    if vaccine_type=="COVISHIELD":
+        return covishield_due_date
+    elif vaccine_type=="COVAXIN":
+        return covaxin_due_date
+    elif vaccine_type=="SPUTNIK V":
+        return sputnikV_due_date
+
+
+
 def get_beneficiaries(request_header):
     """
     This function
@@ -803,14 +853,24 @@ def get_beneficiaries(request_header):
     """
     beneficiaries = fetch_beneficiaries(request_header)
 
+    vaccinated=False
+
     if beneficiaries.status_code == 200:
         beneficiaries = beneficiaries.json()["beneficiaries"]
+        
 
         refined_beneficiaries = []
         for beneficiary in beneficiaries:
             beneficiary["age"] = datetime.datetime.today().year - int(
                 beneficiary["birth_year"]
             )
+            if beneficiary["vaccination_status"]=="Partially Vaccinated":
+                vaccinated=True
+                days_remaining=vaccine_dose2_duedate(beneficiary["vaccine"])
+                               
+                dose1_date=datetime.datetime.strptime(beneficiary["dose1_date"], "%d-%m-%Y")
+                beneficiary["dose2_due_date"]=dose1_date+datetime.timedelta(days=days_remaining)
+                #print(beneficiary_2)
 
             tmp = {
                 "bref_id": beneficiary["beneficiary_reference_id"],
@@ -818,10 +878,14 @@ def get_beneficiaries(request_header):
                 "vaccine": beneficiary["vaccine"],
                 "age": beneficiary["age"],
                 "status": beneficiary["vaccination_status"],
+                "dose1_date":beneficiary["dose1_date"]
             }
+            if vaccinated:
+                tmp["due_date"]=beneficiary["dose2_due_date"]
             refined_beneficiaries.append(tmp)
 
         display_table(refined_beneficiaries)
+        print(refined_beneficiaries)
         print(
             """
         ################# IMPORTANT NOTES #################
@@ -847,10 +911,20 @@ def get_beneficiaries(request_header):
                 "vaccine": item["vaccine"],
                 "age": item["age"],
                 "status": item["vaccination_status"],
+                "dose1_date":item["dose1_date"]
             }
+                                
             for idx, item in enumerate(beneficiaries)
             if idx in beneficiary_idx
         ]
+
+        for beneficiary in reqd_beneficiaries:
+                if vaccinated:
+                    days_remaining=vaccine_dose2_duedate(beneficiary["vaccine"])
+                        
+                    dose1_date=datetime.datetime.strptime(beneficiary["dose1_date"], "%d-%m-%Y")
+                    dose2DueDate=dose1_date+datetime.timedelta(days=days_remaining)
+                    beneficiary["dose2_due_date"]=dose2DueDate.strftime("%d-%m-%Y")
 
         print(f"Selected beneficiaries: ")
         display_table(reqd_beneficiaries)
