@@ -4,9 +4,7 @@ def test_captcha_builder():
     from svglib.svglib import svg2rlg
     from reportlab.graphics import renderPM
     import PySimpleGUI as sg
-    import re
-    #with open('captcha.svg', 'w') as f:
-    #    f.write(re.sub('(<path d=)(.*?)(fill=\"none\"/>)', '', resp['captcha']))
+
     drawing = svg2rlg('captcha.svg')
     renderPM.drawToFile(drawing, "captcha.png", fmt="PNG")
 
@@ -34,31 +32,38 @@ def test_captcha_builder():
         print("\nOhh NO !!! you have entered wrong captcha : %s while expected: %s" % (captcha_value, expected_captcha_value))
         print("Check if you are missing any required python packages\n\n")
 
-def test_captcha_builder_auto(api_key):
-    from PIL import Image
-    from svglib.svglib import svg2rlg
-    from reportlab.graphics import renderPM
-    from anticaptchaofficial.imagecaptcha import imagecaptcha
-    import re, time
-    drawing = svg2rlg('captcha.svg')
-    renderPM.drawToFile(drawing, "captcha.png", fmt="PNG")
+def test_captcha_builder_auto():
+    import re, json, base64, os, sys, time
+    from bs4 import BeautifulSoup
 
-    solver = imagecaptcha()
-    solver.set_verbose(1)
-    solver.set_key(api_key)
+    model = open(os.path.join(os.path.dirname(sys.argv[0]), "../src/model.txt")).read()
+    svg_data = open("captcha.svg", "r")
+    soup = BeautifulSoup(svg_data, 'html.parser')
+    model = json.loads(base64.b64decode(model.encode('ascii')))
+    CAPTCHA = {}
 
     print("Started solving captcha...")
     tic = time.perf_counter()
-    captcha_text = solver.solve_and_return_solution("captcha.png")
+
+    for path in soup.find_all('path', {'fill': re.compile("#")}):
+        ENCODED_STRING = path.get('d').upper()
+        INDEX = re.findall('M(\d+)', ENCODED_STRING)[0]
+        ENCODED_STRING = re.findall("([A-Z])", ENCODED_STRING)
+        ENCODED_STRING = "".join(ENCODED_STRING)
+        CAPTCHA[int(INDEX)] = model.get(ENCODED_STRING)
+
+    CAPTCHA = sorted(CAPTCHA.items())
+    CAPTCHA_STRING = ''
+
+    for char in CAPTCHA:
+        CAPTCHA_STRING += char[1]
+    
     toc = time.perf_counter()
-
-    if captcha_text == "SNNvu":
-        print(f"Captcha solve success: {captcha_text}")
-        print(f"It took {toc - tic:0.4f} seconds to solve captcha")
+    if CAPTCHA_STRING == "SNNvu":
+        print(f"Captcha solve success: {CAPTCHA_STRING}")
+        print(f"It took {toc - tic:0.5f} seconds to solve captcha")
     else:
-        print(f"Task finished with error: {solver.error_code} - {captcha_text}")
-
-    return captcha_text
+        print(f"Task finished with wrongly predicted value - {CAPTCHA_STRING}")
 
 def test_python_packages():
     try:
@@ -66,7 +71,8 @@ def test_python_packages():
         from svglib.svglib import svg2rlg
         from reportlab.graphics import renderPM
         import PySimpleGUI as sg
-        import re
+        import re, json, base64, os, sys
+        from bs4 import BeautifulSoup
     except Exception:
         print("\n!!!!! Looks like you are missing required python packages. Please look at requirements.txt !!!!")
         exit(1)
@@ -99,4 +105,4 @@ def test_tkinter_lib():
 test_python_packages()
 test_tkinter_lib()
 test_captcha_builder()
-test_captcha_builder_auto("APIKEY") #http://anti-captcha.com
+test_captcha_builder_auto()
