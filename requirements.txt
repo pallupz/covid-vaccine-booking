@@ -6,3 +6,4 @@ reportlab~=3.5.67
 pysimplegui~=4.41.2
 Pillow~=8.2.0
 beautifulsoup4~=4.9.3
+pyjwt~=2.1.0
