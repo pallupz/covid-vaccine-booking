@@ -214,9 +214,9 @@ def collect_user_details(request_header):
 
     # Get refresh frequency
     refresh_freq = input(
-        "How often do you want to refresh the calendar (in seconds)? Default 15. Minimum 1. : "
+        "How often do you want to refresh the calendar (in seconds)? Default 10. Minimum 5. (You might be blocked if the value is too low, in that case please try after a while with a lower frequency) : "
     )
-    refresh_freq = int(refresh_freq) if refresh_freq and int(refresh_freq) >= 1 else 15
+    refresh_freq = int(refresh_freq) if refresh_freq and int(refresh_freq) >= 1 else 10
 
     # Get search start date
     start_date = input(
