@@ -9,7 +9,7 @@
 - This CANNOT book slots automatically. It doesn't skip any of the steps that a normal user would have to take on the official portal. You will still have to enter the OTP and Captcha.
 - Do NOT use unless all the beneficiaries selected are supposed to get the same vaccine and dose. 
 - There is no option to register new mobile or add beneficiaries. This can be used only after beneficiary has been added through the official app/site.
-- This goes without saying but, once you get your shot, please do help out any underprivileged people around you who may not have a laptop or the know-how. For instance any sort of domestic help, or the staff in your local grocery store owner, or literally the thousands of people who don't have the knowledge  or luxury we do.
+- This goes without saying but, once you get your shot, please do help out any underprivileged people around you who may not have a laptop or the know-how. For instance any sort of domestic help, or the staff in your local grocery store, or literally the thousands of people who don't have the knowledge  or luxury we do.
 - API Details (read the first paragraph at least): https://apisetu.gov.in/public/marketplace/api/cowin/cowin-public-v2
 - BMC Link: https://www.buymeacoffee.com/pallupz
     - All donations, as they materialize, will be split equally between COVID Kerala CMDRF and a centre for cerebral palsied children with multiple handicaps.
