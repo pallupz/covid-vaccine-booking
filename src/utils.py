@@ -272,7 +272,10 @@ def collect_user_details(request_header):
     print(
         "===== BE CAREFUL WITH THIS OPTION! AUTO-BOOKING WILL BOOK THE FIRST AVAILABLE CENTRE, DATE, AND A RANDOM SLOT! ====="
     )
-    auto_book = "yes-please"
+    auto_book = input(
+        "Do you want to Enable the Auto-Booking Function? (yes-please or no) Default no: "
+    )
+    auto_book = "no" if not auto_book else auto_book
 
     print("\n================================= Captcha Automation =================================\n")
 
