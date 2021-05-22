@@ -59,7 +59,6 @@ def viable_options(resp, minimum_slots, min_age_booking, fee_type, dose_num):
                         "center_id": center["center_id"],
                         "vaccine": session["vaccine"],
                         "fee_type": center["fee_type"],
-                        "fee": session.get("fee", "0"),
                         "available": available_capacity,
                         "date": session["date"],
                         "slots": session["slots"],
@@ -432,6 +431,10 @@ def book_appointment(request_header, details, mobile, generate_captcha_pref):
         1. Takes details in json format
         2. Attempts to book an appointment using the details
         3. Returns True or False depending on Token Validity
+           a) 0 - when token is expired
+           b) 1 - when token is OK but unable to book due to selected center is completely booked
+           c) 2 - when token is OK but unable to book due to any other reason
+
     """
     try:
         valid_captcha = True
@@ -450,7 +453,7 @@ def book_appointment(request_header, details, mobile, generate_captcha_pref):
 
             if resp.status_code == 401:
                 print("TOKEN INVALID")
-                return False
+                return 0
 
             elif resp.status_code == 200:
                 beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
@@ -467,13 +470,28 @@ def book_appointment(request_header, details, mobile, generate_captcha_pref):
                 os.system("pause")
                 sys.exit()
 
+            elif resp.status_code == 409:
+                print(f"Response: {resp.status_code} : {resp.text}")
+                try:
+                    data = resp.json()
+                    # Response: 409 : {"errorCode":"APPOIN0040","error":"This vaccination center is completely booked for the selected date. Please try another date or vaccination center."}
+                    if data.get("errorCode", '') == 'APPOIN0040':
+                        return 1
+                except Exception as e:
+                    print(str(e))
+                return 2
             elif resp.status_code == 400:
                 print(f"Response: {resp.status_code} : {resp.text}")
+                # Response: 400 : {"errorCode":"APPOIN0044", "error":"Please enter valid security code"}
                 pass
-
+            elif resp.status_code >= 500:
+                print(f"Response: {resp.status_code} : {resp.text}")
+                # Server error at the time of high booking
+                # Response: 500 : {"message":"Throughput exceeds the current capacity of your table or index.....","code":"ThrottlingException","statusCode":400,"retryable":true}
+                pass
             else:
                 print(f"Response: {resp.status_code} : {resp.text}")
-                return True
+                return 2
 
     except Exception as e:
         print(str(e))
@@ -491,6 +509,7 @@ def check_and_book(
         4. Calls function to book appointment, and
         5. Returns True or False depending on Token Validity
     """
+    slots_available = False
     try:
         min_age_booking = get_min_age(beneficiary_dtls)
 
@@ -558,56 +577,106 @@ def check_and_book(
                 cleaned_options_for_display.append(item)
 
             display_table(cleaned_options_for_display)
-            randrow = random.randint(1, len(options))
-            randcol = random.randint(1, len(options[randrow - 1]["slots"]))
-            choice = str(randrow) + "." + str(randcol)
-            print("Random Rows.Column:" + choice)
-
+            slots_available = True
         else:
             for i in range(refresh_freq, 0, -1):
                 msg = f"No viable options. Next update in {i} seconds.."
                 print(msg, end="\r", flush=True)
                 sys.stdout.flush()
                 time.sleep(1)
-            choice = "."
+            slots_available = True
 
     except TimeoutOccurred:
         time.sleep(1)
         return True
 
     else:
-        if choice == ".":
+        if not slots_available:
             return True
         else:
-            try:
-                choice = choice.split(".")
-                choice = [int(item) for item in choice]
-                print(
-                    f"============> Got Choice: Center #{choice[0]}, Slot #{choice[1]}"
-                )
+            # If we reached here then it means there is at-least one center having required doses.
 
-                new_req = {
-                    "beneficiaries": [
-                        beneficiary["bref_id"] for beneficiary in beneficiary_dtls
-                    ],
-                    "dose": 2
-                    if [beneficiary["status"] for beneficiary in beneficiary_dtls][0]
-                       == "Partially Vaccinated"
-                    else 1,
-                    "center_id": options[choice[0] - 1]["center_id"],
-                    "session_id": options[choice[0] - 1]["session_id"],
-                    "slot": options[choice[0] - 1]["slots"][choice[1] - 1],
-                }
+            # sort options based on max available capacity of vaccine doses
+            # highest available capacity of vaccine doses first for better chance of booking
 
-                print(f"Booking with info: {new_req}")
-                return book_appointment(request_header, new_req, mobile, captcha_automation)
+            # ==> Caveat: if multiple folks are trying for same region like tier-I or tier-II cities then
+            # choosing always first maximum available capacity may be a problem.
+            # To solve this problem, we can use bucketization logic on top of available capacity
+            #
+            # Example:
+            # meaning of pair is {center id, available capacity of vaccine doses at the center}
+            # options = [{c1, 203}, {c2, 159}, {c3, 180}, {c4, 25}, {c5, 120}]
+            #
+            # Solution-1) Max available capacity wise ordering of options = [{c1, 203}, {c3, 180}, {c2, 159}, {c5, 120}, {c4, 25}]
+            # Solution-2) Max available capacity with simple bucketization wise ordering of options = [{c1, 200}, {c3, 150}, {c2, 150}, {c5, 100}, {c4, 0}] when bucket size = 50
+            # Solution-3) Max available capacity with simple bucketization & random seed wise ordering of options = [{c1, 211}, {c2, 180}, {c3, 160}, {c5, 123}, {c4, 15}] when bucket size = 50 + random seed
+            #
+            # Solution-3) is best as it also maximizing the chance of booking while considering max
+            # at the same time it also adds flavour of randomization to handle concurrency.
 
-            except IndexError:
-                print("============> Invalid Option!")
-                os.system("pause")
-                pass
+            BUCKET_SIZE = 50
+            options = sorted(
+                options,
+                key=lambda k: (BUCKET_SIZE*int(k.get('available', 0)/BUCKET_SIZE)) + random.randint(0, BUCKET_SIZE-1),
+                reverse=True)
 
+            start_epoch = int(time.time())
 
+            # if captcha automation is enabled then have less duration for stale information of centers & slots.
+            MAX_ALLOWED_DURATION_OF_STALE_INFORMATION_IN_SECS = 1*60 if captcha_automation == 'n' else 2*60
+
+            # Now try to look into all options unless it is not authentication related issue
+            for i in range(0, len(options)):
+                option = options[i]
+                all_slots_of_a_center = option.get("slots", [])
+                if not all_slots_of_a_center:
+                    continue
+                # For better chances of booking, use random slots of a particular center
+                # This will help if too many folks are trying for same region at the same time.
+                # Everyone will have better chances of booking otherwise everyone will look for same slot of same center at a time.
+                # Randomized slots selection is maximizing chances of booking
+                random.shuffle(all_slots_of_a_center) # in-place modification
+
+                for selected_slot in all_slots_of_a_center:
+                    # if have spent too much time in loop iteration then means we are looking at stale information about centers & slots.
+                    # so we should re-calculate this information while ending this loop more aggressively.
+                    current_epoch = int(time.time())
+                    if current_epoch - start_epoch >= MAX_ALLOWED_DURATION_OF_STALE_INFORMATION_IN_SECS:
+                        print("tried too many centers but still not able to book then look for current status of centers ...")
+                        return True
+
+                    try:
+                        center_id = option["center_id"]
+                        print(f"============> Trying Choice # {i} Center # {center_id}, Slot #{selected_slot}")
+
+                        dose_num = 2 if [beneficiary["status"] for beneficiary in beneficiary_dtls][0] == "Partially Vaccinated" else 1
+                        new_req = {
+                            "beneficiaries": [
+                                beneficiary["bref_id"] for beneficiary in beneficiary_dtls
+                            ],
+                            "dose": dose_num,
+                            "center_id": option["center_id"],
+                            "session_id": option["session_id"],
+                            "slot": selected_slot,
+                        }
+                        print(f"Booking with info: {new_req}")
+                        booking_status = book_appointment(request_header, new_req, mobile, captcha_automation, captcha_automation_api_key, captcha_api_choice)
+                        # is token error ? If yes then break the loop by returning immediately
+                        if booking_status == 0:
+                            return False
+                        else:
+                            # try irrespective of booking status as it will be beneficial choice.
+                            # try different center as slots are full for this center
+                            # break the slots loop
+                            print('Center is fully booked..Trying another...')
+                            break
+                    except IndexError:
+                        print("============> Invalid Option!")
+                        os.system("pause")
+                        pass
+
+            # tried all slots of all centers but still not able to book then look for current status of centers
+            return True
 def get_vaccine_preference():
     print(
         "It seems you're trying to find a slot for your first dose. Do you have a vaccine preference?"
@@ -945,3 +1014,4 @@ def generate_token_OTP_manual(mobile, request_header):
 
         except Exception as e:
             print(str(e))
+
