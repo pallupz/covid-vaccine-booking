@@ -126,15 +126,16 @@ def main():
                 # If yes, generate new one
                 if not token_valid: 
                     print('Token is INVALID.')
-                    if otp_pref=="n":
-                        try:
-                            token = generate_token_OTP(mobile, base_request_header)
-                        except Exception as e:
-                            print(str(e))
-                            print('OTP Retrying in 5 seconds')
-                            time.sleep(5)
-                    elif otp_pref=="y":
-                        token = generate_token_OTP_manual(mobile, base_request_header)
+                    while token is None:
+                        if otp_pref=="n":
+                            try:
+                                token = generate_token_OTP(mobile, base_request_header)
+                            except Exception as e:
+                                print(str(e))
+                                print('OTP Retrying in 5 seconds')
+                                time.sleep(5)
+                        elif otp_pref=="y":
+                            token = generate_token_OTP_manual(mobile, base_request_header)
 
                 check_and_book(request_header, info.beneficiary_dtls, info.location_dtls, info.search_option,
                                              min_slots=info.minimum_slots,
