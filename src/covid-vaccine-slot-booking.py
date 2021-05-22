@@ -4,9 +4,18 @@ import copy
 import time
 from types import SimpleNamespace
 import requests, sys, argparse, os, datetime
+import jwt
 from utils import generate_token_OTP, generate_token_OTP_manual, check_and_book, beep, BENEFICIARIES_URL, WARNING_BEEP_DURATION, \
     display_info_dict, save_user_info, collect_user_details, get_saved_user_info, confirm_and_proceed, get_dose_num, display_table, fetch_beneficiaries
 
+def is_token_valid(token):
+    payload = jwt.decode(token, options={"verify_signature": False})
+    remaining_seconds = payload['exp'] - int(time.time())
+    if remaining_seconds <= 1*30: # 30 secs early before expiry for clock issues
+        return False
+    if remaining_seconds <= 60:
+        print("Token is about to expire in next 1 min ...")
+    return True
 
 def main():
     parser = argparse.ArgumentParser()
@@ -104,36 +113,19 @@ def main():
 
         info = SimpleNamespace(**collected_details)
 
-        token_valid = True
-        while token_valid:
+        while True: # infinite-loop
+            # create new request_header
             request_header = copy.deepcopy(base_request_header)
             request_header["Authorization"] = f"Bearer {token}"
 
             # call function to check and book slots
             try:
-                token_valid = check_and_book(request_header, info.beneficiary_dtls, info.location_dtls, info.search_option,
-                                             min_slots=info.minimum_slots,
-                                             ref_freq=info.refresh_freq,
-                                             auto_book=info.auto_book,
-                                             start_date=info.start_date,
-                                             vaccine_type=info.vaccine_type,
-                                             fee_type=info.fee_type,
-                                             mobile=mobile,
-                                             captcha_automation=info.captcha_automation,
-                                             dose_num=get_dose_num(collected_details))
+                token_valid = is_token_valid(token)
 
-                # check if token is still valid
-                beneficiaries_list = requests.get(BENEFICIARIES_URL, headers=request_header)
-                if beneficiaries_list.status_code == 200:
-                    token_valid = True
-
-                else:
-                    # if token invalid, regenerate OTP and new token
-                   # beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
+                # token is invalid ? 
+                # If yes, generate new one
+                if not token_valid: 
                     print('Token is INVALID.')
-                    token_valid = False
-                    token = None
-
                     while token is None:
                         if otp_pref=="n":
                             try:
@@ -144,7 +136,17 @@ def main():
                                 time.sleep(5)
                         elif otp_pref=="y":
                             token = generate_token_OTP_manual(mobile, base_request_header)
-                    token_valid = True
+
+                check_and_book(request_header, info.beneficiary_dtls, info.location_dtls, info.search_option,
+                                             min_slots=info.minimum_slots,
+                                             ref_freq=info.refresh_freq,
+                                             auto_book=info.auto_book,
+                                             start_date=info.start_date,
+                                             vaccine_type=info.vaccine_type,
+                                             fee_type=info.fee_type,
+                                             mobile=mobile,
+                                             captcha_automation=info.captcha_automation,
+                                             dose_num=get_dose_num(collected_details))
             except Exception as e:
                 print(str(e))
                 print('Retryin in 5 seconds')
