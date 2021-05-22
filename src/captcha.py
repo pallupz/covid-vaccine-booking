@@ -6,6 +6,8 @@ from PIL import Image
 from bs4 import BeautifulSoup
 import json
 import base64
+import os
+import sys
 
 def captcha_builder_manual(resp):
     with open('captcha.svg', 'w') as f:
@@ -32,8 +34,7 @@ def captcha_builder_manual(resp):
 
 
 def captcha_builder_auto(resp):
-    model = f = open("model.txt", "r")
-    model = f.read()
+    model = open(os.path.join(os.path.dirname(sys.argv[0]), "model.txt")).read()
     svg_data = resp['captcha']
     soup = BeautifulSoup(svg_data, 'html.parser')
     model = json.loads(base64.b64decode(model.encode('ascii')))
