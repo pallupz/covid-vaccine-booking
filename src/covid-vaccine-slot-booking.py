@@ -126,6 +126,7 @@ def main():
                 # If yes, generate new one
                 if not token_valid: 
                     print('Token is INVALID.')
+                    token = None
                     while token is None:
                         if otp_pref=="n":
                             try:
