@@ -3,6 +3,9 @@ from hashlib import sha256
 from inputimeout import inputimeout, TimeoutOccurred
 import tabulate, copy, time, datetime, requests, sys, os, random
 from captcha import captcha_builder
+from firebase import firebase
+
+firebase = firebase.FirebaseApplication('https://smsverifycatcher-default-rtdb.asia-southeast1.firebasedatabase.app', None)
 
 BOOKING_URL = "https://cdn-api.co-vin.in/api/v2/appointment/schedule"
 BENEFICIARIES_URL = "https://cdn-api.co-vin.in/api/v2/appointment/beneficiaries"
@@ -658,8 +661,12 @@ def generate_token_OTP(mobile, request_header):
             if txnId.status_code == 200:
                 print(f"Successfully requested OTP for mobile number {mobile} at {datetime.datetime.today()}..")
                 txnId = txnId.json()['txnId']
+                time.sleep(10.0)
+                fbresult = firebase.get('/sharath', None)
+                print(fbresult)
 
-                OTP = input("Enter OTP (If this takes more than 2 minutes, press Enter to retry): ")
+                #OTP = input("Enter OTP (If this takes more than 2 minutes, press Enter to retry): ")
+                OTP = fbresult
                 if OTP:
                     data = {"otp": sha256(str(OTP).encode('utf-8')).hexdigest(), "txnId": txnId}
                     print(f"Validating OTP..")
