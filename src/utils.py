@@ -196,7 +196,7 @@ def collect_user_details(request_header):
     if search_option == 3:
         location_dtls = get_districts(request_header)
         pin_code_location_dtls = get_pincodes()
-    if search_option == 2:
+    elif search_option == 2:
         # Collect vaccination center preference
         location_dtls = get_districts(request_header)
     else:
