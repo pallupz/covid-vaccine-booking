@@ -870,6 +870,8 @@ def get_beneficiaries(request_header):
                                
                 dose1_date=datetime.datetime.strptime(beneficiary["dose1_date"], "%d-%m-%Y")
                 beneficiary["dose2_due_date"]=dose1_date+datetime.timedelta(days=days_remaining)
+            else:
+                vaccinated=False
                 #print(beneficiary_2)
 
             tmp = {
@@ -885,7 +887,7 @@ def get_beneficiaries(request_header):
             refined_beneficiaries.append(tmp)
 
         display_table(refined_beneficiaries)
-        print(refined_beneficiaries)
+        #print(refined_beneficiaries)
         print(
             """
         ################# IMPORTANT NOTES #################
@@ -919,7 +921,7 @@ def get_beneficiaries(request_header):
         ]
 
         for beneficiary in reqd_beneficiaries:
-                if vaccinated:
+                if beneficiary["status"]=="Partially Vaccinated":
                     days_remaining=vaccine_dose2_duedate(beneficiary["vaccine"])
                         
                     dose1_date=datetime.datetime.strptime(beneficiary["dose1_date"], "%d-%m-%Y")
