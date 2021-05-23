@@ -145,7 +145,23 @@ def get_dose_num(collected_details):
         return 2
 
     return 1
-
+    
+def start_date_search():
+        # Get search start date
+        start_date = input(
+                "\nSearch for next seven day starting from when?\nUse 1 for today, 2 for tomorrow, or provide a date in the format dd-mm-yyyy. Default 2: "
+            )
+        if not start_date:
+            start_date = 2
+        elif start_date in ["1", "2"]:
+            start_date = int(start_date)
+        else:
+            try:
+                datetime.datetime.strptime(start_date, "%d-%m-%Y")
+            except ValueError:
+                start_date = 2
+                print('Invalid Date! Proceeding with tomorrow.')
+        return start_date
 
 def collect_user_details(request_header):
     # Get Beneficiaries
@@ -253,23 +269,13 @@ def collect_user_details(request_header):
             else:
                 os.system("pause")
                 sys.exit(1)
+        else:
+            start_date=start_date_search()
 
     else:
-        # Get search start date
-        start_date = input(
-                "\nSearch for next seven day starting from when?\nUse 1 for today, 2 for tomorrow, or provide a date in the format dd-mm-yyyy. Default 2: "
-            )
-        if not start_date:
-            start_date = 2
-        elif start_date in ["1", "2"]:
-            start_date = int(start_date)
-        else:
-            try:
-                datetime.datetime.strptime(start_date, "%d-%m-%Y")
-            except ValueError:
-                start_date = 2
-                print('Invalid Date! Proceeding with tomorrow.')
-    # Get preference of Free/Paid option
+        # Non vaccinated
+        start_date=start_date_search()
+        
     fee_type = get_fee_type_preference()
 
     print(
@@ -586,6 +592,7 @@ def check_and_book(
             )
 
             pincode_filtered_options = []
+
             for option in pincode_filtered_options: 
                 for location in pin_code_location_dtls:
                     if int(location["pincode"]) in [option["pincode"] for option in options]:
