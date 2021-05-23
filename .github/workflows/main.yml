@@ -29,8 +29,6 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
       - uses: fregante/setup-git-user@v1
-
-
       
       # Set branch name
       - name: Set branch name
@@ -49,27 +47,10 @@ jobs:
         run: |
           rm covid-vaccine-slot-booking.exe -ErrorAction Ignore
           cd src
-          pyinstaller covid-vaccine-slot-booking.py
-
-      # Copy library files
-      - name: copy fonts folder
-        uses: MadaraUchiha/copy-action@0.0.1
-        with:
-          source: libs\fonts
-          target: dist\covid-vaccine-slot-booking\reportlab\
-      - name: make the zip file of dist folder
-
-      # Make zip file
-        uses: papeloto/action-zip@v1
-        with:
-          files: dist/
-          dest: windows-exe.zip
-
-      # Remove not required files
-      - name: Package Script to EXE
-        run: |
-          rm -r /build -ErrorAction Ignore
-
+          pyinstaller --onefile covid-vaccine-slot-booking.py
+          cd ..
+          move src\dist\covid-vaccine-slot-booking.exe .
+      
       # Commit and push EXE file to branch
       - name: Push EXE to branch
         run: |
