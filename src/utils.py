@@ -133,7 +133,7 @@ def get_saved_user_info(filename):
 
     # for backward compatible logic
     if data["search_option"] !=3 and "pin_code_location_dtls" not in data:
-        data["pin_code_location_dtls"] = {}
+        data["pin_code_location_dtls"] = []
     return data
 
 
@@ -192,7 +192,7 @@ def collect_user_details(request_header):
     else:
         search_option = int(search_option)
 
-    pin_code_location_dtls = {}
+    pin_code_location_dtls = []
     if search_option == 3:
         location_dtls = get_districts(request_header)
         pin_code_location_dtls = get_pincodes()
