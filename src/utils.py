@@ -131,6 +131,9 @@ def get_saved_user_info(filename):
     with open(filename, "r") as f:
         data = json.load(f)
 
+    # for backward compatible logic
+    if data["search_option"] !=3 and "pin_code_location_dtls" not in data:
+        data["pin_code_location_dtls"] = {}
     return data
 
 
@@ -181,20 +184,23 @@ def collect_user_details(request_header):
     )
     # get search method to use
     search_option = input(
-        """Search by Pincode? Or by State/District? \nEnter 1 for Pincode or 2 for State/District. (Default 2) : """
+        """Search by Pincode? Or by State/District Or Smart search State/District for selected Pincodes ? \nEnter 1 for Pincode or 2 for State/District or 3 for State/District filter by Pincodes (Optimized for rate-limit) (Default 2): """
     )
 
-    if not search_option or int(search_option) not in [1, 2]:
+    if not search_option or int(search_option) not in [1, 2, 3]:
         search_option = 2
     else:
         search_option = int(search_option)
 
-    if search_option == 2:
-        # Collect vaccination center preferance
+    pin_code_location_dtls = {}
+    if search_option == 3:
         location_dtls = get_districts(request_header)
-
+        pin_code_location_dtls = get_pincodes()
+    if search_option == 2:
+        # Collect vaccination center preference
+        location_dtls = get_districts(request_header)
     else:
-        # Collect vaccination center preferance
+        # Collect vaccination center preference
         location_dtls = get_pincodes()
 
     print(
@@ -282,6 +288,7 @@ def collect_user_details(request_header):
     collected_details = {
         "beneficiary_dtls": beneficiary_dtls,
         "location_dtls": location_dtls,
+        "pin_code_location_dtls": pin_code_location_dtls,
         "search_option": search_option,
         "minimum_slots": minimum_slots,
         "refresh_freq": refresh_freq,
@@ -529,7 +536,7 @@ def book_appointment(request_header, details, mobile, generate_captcha_pref):
 
 
 def check_and_book(
-        request_header, beneficiary_dtls, location_dtls, search_option, **kwargs
+        request_header, beneficiary_dtls, location_dtls, pin_code_location_dtls, search_option, **kwargs
 ):
     """
     This function
@@ -562,7 +569,29 @@ def check_and_book(
         else:
             pass
 
-        if search_option == 2:
+        if search_option == 3:
+            options = check_calendar_by_district(
+                request_header,
+                vaccine_type,
+                location_dtls,
+                start_date,
+                minimum_slots,
+                min_age_booking,
+                fee_type,
+                dose_num
+            )
+
+            pincode_filtered_options = []
+            for option in pincode_filtered_options: 
+                for location in pin_code_location_dtls:
+                    if int(location["pincode"]) in [option["pincode"] for option in options]:
+                        # ADD this filtered PIN code option
+                        pincode_filtered_options.append()
+                        for _ in range(2):
+                            beep(location["alert_freq"], 150)
+            options = pincode_filtered_options
+
+        elif search_option == 2:
             options = check_calendar_by_district(
                 request_header,
                 vaccine_type,
@@ -745,6 +774,9 @@ def get_pincodes():
     locations = []
     pincodes = input("Enter comma separated index numbers of pincodes to monitor: ")
     for idx, pincode in enumerate(pincodes.split(",")):
+        if not pincode or len(pincode) < 6:
+            print(f"Ignoring invalid pincode: {pincode}")
+            continue
         pincode = {"pincode": pincode, "alert_freq": 440 + ((2 * idx) * 110)}
         locations.append(pincode)
     return locations

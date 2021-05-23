@@ -138,16 +138,22 @@ def main():
                         elif otp_pref=="y":
                             token = generate_token_OTP_manual(mobile, base_request_header)
 
-                check_and_book(request_header, info.beneficiary_dtls, info.location_dtls, info.search_option,
-                                             min_slots=info.minimum_slots,
-                                             ref_freq=info.refresh_freq,
-                                             auto_book=info.auto_book,
-                                             start_date=info.start_date,
-                                             vaccine_type=info.vaccine_type,
-                                             fee_type=info.fee_type,
-                                             mobile=mobile,
-                                             captcha_automation=info.captcha_automation,
-                                             dose_num=get_dose_num(collected_details))
+                check_and_book(
+                    request_header, 
+                    info.beneficiary_dtls,
+                    info.location_dtls,
+                    info.pin_code_location_dtls,
+                    info.search_option,
+                    min_slots=info.minimum_slots,
+                    ref_freq=info.refresh_freq,
+                    auto_book=info.auto_book,
+                    start_date=info.start_date,
+                    vaccine_type=info.vaccine_type,
+                    fee_type=info.fee_type,
+                    mobile=mobile,
+                    captcha_automation=info.captcha_automation,
+                    dose_num=get_dose_num(collected_details)
+                            )
             except Exception as e:
                 print(str(e))
                 print('Retryin in 5 seconds')
