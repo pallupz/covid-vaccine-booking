@@ -327,7 +327,8 @@ def check_calendar_by_district(
         minimum_slots,
         min_age_booking,
         fee_type,
-        dose_num
+        dose_num,
+        beep=True
 ):
     """
     This function
@@ -373,10 +374,12 @@ def check_calendar_by_district(
             else:
                 pass
 
-        for location in location_dtls:
-            if location["district_name"] in [option["district"] for option in options]:
-                for _ in range(2):
-                    beep(location["alert_freq"], 150)
+        # beep only when needed
+        if beep:
+            for location in location_dtls:
+                if location["district_name"] in [option["district"] for option in options]:
+                    for _ in range(2):
+                        beep(location["alert_freq"], 150)
         return options
 
     except Exception as e:
@@ -578,7 +581,8 @@ def check_and_book(
                 minimum_slots,
                 min_age_booking,
                 fee_type,
-                dose_num
+                dose_num,
+                beep=False
             )
 
             pincode_filtered_options = []
@@ -600,7 +604,8 @@ def check_and_book(
                 minimum_slots,
                 min_age_booking,
                 fee_type,
-                dose_num
+                dose_num,
+                beep=True
             )
         else:
             options = check_calendar_by_pincode(
