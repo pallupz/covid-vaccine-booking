@@ -8,7 +8,27 @@
 
 </div>
 
-### Contents
+## Quickstart Guide
+**Instructions to follow on your laptop and phone below. To fetch OTP automatically, Step 2 is compulsory**
+
+### 1. On your laptop
+1. Make sure [Python 3.8+](https://python.org) is installed.
+2. Clone this repo: ```git clone https://github.com/ithihasmadala/covid-vaccine-booking.git``` or download zip file and extract
+3. Install the requirements:
+	- ```pip install -r requirements.txt``` on Windows
+	- ```pip3 install -r requirements.txt``` on Linux or Mac
+4. Run the script:
+	- ```python src\covid-vaccine-slot-booking.py``` on Windows
+	- ```python3 src/covid-vaccine-slot-booking.py``` on Linux or Mac
+5. Follow the steps. For more detailed guide: [Steps](#steps)
+
+### 2. On your Phone (Required for fetching OTP automatically)
+1. **Android Phone**: Follow either [Option 1: IFTTT app](#option-1-ifttt) or [Option 2: CoWIN OTP Retriever app](#option-2-cowin-otp-retriever)
+2. **iPhone**: Follow [Using Shortcuts app](#using-shortcuts-app)
+
+<br>
+
+## Contents
   - [Before you start](#before-you-start)
   - [What this repository does](#what-this-repository-does)
   - [Setup Guide: Android](#setup-guide-for-android)
@@ -34,12 +54,11 @@
 3. If you are still facing errors and want to run this script on windows using exe, please see the section below [How to run on windows](#how-to-run-on-windows)
 4. Instructions for iOS have also been added. See the [Setup Guide for iOS](#setup-guide-for-ios) for details. Please note that its not possible to automate the OTP auto read on iOS completely, however its possible to make it a 1 tap process, which is far better than seeing and entering the OTP manually.
 
-
 ## What this repository does
 1. Automates OTP read from the SMS after the token expires.
 2. Randomly chooses one of the available slots instead of waiting for input from the user.
 3. Reduces the polling wait to optimize on the polling frequency (hence the name bombardier)
-![image](https://user-images.githubusercontent.com/83712877/117467267-290fd200-af71-11eb-8461-d6e253c183d7.png)
+<img src="https://user-images.githubusercontent.com/83712877/117467267-290fd200-af71-11eb-8461-d6e253c183d7.png" />
 
 #### How it works via IFTTT app on Android
 1. https://ifttt.com/ is used to create a SMS trigger. The trigger happens when the OTP SMS is received
@@ -60,6 +79,8 @@
 4. The script polls the shared storage to get the OTP
 5. Once the OTP is received, the polling resumes
 6. If a free slot is found, rather than waiting for an input, it randomly chooses a slot and attempts to book
+
+<br>
 
 ## Setup Guide for Android
 
@@ -92,15 +113,19 @@
 
 
 #### IFTTT steps in screenshots:
-![image](https://user-images.githubusercontent.com/83712877/117159172-b0c4d780-addd-11eb-90f0-ab8438db4c8e.png)
-![image](https://user-images.githubusercontent.com/83712877/117159291-c76b2e80-addd-11eb-991a-dc6de4bbb620.png)
-![image](https://user-images.githubusercontent.com/83712877/117159444-e669c080-addd-11eb-9b4c-448335b1c781.png)
-![image](https://user-images.githubusercontent.com/83712877/117159516-f8e3fa00-addd-11eb-832d-fcf92238f823.png)
-![image](https://user-images.githubusercontent.com/83712877/117159663-17e28c00-adde-11eb-9a5f-4faf39430279.png)
-![image](https://user-images.githubusercontent.com/83712877/117159753-2c268900-adde-11eb-9bb3-4bb54f951683.png)
-![image](https://user-images.githubusercontent.com/83712877/117159818-38aae180-adde-11eb-96b5-0e779803b4b2.png)
-![image](https://user-images.githubusercontent.com/83712877/117159863-4496a380-adde-11eb-8874-40cc6f851cf6.png)
-![image](https://user-images.githubusercontent.com/83712877/117325821-b5a58c00-aeae-11eb-8156-2ea585a77834.png)
+
+| |
+|:-------------------------:|
+| <img alt="Step 1" src="https://user-images.githubusercontent.com/83712877/117159172-b0c4d780-addd-11eb-90f0-ab8438db4c8e.png"> Step 1 |
+
+| | |
+|:-------------------------:|:-------------------------:|
+|<img alt="Step 2" src="https://user-images.githubusercontent.com/83712877/117159291-c76b2e80-addd-11eb-991a-dc6de4bbb620.png"> Step 2 |<img alt="Step 3" src="https://user-images.githubusercontent.com/83712877/117159444-e669c080-addd-11eb-9b4c-448335b1c781.png"> Step 3 |
+|<img alt="Step 4" src="https://user-images.githubusercontent.com/83712877/117159516-f8e3fa00-addd-11eb-832d-fcf92238f823.png"> Step 4 |<img alt="Step 5" src="https://user-images.githubusercontent.com/83712877/117159753-2c268900-adde-11eb-9bb3-4bb54f951683.png"> Step 5 |
+|<img alt="Step 6" src="https://user-images.githubusercontent.com/83712877/117159753-2c268900-adde-11eb-9bb3-4bb54f951683.png"> Step 6 |<img alt="Step 7" src="https://user-images.githubusercontent.com/83712877/117159818-38aae180-adde-11eb-96b5-0e779803b4b2.png"> Step 7 |
+|<img alt="Step 8" src="https://user-images.githubusercontent.com/83712877/117159863-4496a380-adde-11eb-8874-40cc6f851cf6.png"> Step 8 |<img alt="Step 9" src="https://user-images.githubusercontent.com/83712877/117325821-b5a58c00-aeae-11eb-8156-2ea585a77834.png"> Step 9 |
+
+<br>
 
 ### Option 2: CoWIN OTP Retriever
 1. Install the [CoWinOTPRetriever Android app](./CoWinOtpRetreiver.apk?raw=true) by enabling installation from unknown sources.
@@ -115,20 +140,14 @@
 8. Security tip: Make sure to change back your settings to disallow app installation from unknown sources.
 
 #### CoWIN OTP Retriever steps in screenshots
-1. ![image](https://user-images.githubusercontent.com/3753228/117923351-814c2880-b311-11eb-9008-fbf497271e08.png)
-2. ![image](https://user-images.githubusercontent.com/3753228/117923398-9759e900-b311-11eb-9dec-4e003b772f0e.png)
-3. ![image](https://user-images.githubusercontent.com/3753228/117923447-a771c880-b311-11eb-92f5-b08903f1b20e.png)
-4. ![image](https://user-images.githubusercontent.com/3753228/117923482-b9ec0200-b311-11eb-8210-4c1e1b958d6a.png)
-5. ![image](https://user-images.githubusercontent.com/3753228/117924614-9e81f680-b313-11eb-8583-bffcadf681f3.png)
-6. ![image](https://user-images.githubusercontent.com/3753228/117923509-c40e0080-b311-11eb-9832-805c4676e4a5.png)
-7. ![image](https://user-images.githubusercontent.com/3753228/117923554-d6883a00-b311-11eb-8ae1-8ea36ffaf35b.png)
-8. ![image](https://user-images.githubusercontent.com/3753228/118130348-e17ac180-b41a-11eb-8af9-f9e13d671f07.png)
-9. ![image](https://user-images.githubusercontent.com/3753228/117947493-df870480-b32d-11eb-923d-47efa55f9586.png)
-11. ![image](https://user-images.githubusercontent.com/3753228/117948585-e4988380-b32e-11eb-9837-9abdda21c23e.png)
-12. ![image](https://user-images.githubusercontent.com/3753228/117949247-8ae48900-b32f-11eb-8b77-5d98ed07cfc6.png)
-13. ![image](https://user-images.githubusercontent.com/3753228/117925274-a1311b80-b314-11eb-9f77-ac6d83720de8.png)
-14. ![image](https://user-images.githubusercontent.com/3753228/117925321-b148fb00-b314-11eb-8b0a-7a4c55afae69.png)
-15. ![image](https://user-images.githubusercontent.com/3753228/117925366-c2920780-b314-11eb-8db5-e8f11325fa2e.png)
+| | | |
+|:-------------------------:|:-------------------------:|:-------------------------:|
+|<img alt="Step 1" src="https://user-images.githubusercontent.com/3753228/117923351-814c2880-b311-11eb-9008-fbf497271e08.png"> Step 1 |<img alt="Step 2" src="https://user-images.githubusercontent.com/3753228/117923398-9759e900-b311-11eb-9dec-4e003b772f0e.png"> Step 2 |<img alt="Step 3" src="https://user-images.githubusercontent.com/3753228/117923447-a771c880-b311-11eb-92f5-b08903f1b20e.png"> Step 3 |
+|<img alt="Step 4" src="https://user-images.githubusercontent.com/3753228/117923482-b9ec0200-b311-11eb-8210-4c1e1b958d6a.png"> Step 4 |<img alt="Step 5" src="https://user-images.githubusercontent.com/3753228/117924614-9e81f680-b313-11eb-8583-bffcadf681f3.png"> Step 5 |<img alt="Step 6" src="https://user-images.githubusercontent.com/3753228/117923509-c40e0080-b311-11eb-9832-805c4676e4a5.png"> Step 6 |
+|<img alt="Step 7" src="https://user-images.githubusercontent.com/3753228/117923554-d6883a00-b311-11eb-8ae1-8ea36ffaf35b.png"> Step 7 |<img alt="Step 8" src="https://user-images.githubusercontent.com/3753228/118130348-e17ac180-b41a-11eb-8af9-f9e13d671f07.png"> Step 8 |<img alt="Step 9" src="https://user-images.githubusercontent.com/3753228/117947493-df870480-b32d-11eb-923d-47efa55f9586.png"> Step 9 |
+|<img alt="Step 10" src="https://user-images.githubusercontent.com/3753228/117948585-e4988380-b32e-11eb-9837-9abdda21c23e.png"> Step 10 |<img alt="Step 11" src="https://user-images.githubusercontent.com/3753228/117949247-8ae48900-b32f-11eb-8b77-5d98ed07cfc6.png"> Step 11 | |
+
+<br>
 
 ## Setup Guide for iOS
 
@@ -139,7 +158,7 @@
 3. Select the `Message` option
 4. Put `CoWIN` in the Message Contains option & leave everything blank. Tap on Next button
 5. Tap on `Add action` and search for the option `Set Variable`. Give the variable name `text` and input as `Shortcut Input`
-6.     Then add another action and select `URL` and paste the url: https://kvdb.io/ASth4wnvVDPkg2bdjsiqMN/99XXXXXXXX replace 99XXXXXXXX with your phone number
+6. Then add another action and select `URL` and paste the url: https://kvdb.io/ASth4wnvVDPkg2bdjsiqMN/99XXXXXXXX replace 99XXXXXXXX with your phone number
 7. Then add another action and select `Get Contents of Url`. Click on show more. Change the method to `PUT`. Request Body to `File` and in the file row tap on `Choose Variable` and select `text` which we defined in Step 6.
 8. Click Next and save this automation.
 9. Clone this repository
@@ -157,23 +176,14 @@ Go to `src` directory and run the script  `cd src && python covid-vaccine-slot-b
 
 #### Shortcuts steps in screenshots
 
-![image1](https://user-images.githubusercontent.com/83958525/117808231-40550500-b27a-11eb-9f58-17c3c9f52dc5.PNG)
-![image2](https://user-images.githubusercontent.com/83958525/117808359-6a0e2c00-b27a-11eb-975b-cd3cbfda68b0.PNG)
-![image](https://user-images.githubusercontent.com/83958525/117808435-7db99280-b27a-11eb-933d-58a8af95dfaa.PNG)
-![image](https://user-images.githubusercontent.com/83958525/117808441-80b48300-b27a-11eb-92c4-e9e4eb144bef.PNG)
-![image](https://user-images.githubusercontent.com/83958525/117808450-8611cd80-b27a-11eb-9caa-b23a5a3c3509.PNG)
-![image](https://user-images.githubusercontent.com/83958525/117808480-8dd17200-b27a-11eb-986e-1405dec40e73.PNG)
-![image](https://user-images.githubusercontent.com/83958525/117808695-d1c47700-b27a-11eb-897a-7a4ef7761889.PNG)
-![image](https://user-images.githubusercontent.com/83958525/117808764-e7d23780-b27a-11eb-90b4-bb9859d45379.PNG)
-![image](https://user-images.githubusercontent.com/83958525/117808824-01737f00-b27b-11eb-8937-a473107a3fcd.PNG)
-![image](https://user-images.githubusercontent.com/83958525/117809022-40a1d000-b27b-11eb-86bd-31b5e9669887.PNG)
-![image](https://user-images.githubusercontent.com/83958525/117809074-51524600-b27b-11eb-9b2f-82cab9a92f49.jpeg)
+| | | |
+|:-------------------------:|:-------------------------:|:-------------------------:|
+|<img alt="Step 1" src="https://user-images.githubusercontent.com/83958525/117808231-40550500-b27a-11eb-9f58-17c3c9f52dc5.PNG"> Step 1 |<img alt="Step 2" src="https://user-images.githubusercontent.com/83958525/117808359-6a0e2c00-b27a-11eb-975b-cd3cbfda68b0.PNG"> Step 2 |<img alt="Step 3" src="https://user-images.githubusercontent.com/83958525/117808435-7db99280-b27a-11eb-933d-58a8af95dfaa.PNG"> Step 3 |
+|<img alt="Step 4" src="https://user-images.githubusercontent.com/83958525/117808441-80b48300-b27a-11eb-92c4-e9e4eb144bef.PNG"> Step 4 |<img alt="Step 5" src="https://user-images.githubusercontent.com/83958525/117808450-8611cd80-b27a-11eb-9caa-b23a5a3c3509.PNG"> Step 5 |<img alt="Step 6" src="https://user-images.githubusercontent.com/83958525/117808480-8dd17200-b27a-11eb-986e-1405dec40e73.PNG"> Step 6 |
+|<img alt="Step 7" src="https://user-images.githubusercontent.com/83958525/117808695-d1c47700-b27a-11eb-897a-7a4ef7761889.PNG"> Step 7 |<img alt="Step 8" src="https://user-images.githubusercontent.com/83958525/117808764-e7d23780-b27a-11eb-90b4-bb9859d45379.PNG"> Step 8 |<img alt="Step 9" src="https://user-images.githubusercontent.com/83958525/117808824-01737f00-b27b-11eb-8937-a473107a3fcd.PNG"> Step 9 |
+|<img alt="Step 10" src="https://user-images.githubusercontent.com/83958525/117809022-40a1d000-b27b-11eb-86bd-31b5e9669887.PNG"> Step 10 |<img alt="Step 11" src="https://user-images.githubusercontent.com/83958525/117809074-51524600-b27b-11eb-9b2f-82cab9a92f49.jpeg"> Step 11 | |
 
-
-**Tips:** 
-
-I used this command to run the script as it was giving me Syntax error: `python3 src/covid-vaccine-slot-booking.py`
-Also I used this command to install the dependencies  `python3 -m pip install -r requirements.txt`
+<br>
 
 ## COVID-19 Vaccination Slot Booking Script
 
@@ -214,11 +224,11 @@ python src\covid-vaccine-slot-booking.py --token=YOUR-TOKEN-HERE
 - ```inputimeout``` : For creating an input with timeout.
 
 Install all dependencies by running:
-```
-pip install -r requirements.txt
-```
+```pip install -r requirements.txt```
 
-### Steps:
+<br>
+
+## Steps:
 1. Run script:
 	```python src\covid-vaccine-slot-booking.py```
 2. Select Beneficiaries. Read the important notes. You can select multiple beneficiaries by providing comma-separated index values such as ```1,2```:
@@ -349,27 +359,21 @@ pip install -r requirements.txt
 	```
 12. Before the next update, you'll have 10 seconds to provide a choice in the format ```centerIndex.slotIndex``` eg: The input```1.4``` will select the vaccination center in second row and its fourth slot.
 
-How to run on windows
+<br>
 
-### How to run on windows
+## How to run on windows
 
 1. **Step 1** - Download or clone this repo.
-
 2. **Step 2 -** Go to folder **tests** then **windows exe**.**zip**. Unzip the folder and Now run the program "**captcha_tests.exe**".  If you see a dialog box click on quit, and you will see a Captcha. If this is what happened you are all good to go. 
-
-   
-
 3. Now come back to main folder unzip "**windows exe.zip**"go to this "**windows exe**" folder 
-
-   ![image-20210511140608465](C:\Users\Hitesh\AppData\Roaming\Typora\typora-user-images\image-20210511140608465.png)
-
    Now start the program "**covid-vaccine-slot-booking.exe**", you will not see any error.
-
 4. DO NOT DELETE ANY FOLDER OR FILE. 
 
-### Troubleshooting common problems
+<br>
 
-1. **Problem 1**
+## Troubleshooting common problems
+
+### Problem 1
 
    ```
    Can't setFont(Times-Roman) missing the T1 files?
@@ -378,13 +382,11 @@ How to run on windows
 
    **Solution 1:** Then run the python script directly in the **src** folder after installing the required modules from **requirements.txt.** That solved it for me
 
-   **Solution 2:** If you are running ubantu(tested) or winows , this problem is due to some font files from package (reportlab) which are included in arch linux but not on ubantu. Follow these steps to install reportlab correctly. It can be done after you have installed all the requirements rom txt file.
+   **Solution 2:** If you are running ubantu(tested) or Windows, this problem is due to some font files from package (reportlab) which are included in arch linux but not on Ubuntu. Follow these steps to install reportlab correctly. It can be done after you have installed all the requirements rom txt file.
 
-   - git clone https://github.com/Distrotech/reportlab.git
-
-   - cd reportlab
-
-   - python3 setup.py install
+   1. ```git clone https://github.com/Distrotech/reportlab.git```
+   2. ```cd reportlab```
+   3. ```python3 setup.py install```
 
      This will download all the font files. 
 
@@ -393,31 +395,25 @@ How to run on windows
    **Solution 4:** (Recommended) Try to use this Linux executable " **./covid-vaccine-slot-booking**-linux " file directly from terminal it does not require anything to install just like windows exe. **Windows exe is under going testing**
 
     
-
-2. **Problem 2**
+### Problem 2
 
    Regarding beep package - Device not found or beep not found
 
-   **Solution** : Follow these steps for ubantu
+   **Solution** : Follow these steps for Ubuntu
 
-   - sudo apt-get install beep #insatll this once
+   1. ```sudo apt-get install beep``` #Install this once
+   2. ```sudo modeprobe pcspkr``` #This will solve Device not found error 
+   3. Testing beep is simple just type ```beep``` in terminal, this will produce a beep sound from your speakers.
 
-   - sudo modeprobe pcspkr #This will solve Device not found error 
-
-   - Testing beep is simple just type 
-
-     ```
-     beep
-     ```
-
-      on terminal this will beep a sound from speakers.
-
-3. **Problem 3**
+### Problem 3
 
    SMS is not read automatically
 
-   **Solution**: Check the mobile number you have entered in this step.
+   **Solution**: Make sure the settings shown below are the same on your phone:
 
-   <img src="https://user-images.githubusercontent.com/83712877/117325821-b5a58c00-aeae-11eb-8156-2ea585a77834.png" alt="image" style="zoom: 33%;" />
+| | |
+|:-------------------------:|:-------------------------:|
+| <img src="https://user-images.githubusercontent.com/83712877/117325821-b5a58c00-aeae-11eb-8156-2ea585a77834.png" alt="image" width="300" /> <br> Using IFTTT: This number must match the number you enter while running the script. |<img src="https://user-images.githubusercontent.com/3753228/117948585-e4988380-b32e-11eb-9837-9abdda21c23e.png" alt="image" width="300" /> <br> CowinOTPRetriever App: Make sure the switch is flipped on. |
+   
 
-   This number must match the number you enter while running the script.
+   
