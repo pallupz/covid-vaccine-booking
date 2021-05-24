@@ -401,6 +401,6 @@ How to run on windows
 
    **Solution**: Check the mobile number you have entered in this step.
 
-   <img src="https://user-images.githubusercontent.com/83712877/117325821-b5a58c00-aeae-11eb-8156-2ea585a77834.png" alt="image" style="zoom: 33%;" />
+   <img src="https://user-images.githubusercontent.com/83712877/117325821-b5a58c00-aeae-11eb-8156-2ea585a77834.png" alt="image" width="300" />
 
    This number must match the number you enter while running the script.
