@@ -121,8 +121,7 @@
 |<img alt="Step 1" src="https://user-images.githubusercontent.com/3753228/117923351-814c2880-b311-11eb-9008-fbf497271e08.png"> Step 1 |<img alt="Step 2" src="https://user-images.githubusercontent.com/3753228/117923398-9759e900-b311-11eb-9dec-4e003b772f0e.png"> Step 2 |<img alt="Step 3" src="https://user-images.githubusercontent.com/3753228/117923447-a771c880-b311-11eb-92f5-b08903f1b20e.png"> Step 3 |
 |<img alt="Step 4" src="https://user-images.githubusercontent.com/3753228/117923482-b9ec0200-b311-11eb-8210-4c1e1b958d6a.png"> Step 4 |<img alt="Step 5" src="https://user-images.githubusercontent.com/3753228/117924614-9e81f680-b313-11eb-8583-bffcadf681f3.png"> Step 5 |<img alt="Step 6" src="https://user-images.githubusercontent.com/3753228/117923509-c40e0080-b311-11eb-9832-805c4676e4a5.png"> Step 6 |
 |<img alt="Step 7" src="https://user-images.githubusercontent.com/3753228/117923554-d6883a00-b311-11eb-8ae1-8ea36ffaf35b.png"> Step 7 |<img alt="Step 8" src="https://user-images.githubusercontent.com/3753228/118130348-e17ac180-b41a-11eb-8af9-f9e13d671f07.png"> Step 8 |<img alt="Step 9" src="https://user-images.githubusercontent.com/3753228/117947493-df870480-b32d-11eb-923d-47efa55f9586.png"> Step 9 |
-|<img alt="Step 10" src="https://user-images.githubusercontent.com/3753228/117948585-e4988380-b32e-11eb-9837-9abdda21c23e.png"> Step 10 |<img alt="Step 11" src="https://user-images.githubusercontent.com/3753228/117949247-8ae48900-b32f-11eb-8b77-5d98ed07cfc6.png"> Step 11 |<img alt="Step 12" src="https://user-images.githubusercontent.com/3753228/117925274-a1311b80-b314-11eb-9f77-ac6d83720de8.png"> Step 12 |
-|<img alt="Step 13" src="https://user-images.githubusercontent.com/3753228/117925321-b148fb00-b314-11eb-8b0a-7a4c55afae69.png"> Step 13 |<img alt="Step 14" src="https://user-images.githubusercontent.com/3753228/117925366-c2920780-b314-11eb-8db5-e8f11325fa2e.png"> Step 14 | |
+|<img alt="Step 10" src="https://user-images.githubusercontent.com/3753228/117948585-e4988380-b32e-11eb-9837-9abdda21c23e.png"> Step 10 |<img alt="Step 11" src="https://user-images.githubusercontent.com/3753228/117949247-8ae48900-b32f-11eb-8b77-5d98ed07cfc6.png"> Step 11 | |
 
 ## Setup Guide for iOS
 
@@ -151,17 +150,12 @@ Go to `src` directory and run the script  `cd src && python covid-vaccine-slot-b
 
 #### Shortcuts steps in screenshots
 
-![image1](https://user-images.githubusercontent.com/83958525/117808231-40550500-b27a-11eb-9f58-17c3c9f52dc5.PNG)
-![image2](https://user-images.githubusercontent.com/83958525/117808359-6a0e2c00-b27a-11eb-975b-cd3cbfda68b0.PNG)
-![image](https://user-images.githubusercontent.com/83958525/117808435-7db99280-b27a-11eb-933d-58a8af95dfaa.PNG)
-![image](https://user-images.githubusercontent.com/83958525/117808441-80b48300-b27a-11eb-92c4-e9e4eb144bef.PNG)
-![image](https://user-images.githubusercontent.com/83958525/117808450-8611cd80-b27a-11eb-9caa-b23a5a3c3509.PNG)
-![image](https://user-images.githubusercontent.com/83958525/117808480-8dd17200-b27a-11eb-986e-1405dec40e73.PNG)
-![image](https://user-images.githubusercontent.com/83958525/117808695-d1c47700-b27a-11eb-897a-7a4ef7761889.PNG)
-![image](https://user-images.githubusercontent.com/83958525/117808764-e7d23780-b27a-11eb-90b4-bb9859d45379.PNG)
-![image](https://user-images.githubusercontent.com/83958525/117808824-01737f00-b27b-11eb-8937-a473107a3fcd.PNG)
-![image](https://user-images.githubusercontent.com/83958525/117809022-40a1d000-b27b-11eb-86bd-31b5e9669887.PNG)
-![image](https://user-images.githubusercontent.com/83958525/117809074-51524600-b27b-11eb-9b2f-82cab9a92f49.jpeg)
+| | | |
+|:-------------------------:|:-------------------------:|:-------------------------:|
+|<img alt="Step 1" src="https://user-images.githubusercontent.com/83958525/117808231-40550500-b27a-11eb-9f58-17c3c9f52dc5.PNG"> Step 1 |<img alt="Step 2" src="https://user-images.githubusercontent.com/83958525/117808359-6a0e2c00-b27a-11eb-975b-cd3cbfda68b0.PNG"> Step 2 |<img alt="Step 3" src="https://user-images.githubusercontent.com/83958525/117808435-7db99280-b27a-11eb-933d-58a8af95dfaa.PNG"> Step 3 |
+|<img alt="Step 4" src="https://user-images.githubusercontent.com/83958525/117808441-80b48300-b27a-11eb-92c4-e9e4eb144bef.PNG"> Step 4 |<img alt="Step 5" src="https://user-images.githubusercontent.com/83958525/117808450-8611cd80-b27a-11eb-9caa-b23a5a3c3509.PNG"> Step 5 |<img alt="Step 6" src="https://user-images.githubusercontent.com/83958525/117808480-8dd17200-b27a-11eb-986e-1405dec40e73.PNG"> Step 6 |
+|<img alt="Step 7" src="https://user-images.githubusercontent.com/83958525/117808695-d1c47700-b27a-11eb-897a-7a4ef7761889.PNG"> Step 7 |<img alt="Step 8" src="hhttps://user-images.githubusercontent.com/83958525/117808764-e7d23780-b27a-11eb-90b4-bb9859d45379.PNG"> Step 8 |<img alt="Step 9" src="https://user-images.githubusercontent.com/83958525/117808824-01737f00-b27b-11eb-8937-a473107a3fcd.PNG"> Step 9 |
+|<img alt="Step 10" src="https://user-images.githubusercontent.com/83958525/117809022-40a1d000-b27b-11eb-86bd-31b5e9669887.PNG"> Step 10 |<img alt="Step 11" src="https://user-images.githubusercontent.com/83958525/117809074-51524600-b27b-11eb-9b2f-82cab9a92f49.jpeg"> Step 11 | |
 
 
 **Tips:** 
