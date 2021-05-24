@@ -218,7 +218,6 @@ def collect_user_details(request_header):
     else:
         # Collect vaccination center preference
         location_dtls = get_pincodes()
-        pin_code_location_dtls = location_dtls
 
     print(
         "\n================================= Additional Info =================================\n"
