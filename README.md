@@ -8,8 +8,8 @@
 
 </div>
 
-## Quick Start Guide
-Instructions to follow on your laptop and phone below. To fetch OTP automatically, Step 2 is compulsory
+## Quickstart Guide
+**Instructions to follow on your laptop and phone below. To fetch OTP automatically, Step 2 is compulsory**
 
 ### 1. On your laptop
 1. Make sure [Python 3.8+](https://python.org) is installed.
@@ -22,13 +22,13 @@ Instructions to follow on your laptop and phone below. To fetch OTP automaticall
 	- ```python3 src/covid-vaccine-slot-booking.py``` on Linux or Mac
 5. Follow the steps. For more detailed guide: [Steps](#steps)
 
-### 2. On your Phone (Optional: To fetch OTP automatically)
+### 2. On your Phone (Required for fetching OTP automatically)
 1. **Android Phone**: Follow either [Option 1: IFTTT app](#option-1-ifttt) or [Option 2: CoWIN OTP Retriever app](#option-2-cowin-otp-retriever)
 2. **iPhone**: Follow [Using Shortcuts app](#using-shortcuts-app)
 
 <br>
 
-### Contents
+## Contents
   - [Before you start](#before-you-start)
   - [What this repository does](#what-this-repository-does)
   - [Setup Guide: Android](#setup-guide-for-android)
@@ -58,7 +58,7 @@ Instructions to follow on your laptop and phone below. To fetch OTP automaticall
 1. Automates OTP read from the SMS after the token expires.
 2. Randomly chooses one of the available slots instead of waiting for input from the user.
 3. Reduces the polling wait to optimize on the polling frequency (hence the name bombardier)
-![image](https://user-images.githubusercontent.com/83712877/117467267-290fd200-af71-11eb-8461-d6e253c183d7.png)
+<img src="https://user-images.githubusercontent.com/83712877/117467267-290fd200-af71-11eb-8461-d6e253c183d7.png" />
 
 #### How it works via IFTTT app on Android
 1. https://ifttt.com/ is used to create a SMS trigger. The trigger happens when the OTP SMS is received
