@@ -54,6 +54,11 @@ If you already have a bearer token, you can also use:
 python src\covid-vaccine-slot-booking.py --token=YOUR-TOKEN-HERE
 ```
 
+If you want to pass mobile number with script rather typing later, you can also use:
+```
+python src\covid-vaccine-slot-booking.py --mobile=YOUR-MOBILE-NUMBER
+```
+
 ### Python 3.7.3 Installation in Windows
 - Check if Python is already installed by opening command prompt and running ```python --version```.
 - If the above command returns ```Python <some-version-number>``` you're probably good - provided version number is above 3.6
