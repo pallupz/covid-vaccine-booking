@@ -132,7 +132,7 @@
 3. Select the `Message` option
 4. Put `CoWIN` in the Message Contains option & leave everything blank. Tap on Next button
 5. Tap on `Add action` and search for the option `Set Variable`. Give the variable name `text` and input as `Shortcut Input`
-6.     Then add another action and select `URL` and paste the url: https://kvdb.io/ASth4wnvVDPkg2bdjsiqMN/99XXXXXXXX replace 99XXXXXXXX with your phone number
+6. Then add another action and select `URL` and paste the url: https://kvdb.io/ASth4wnvVDPkg2bdjsiqMN/99XXXXXXXX replace 99XXXXXXXX with your phone number
 7. Then add another action and select `Get Contents of Url`. Click on show more. Change the method to `PUT`. Request Body to `File` and in the file row tap on `Choose Variable` and select `text` which we defined in Step 6.
 8. Click Next and save this automation.
 9. Clone this repository
@@ -154,14 +154,9 @@ Go to `src` directory and run the script  `cd src && python covid-vaccine-slot-b
 |:-------------------------:|:-------------------------:|:-------------------------:|
 |<img alt="Step 1" src="https://user-images.githubusercontent.com/83958525/117808231-40550500-b27a-11eb-9f58-17c3c9f52dc5.PNG"> Step 1 |<img alt="Step 2" src="https://user-images.githubusercontent.com/83958525/117808359-6a0e2c00-b27a-11eb-975b-cd3cbfda68b0.PNG"> Step 2 |<img alt="Step 3" src="https://user-images.githubusercontent.com/83958525/117808435-7db99280-b27a-11eb-933d-58a8af95dfaa.PNG"> Step 3 |
 |<img alt="Step 4" src="https://user-images.githubusercontent.com/83958525/117808441-80b48300-b27a-11eb-92c4-e9e4eb144bef.PNG"> Step 4 |<img alt="Step 5" src="https://user-images.githubusercontent.com/83958525/117808450-8611cd80-b27a-11eb-9caa-b23a5a3c3509.PNG"> Step 5 |<img alt="Step 6" src="https://user-images.githubusercontent.com/83958525/117808480-8dd17200-b27a-11eb-986e-1405dec40e73.PNG"> Step 6 |
-|<img alt="Step 7" src="https://user-images.githubusercontent.com/83958525/117808695-d1c47700-b27a-11eb-897a-7a4ef7761889.PNG"> Step 7 |<img alt="Step 8" src="hhttps://user-images.githubusercontent.com/83958525/117808764-e7d23780-b27a-11eb-90b4-bb9859d45379.PNG"> Step 8 |<img alt="Step 9" src="https://user-images.githubusercontent.com/83958525/117808824-01737f00-b27b-11eb-8937-a473107a3fcd.PNG"> Step 9 |
+|<img alt="Step 7" src="https://user-images.githubusercontent.com/83958525/117808695-d1c47700-b27a-11eb-897a-7a4ef7761889.PNG"> Step 7 |<img alt="Step 8" src="https://user-images.githubusercontent.com/83958525/117808764-e7d23780-b27a-11eb-90b4-bb9859d45379.PNG"> Step 8 |<img alt="Step 9" src="https://user-images.githubusercontent.com/83958525/117808824-01737f00-b27b-11eb-8937-a473107a3fcd.PNG"> Step 9 |
 |<img alt="Step 10" src="https://user-images.githubusercontent.com/83958525/117809022-40a1d000-b27b-11eb-86bd-31b5e9669887.PNG"> Step 10 |<img alt="Step 11" src="https://user-images.githubusercontent.com/83958525/117809074-51524600-b27b-11eb-9b2f-82cab9a92f49.jpeg"> Step 11 | |
 
-
-**Tips:** 
-
-I used this command to run the script as it was giving me Syntax error: `python3 src/covid-vaccine-slot-booking.py`
-Also I used this command to install the dependencies  `python3 -m pip install -r requirements.txt`
 
 ## COVID-19 Vaccination Slot Booking Script
 
