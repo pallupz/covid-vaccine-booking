@@ -13,7 +13,7 @@
 
 ### 1. On your laptop
 1. Make sure [Python 3.8+](https://python.org) is installed.
-2. Clone this repo: ```git clone https://github.com/ithihasmadala/covid-vaccine-booking.git``` or download zip file and extract
+2. Clone this repo: ```git clone https://github.com/bombardier-gif/covid-vaccine-booking.git``` or download zip file and extract
 3. Install the requirements:
 	- ```pip install -r requirements.txt``` on Windows
 	- ```pip3 install -r requirements.txt``` on Linux or Mac
