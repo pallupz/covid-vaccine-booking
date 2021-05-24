@@ -589,7 +589,7 @@ def check_and_book(
                 pincode_filtered_options = []
                 for option in options: 
                     for location in pin_code_location_dtls:
-                        if int(location["pincode"]) == option["pincode"]:
+                        if int(location["pincode"]) == int(option["pincode"]):
                             # ADD this filtered PIN code option
                             pincode_filtered_options.append(option)
                             for _ in range(2):
