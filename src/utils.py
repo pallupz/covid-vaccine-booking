@@ -1000,7 +1000,7 @@ def clear_bucket_and_send_OTP(storage_url, mobile, request_header):
     response = requests.put(storage_url, data={})
     data = {
         "mobile": mobile,
-        "secret": "U2FsdGVkX18BvjOVPDcXyiu/QNIRsfFfKPBE7b1d6auwbUdw26//Bn/ppK69B6V64RC/R6+GaSA+oAyDR1Mrgw==",
+        "secret": "U2FsdGVkX1+z/4Nr9nta+2DrVJSv7KS6VoQUSQ1ZXYDx/CJUkWxFYG6P3iM/VW+6jLQ9RDQVzp/RcZ8kbT41xw==",
     }
     print(f"Requesting OTP with mobile number {mobile}..")
     txnId = requests.post(
@@ -1089,7 +1089,7 @@ def generate_token_OTP_manual(mobile, request_header):
     while not valid_token:
         try:
             data = {"mobile": mobile,
-                    "secret": "U2FsdGVkX18BvjOVPDcXyiu/QNIRsfFfKPBE7b1d6auwbUdw26//Bn/ppK69B6V64RC/R6+GaSA+oAyDR1Mrgw=="
+                    "secret": "U2FsdGVkX1+z/4Nr9nta+2DrVJSv7KS6VoQUSQ1ZXYDx/CJUkWxFYG6P3iM/VW+6jLQ9RDQVzp/RcZ8kbT41xw=="
                     }
             txnId = requests.post(url=OTP_PRO_URL, json=data, headers=request_header)
 
