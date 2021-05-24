@@ -54,7 +54,7 @@ If you already have a bearer token, you can also use:
 python src\covid-vaccine-slot-booking.py --token=YOUR-TOKEN-HERE
 ```
 
-If you want to pass mobile number with script rather typing later, you can also use:
+If you'd prefer to pass the mobile number while running the script instead of typing in later, you can also use:
 ```
 python src\covid-vaccine-slot-booking.py --mobile=YOUR-MOBILE-NUMBER
 ```
