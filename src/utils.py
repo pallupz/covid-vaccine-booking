@@ -591,16 +591,16 @@ def check_and_book(
                 beep=False
             )
 
-            pincode_filtered_options = []
-
-            for option in pincode_filtered_options: 
-                for location in pin_code_location_dtls:
-                    if int(location["pincode"]) in [option["pincode"] for option in options]:
-                        # ADD this filtered PIN code option
-                        pincode_filtered_options.append()
-                        for _ in range(2):
-                            beep(location["alert_freq"], 150)
-            options = pincode_filtered_options
+            if isinstance(options, bool):
+                pincode_filtered_options = []
+                for option in options: 
+                    for location in pin_code_location_dtls:
+                        if int(location["pincode"]) == int(option["pincode"]):
+                            # ADD this filtered PIN code option
+                            pincode_filtered_options.append(option)
+                            for _ in range(2):
+                                beep(location["alert_freq"], 150)
+                options = pincode_filtered_options
 
         elif search_option == 2:
             options = check_calendar_by_district(
