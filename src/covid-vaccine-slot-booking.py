@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import copy
+import traceback
 import time
 from types import SimpleNamespace
 import requests, sys, argparse, os, datetime

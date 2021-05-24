@@ -89,7 +89,7 @@ def display_table(dict_list):
 def display_info_dict(details):
     for key, value in details.items():
         if isinstance(value, list):
-            if all(isinstance(item, dict) for item in value):
+            if len(value) > 0 and all(isinstance(item, dict) for item in value):
                 print(f"\t{key}:")
                 display_table(value)
             else:
@@ -334,7 +334,7 @@ def check_calendar_by_district(
         min_age_booking,
         fee_type,
         dose_num,
-        beep=True
+        beep_required=True
 ):
     """
     This function
@@ -381,7 +381,7 @@ def check_calendar_by_district(
                 pass
 
         # beep only when needed
-        if beep:
+        if beep_required:
             for location in location_dtls:
                 if location["district_name"] in [option["district"] for option in options]:
                     for _ in range(2):
@@ -588,7 +588,7 @@ def check_and_book(
                 min_age_booking,
                 fee_type,
                 dose_num,
-                beep=False
+                beep_required=False
             )
 
             if isinstance(options, bool):
@@ -612,7 +612,7 @@ def check_and_book(
                 min_age_booking,
                 fee_type,
                 dose_num,
-                beep=True
+                beep_required=True
             )
         else:
             options = check_calendar_by_pincode(
