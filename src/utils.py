@@ -592,7 +592,7 @@ def check_and_book(
                 beep_required=False
             )
 
-            if isinstance(options, bool):
+            if not isinstance(options, bool):
                 pincode_filtered_options = []
                 for option in options: 
                     for location in pin_code_location_dtls:
