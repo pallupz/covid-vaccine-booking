@@ -352,7 +352,7 @@ How to run on windows
 
 ## Troubleshooting common problems
 
-1. **Problem 1**
+### Problem 1
 
    ```
    Can't setFont(Times-Roman) missing the T1 files?
@@ -361,13 +361,11 @@ How to run on windows
 
    **Solution 1:** Then run the python script directly in the **src** folder after installing the required modules from **requirements.txt.** That solved it for me
 
-   **Solution 2:** If you are running ubantu(tested) or winows , this problem is due to some font files from package (reportlab) which are included in arch linux but not on ubantu. Follow these steps to install reportlab correctly. It can be done after you have installed all the requirements rom txt file.
+   **Solution 2:** If you are running ubantu(tested) or Windows, this problem is due to some font files from package (reportlab) which are included in arch linux but not on Ubuntu. Follow these steps to install reportlab correctly. It can be done after you have installed all the requirements rom txt file.
 
-   - git clone https://github.com/Distrotech/reportlab.git
-
-   - cd reportlab
-
-   - python3 setup.py install
+   1. ```git clone https://github.com/Distrotech/reportlab.git```
+   2. ```cd reportlab```
+   3. ```python3 setup.py install```
 
      This will download all the font files. 
 
@@ -376,34 +374,25 @@ How to run on windows
    **Solution 4:** (Recommended) Try to use this Linux executable " **./covid-vaccine-slot-booking**-linux " file directly from terminal it does not require anything to install just like windows exe. **Windows exe is under going testing**
 
     
-
-2. **Problem 2**
+### Problem 2
 
    Regarding beep package - Device not found or beep not found
 
-   **Solution** : Follow these steps for ubantu
+   **Solution** : Follow these steps for Ubuntu
 
-   - sudo apt-get install beep #insatll this once
+   1. ```sudo apt-get install beep``` #insatll this once
+   2. ```sudo modeprobe pcspkr``` #This will solve Device not found error 
+   3. Testing beep is simple just type ```beep``` in terminal this will beep a sound from speakers.
 
-   - sudo modeprobe pcspkr #This will solve Device not found error 
-
-   - Testing beep is simple just type 
-
-     ```
-     beep
-     ```
-
-      on terminal this will beep a sound from speakers.
-
-3. **Problem 3**
+### Problem 3
 
    SMS is not read automatically
 
-   **Solution**: Check the mobile number you have entered in this step.
+   **Solution**: Make sure the settings shown below are the same on your phone:
 
 | | |
 |:-------------------------:|:-------------------------:|
-| <img src="https://user-images.githubusercontent.com/83712877/117325821-b5a58c00-aeae-11eb-8156-2ea585a77834.png" alt="image" width="300" /> Using IFTTT: This number must match the number you enter while running the script. |<img src="https://user-images.githubusercontent.com/83958525/117809022-40a1d000-b27b-11eb-86bd-31b5e9669887.PNG" alt="image" width="300" /> CowinOTPRetriever App: Make sure the switch is flipped on. |
+| <img src="https://user-images.githubusercontent.com/83712877/117325821-b5a58c00-aeae-11eb-8156-2ea585a77834.png" alt="image" width="300" /> <br> Using IFTTT: This number must match the number you enter while running the script. |<img src="hhttps://user-images.githubusercontent.com/3753228/117948585-e4988380-b32e-11eb-9837-9abdda21c23e.png" alt="image" width="300" /> <br> CowinOTPRetriever App: Make sure the switch is flipped on. |
    
 
    
