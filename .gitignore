@@ -134,3 +134,6 @@ dmypy.json
 .pyre/
 
 *.json
+captcha.gif
+captcha.png 
+captcha.svg
