@@ -344,13 +344,13 @@ How to run on windows
 
 3. Now come back to main folder unzip "**windows exe.zip**"go to this "**windows exe**" folder 
 
-   ![image-20210511140608465](C:\Users\Hitesh\AppData\Roaming\Typora\typora-user-images\image-20210511140608465.png)
-
    Now start the program "**covid-vaccine-slot-booking.exe**", you will not see any error.
 
 4. DO NOT DELETE ANY FOLDER OR FILE. 
 
-### Troubleshooting common problems
+<br>
+
+## Troubleshooting common problems
 
 1. **Problem 1**
 
@@ -401,6 +401,9 @@ How to run on windows
 
    **Solution**: Check the mobile number you have entered in this step.
 
-   <img src="https://user-images.githubusercontent.com/83712877/117325821-b5a58c00-aeae-11eb-8156-2ea585a77834.png" alt="image" width="300" />
+| | |
+|:-------------------------:|:-------------------------:|
+| <img src="https://user-images.githubusercontent.com/83712877/117325821-b5a58c00-aeae-11eb-8156-2ea585a77834.png" alt="image" width="300" /> Using IFTTT: This number must match the number you enter while running the script. |<img src="https://user-images.githubusercontent.com/83958525/117809022-40a1d000-b27b-11eb-86bd-31b5e9669887.PNG" alt="image" width="300" /> CowinOTPRetriever App: Make sure the switch is flipped on. |
+   
 
-   This number must match the number you enter while running the script.
+   
