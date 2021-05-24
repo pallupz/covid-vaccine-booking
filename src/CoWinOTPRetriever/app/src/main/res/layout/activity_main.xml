@@ -4,18 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/teal_700"
+    android:background="@color/atomic"
     tools:context=".MainActivity">
 
     <TextView
         android:id="@+id/PhoneNumberLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="44dp"
+        android:layout_marginTop="288dp"
         android:fontFamily="sans-serif"
         android:text="@string/enter_phone_number"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -25,7 +26,7 @@
         android:layout_height="wrap_content"
         android:autofillHints="AUTOFILL_HINT_PHONE_NUMBER"
         android:ems="10"
-        android:hint="@string/enter_phone_number"
+        android:labelFor="@id/PhoneNumberEntry"
         android:inputType="phone"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
@@ -36,9 +37,11 @@
         android:id="@+id/StartListeningCowinOtpSwitch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:text="@string/start_listening_cowin_otp"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/KvdbBucketkeyEntry" />
 
@@ -46,21 +49,28 @@
         android:id="@+id/StatusTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:text="@string/app_name"
         android:textColor="@color/white"
         android:textSize="16sp"
+        app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/StartListeningCowinOtpSwitch" />
+        app:layout_constraintTop_toBottomOf="@+id/StartListeningCowinOtpSwitch"
+        app:layout_constraintVertical_bias="0.848"
+        app:layout_constraintWidth_percent="0.8" />
 
     <TextView
         android:id="@+id/KvdbBucketLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:text="@string/enter_kvdb_bucket_key"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/PhoneNumberEntry" />
 
@@ -69,11 +79,23 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:hint="@string/enter_kvdb_bucket_key"
+        android:labelFor="@id/KvdbBucketkeyEntry"
         android:inputType="textPersonName"
         android:text="@string/kvdb_default_key"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/KvdbBucketLabel" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="303dp"
+        android:layout_height="192dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/PhoneNumberLabel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.437"
+        app:srcCompat="@drawable/ic_upload_image" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,14 +4,9 @@ name: CI Windows EXE Build
 
 # Controls when the action will run. 
 on:
-  # Triggers the workflow on push or pull request events
   push:
-    paths:
-      - '**.py'
-
-  pull_request:
-    paths:
-      - '**.py'
+    tags:
+      - v*
 
 
   # Allows you to run this workflow manually from the Actions tab
@@ -29,8 +24,6 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
       - uses: fregante/setup-git-user@v1
-
-
       
       # Set branch name
       - name: Set branch name
@@ -49,30 +42,22 @@ jobs:
         run: |
           rm covid-vaccine-slot-booking.exe -ErrorAction Ignore
           cd src
-          pyinstaller covid-vaccine-slot-booking.py
-
-      # Copy library files
-      - name: copy fonts folder
-        uses: MadaraUchiha/copy-action@0.0.1
+          pyinstaller --onefile covid-vaccine-slot-booking.py
+          cd ..
+          move src\dist\covid-vaccine-slot-booking.exe .
+      
+      # Push EXE file to release
+      - name: Upload windows executable to release
+        uses: svenstaro/upload-release-action@v2
         with:
-          source: libs\fonts
-          target: dist\covid-vaccine-slot-booking\reportlab\
-      - name: make the zip file of dist folder
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: covid-vaccine-slot-booking.exe
+          tag: ${{ github.ref }}
 
-      # Make zip file
-        uses: papeloto/action-zip@v1
+      # Push APK to release.
+      - name: Upload android package to release
+        uses: svenstaro/upload-release-action@v2
         with:
-          files: dist/
-          dest: windows-exe.zip
-
-      # Remove not required files
-      - name: Package Script to EXE
-        run: |
-          rm -r /build -ErrorAction Ignore
-
-      # Commit and push EXE file to branch
-      - name: Push EXE to branch
-        run: |
-          git add covid-vaccine-slot-booking.exe
-          git commit -m "rebuilt via GitHub Actions"
-          git push --force
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: CoWinOtpRetreiver.apk
+          tag: ${{ github.ref }}
