@@ -104,13 +104,14 @@
 <img src="https://user-images.githubusercontent.com/83712877/117325821-b5a58c00-aeae-11eb-8156-2ea585a77834.png" width="700">
 </center>
 
+<img alt="Step 1" src="https://user-images.githubusercontent.com/83712877/117159172-b0c4d780-addd-11eb-90f0-ab8438db4c8e.png">
+
 | | |
 |:-------------------------:|:-------------------------:|
-|<img alt="Step 1" src="https://user-images.githubusercontent.com/83712877/117159172-b0c4d780-addd-11eb-90f0-ab8438db4c8e.png">  Step 1 |  <img alt="Step 2" src="https://user-images.githubusercontent.com/83712877/117159291-c76b2e80-addd-11eb-991a-dc6de4bbb620.png"> Step 2 |
-|<img alt="Step 3" src="https://user-images.githubusercontent.com/83712877/117159444-e669c080-addd-11eb-9b4c-448335b1c781.png">  Step 3 |  <img alt="Step 4" src="https://user-images.githubusercontent.com/83712877/117159516-f8e3fa00-addd-11eb-832d-fcf92238f823.png"> Step 4 |
-|<img alt="Step 5" src="https://user-images.githubusercontent.com/83712877/117159753-2c268900-adde-11eb-9bb3-4bb54f951683.png">  Step 5 |  <img alt="Step 6" src="https://user-images.githubusercontent.com/83712877/117159753-2c268900-adde-11eb-9bb3-4bb54f951683.png"> Step 6 |
-|<img alt="Step 7" src="https://user-images.githubusercontent.com/83712877/117159818-38aae180-adde-11eb-96b5-0e779803b4b2.png">  Step 7 |  <img alt="Step 8" src="https://user-images.githubusercontent.com/83712877/117159863-4496a380-adde-11eb-8874-40cc6f851cf6.png"> Step 8 |
-|<img alt="Step 9" src="https://user-images.githubusercontent.com/83712877/117325821-b5a58c00-aeae-11eb-8156-2ea585a77834.png">  Step 9 |  
+|<img alt="Step 2" src="https://user-images.githubusercontent.com/83712877/117159291-c76b2e80-addd-11eb-991a-dc6de4bbb620.png"> Step 2 |<img alt="Step 3" src="https://user-images.githubusercontent.com/83712877/117159444-e669c080-addd-11eb-9b4c-448335b1c781.png"> Step 3 |
+|<img alt="Step 4" src="https://user-images.githubusercontent.com/83712877/117159516-f8e3fa00-addd-11eb-832d-fcf92238f823.png"> Step 4 |<img alt="Step 5" src="https://user-images.githubusercontent.com/83712877/117159753-2c268900-adde-11eb-9bb3-4bb54f951683.png"> Step 5 |
+|<img alt="Step 6" src="https://user-images.githubusercontent.com/83712877/117159753-2c268900-adde-11eb-9bb3-4bb54f951683.png"> Step 6 |<img alt="Step 7" src="https://user-images.githubusercontent.com/83712877/117159818-38aae180-adde-11eb-96b5-0e779803b4b2.png"> Step 7 |
+|<img alt="Step 8" src="https://user-images.githubusercontent.com/83712877/117159863-4496a380-adde-11eb-8874-40cc6f851cf6.png"> Step 8 |<img alt="Step 9" src="https://user-images.githubusercontent.com/83712877/117325821-b5a58c00-aeae-11eb-8156-2ea585a77834.png"> Step 9 |
 ### Option 2: CoWIN OTP Retriever
 1. Install the [CoWinOTPRetriever Android app](./CoWinOtpRetreiver.apk?raw=true) by enabling installation from unknown sources.
 2. Follow this guide to install apps from unknown sources: https://www.verizon.com/support/knowledge-base-222186/
