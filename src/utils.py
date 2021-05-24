@@ -130,10 +130,6 @@ def save_user_info(filename, details):
 def get_saved_user_info(filename):
     with open(filename, "r") as f:
         data = json.load(f)
-
-    # for backward compatible logic
-    if data["search_option"] !=3 and "pin_code_location_dtls" not in data:
-        data["pin_code_location_dtls"] = []
     return data
 
 
