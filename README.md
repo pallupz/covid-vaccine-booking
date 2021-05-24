@@ -94,6 +94,7 @@
 #### IFTTT steps in screenshots:
 
 | |
+|:-------------------------:|
 | <img alt="Step 1" src="https://user-images.githubusercontent.com/83712877/117159172-b0c4d780-addd-11eb-90f0-ab8438db4c8e.png"> Step 1 |
 
 | | |
@@ -115,20 +116,13 @@
 8. Security tip: Make sure to change back your settings to disallow app installation from unknown sources.
 
 #### CoWIN OTP Retriever steps in screenshots
-1. ![image](https://user-images.githubusercontent.com/3753228/117923351-814c2880-b311-11eb-9008-fbf497271e08.png)
-2. ![image](https://user-images.githubusercontent.com/3753228/117923398-9759e900-b311-11eb-9dec-4e003b772f0e.png)
-3. ![image](https://user-images.githubusercontent.com/3753228/117923447-a771c880-b311-11eb-92f5-b08903f1b20e.png)
-4. ![image](https://user-images.githubusercontent.com/3753228/117923482-b9ec0200-b311-11eb-8210-4c1e1b958d6a.png)
-5. ![image](https://user-images.githubusercontent.com/3753228/117924614-9e81f680-b313-11eb-8583-bffcadf681f3.png)
-6. ![image](https://user-images.githubusercontent.com/3753228/117923509-c40e0080-b311-11eb-9832-805c4676e4a5.png)
-7. ![image](https://user-images.githubusercontent.com/3753228/117923554-d6883a00-b311-11eb-8ae1-8ea36ffaf35b.png)
-8. ![image](https://user-images.githubusercontent.com/3753228/118130348-e17ac180-b41a-11eb-8af9-f9e13d671f07.png)
-9. ![image](https://user-images.githubusercontent.com/3753228/117947493-df870480-b32d-11eb-923d-47efa55f9586.png)
-11. ![image](https://user-images.githubusercontent.com/3753228/117948585-e4988380-b32e-11eb-9837-9abdda21c23e.png)
-12. ![image](https://user-images.githubusercontent.com/3753228/117949247-8ae48900-b32f-11eb-8b77-5d98ed07cfc6.png)
-13. ![image](https://user-images.githubusercontent.com/3753228/117925274-a1311b80-b314-11eb-9f77-ac6d83720de8.png)
-14. ![image](https://user-images.githubusercontent.com/3753228/117925321-b148fb00-b314-11eb-8b0a-7a4c55afae69.png)
-15. ![image](https://user-images.githubusercontent.com/3753228/117925366-c2920780-b314-11eb-8db5-e8f11325fa2e.png)
+| | | |
+|:-------------------------:|:-------------------------:|:-------------------------:|
+|<img alt="Step 1" src="https://user-images.githubusercontent.com/3753228/117923351-814c2880-b311-11eb-9008-fbf497271e08.png"> Step 1 |<img alt="Step 2" src="https://user-images.githubusercontent.com/3753228/117923398-9759e900-b311-11eb-9dec-4e003b772f0e.png"> Step 2 |<img alt="Step 3" src="https://user-images.githubusercontent.com/3753228/117923447-a771c880-b311-11eb-92f5-b08903f1b20e.png"> Step 3 |
+|<img alt="Step 4" src="https://user-images.githubusercontent.com/3753228/117923482-b9ec0200-b311-11eb-8210-4c1e1b958d6a.png"> Step 4 |<img alt="Step 5" src="https://user-images.githubusercontent.com/3753228/117924614-9e81f680-b313-11eb-8583-bffcadf681f3.png"> Step 5 |<img alt="Step 6" src="https://user-images.githubusercontent.com/3753228/117923509-c40e0080-b311-11eb-9832-805c4676e4a5.png"> Step 6 |
+|<img alt="Step 7" src="https://user-images.githubusercontent.com/3753228/117923554-d6883a00-b311-11eb-8ae1-8ea36ffaf35b.png"> Step 7 |<img alt="Step 8" src="https://user-images.githubusercontent.com/3753228/118130348-e17ac180-b41a-11eb-8af9-f9e13d671f07.png"> Step 8 |<img alt="Step 9" src="https://user-images.githubusercontent.com/3753228/117947493-df870480-b32d-11eb-923d-47efa55f9586.png"> Step 9 |
+|<img alt="Step 10" src="https://user-images.githubusercontent.com/3753228/117948585-e4988380-b32e-11eb-9837-9abdda21c23e.png"> Step 10 |<img alt="Step 11" src="https://user-images.githubusercontent.com/3753228/117949247-8ae48900-b32f-11eb-8b77-5d98ed07cfc6.png"> Step 11 |<img alt="Step 12" src="https://user-images.githubusercontent.com/3753228/117925274-a1311b80-b314-11eb-9f77-ac6d83720de8.png"> Step 12 |
+|<img alt="Step 13" src="https://user-images.githubusercontent.com/3753228/117925321-b148fb00-b314-11eb-8b0a-7a4c55afae69.png"> Step 13 |<img alt="Step 14" src="https://user-images.githubusercontent.com/3753228/117925366-c2920780-b314-11eb-8db5-e8f11325fa2e.png"> Step 14 | |
 
 ## Setup Guide for iOS
 
