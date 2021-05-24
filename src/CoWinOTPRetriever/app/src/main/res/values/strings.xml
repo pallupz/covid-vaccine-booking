@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">CoWIN OTP Retriever</string>
     <string name="enter_phone_number">Enter Your Phone Number</string>
-    <string name="start_listening_cowin_otp">Start Listening CoWIN OTP</string>
+    <string name="start_listening_cowin_otp">Start Listening CoWIN OTP &#160;</string>
     <string name="kvdb_base_url">https://kvdb.io</string>
     <string name="enter_kvdb_bucket_key">Enter KV DB Bucket Key</string>
     <string name="kvdb_default_key">ASth4wnvVDPkg2bdjsiqMN</string>
