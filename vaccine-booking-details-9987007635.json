@@ -1,0 +1,38 @@
+{
+    "auto_book": "yes-please",
+    "beneficiary_dtls": [
+        {
+            "age": 22,
+            "bref_id": "21759242672320",
+            "name": "Animesh Sasan",
+            "status": "Not Vaccinated",
+            "vaccine": ""
+        },
+        {
+            "age": 20,
+            "bref_id": "91379888254180",
+            "name": "Giransh Sasan",
+            "status": "Not Vaccinated",
+            "vaccine": ""
+        }
+    ],
+    "captcha_api_choice": "1",
+    "captcha_automation": "y",
+    "captcha_automation_api_key": "d92ec38510916f37a08393bc3c62e0b7",
+    "fee_type": [
+        "Free",
+        "Paid"
+    ],
+    "location_dtls": [
+        {
+            "alert_freq": 3960,
+            "district_id": 395,
+            "district_name": "Mumbai"
+        }
+    ],
+    "minimum_slots": 2,
+    "refresh_freq": 4,
+    "search_option": 2,
+    "start_date": 2,
+    "vaccine_type": null
+}
