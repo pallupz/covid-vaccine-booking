@@ -8,6 +8,26 @@
 
 </div>
 
+## Quick Start Guide
+Instructions to follow on your laptop and phone below. To fetch OTP automatically, Step 2 is compulsory
+
+### 1. On your laptop
+1. Make sure [Python 3.8+](https://python.org) is installed.
+2. Clone this repo: ```git clone https://github.com/ithihasmadala/covid-vaccine-booking.git``` or download zip file and extract
+3. Install the requirements:
+	- ```pip install -r requirements.txt``` on Windows
+	- ```pip3 install -r requirements.txt``` on Linux or Mac
+4. Run the script:
+	- ```python src\covid-vaccine-slot-booking.py``` on Windows
+	- ```python3 src/covid-vaccine-slot-booking.py``` on Linux or Mac
+5. Follow the steps. For more detailed guide: [Steps](#steps)
+
+### 2. On your Phone (Optional: To fetch OTP automatically)
+1. **Android Phone**: Follow either [Option 1: IFTTT app](#option-1-ifttt) or [Option 2: CoWIN OTP Retriever app](#option-2-cowin-otp-retriever)
+2. **iPhone**: Follow [Using Shortcuts app](#using-shortcuts-app)
+
+<br>
+
 ### Contents
   - [Before you start](#before-you-start)
   - [What this repository does](#what-this-repository-does)
@@ -34,7 +54,6 @@
 3. If you are still facing errors and want to run this script on windows using exe, please see the section below [How to run on windows](#how-to-run-on-windows)
 4. Instructions for iOS have also been added. See the [Setup Guide for iOS](#setup-guide-for-ios) for details. Please note that its not possible to automate the OTP auto read on iOS completely, however its possible to make it a 1 tap process, which is far better than seeing and entering the OTP manually.
 
-
 ## What this repository does
 1. Automates OTP read from the SMS after the token expires.
 2. Randomly chooses one of the available slots instead of waiting for input from the user.
@@ -60,6 +79,8 @@
 4. The script polls the shared storage to get the OTP
 5. Once the OTP is received, the polling resumes
 6. If a free slot is found, rather than waiting for an input, it randomly chooses a slot and attempts to book
+
+<br>
 
 ## Setup Guide for Android
 
@@ -103,6 +124,9 @@
 |<img alt="Step 4" src="https://user-images.githubusercontent.com/83712877/117159516-f8e3fa00-addd-11eb-832d-fcf92238f823.png"> Step 4 |<img alt="Step 5" src="https://user-images.githubusercontent.com/83712877/117159753-2c268900-adde-11eb-9bb3-4bb54f951683.png"> Step 5 |
 |<img alt="Step 6" src="https://user-images.githubusercontent.com/83712877/117159753-2c268900-adde-11eb-9bb3-4bb54f951683.png"> Step 6 |<img alt="Step 7" src="https://user-images.githubusercontent.com/83712877/117159818-38aae180-adde-11eb-96b5-0e779803b4b2.png"> Step 7 |
 |<img alt="Step 8" src="https://user-images.githubusercontent.com/83712877/117159863-4496a380-adde-11eb-8874-40cc6f851cf6.png"> Step 8 |<img alt="Step 9" src="https://user-images.githubusercontent.com/83712877/117325821-b5a58c00-aeae-11eb-8156-2ea585a77834.png"> Step 9 |
+
+<br>
+
 ### Option 2: CoWIN OTP Retriever
 1. Install the [CoWinOTPRetriever Android app](./CoWinOtpRetreiver.apk?raw=true) by enabling installation from unknown sources.
 2. Follow this guide to install apps from unknown sources: https://www.verizon.com/support/knowledge-base-222186/
@@ -122,6 +146,8 @@
 |<img alt="Step 4" src="https://user-images.githubusercontent.com/3753228/117923482-b9ec0200-b311-11eb-8210-4c1e1b958d6a.png"> Step 4 |<img alt="Step 5" src="https://user-images.githubusercontent.com/3753228/117924614-9e81f680-b313-11eb-8583-bffcadf681f3.png"> Step 5 |<img alt="Step 6" src="https://user-images.githubusercontent.com/3753228/117923509-c40e0080-b311-11eb-9832-805c4676e4a5.png"> Step 6 |
 |<img alt="Step 7" src="https://user-images.githubusercontent.com/3753228/117923554-d6883a00-b311-11eb-8ae1-8ea36ffaf35b.png"> Step 7 |<img alt="Step 8" src="https://user-images.githubusercontent.com/3753228/118130348-e17ac180-b41a-11eb-8af9-f9e13d671f07.png"> Step 8 |<img alt="Step 9" src="https://user-images.githubusercontent.com/3753228/117947493-df870480-b32d-11eb-923d-47efa55f9586.png"> Step 9 |
 |<img alt="Step 10" src="https://user-images.githubusercontent.com/3753228/117948585-e4988380-b32e-11eb-9837-9abdda21c23e.png"> Step 10 |<img alt="Step 11" src="https://user-images.githubusercontent.com/3753228/117949247-8ae48900-b32f-11eb-8b77-5d98ed07cfc6.png"> Step 11 | |
+
+<br>
 
 ## Setup Guide for iOS
 
@@ -157,6 +183,7 @@ Go to `src` directory and run the script  `cd src && python covid-vaccine-slot-b
 |<img alt="Step 7" src="https://user-images.githubusercontent.com/83958525/117808695-d1c47700-b27a-11eb-897a-7a4ef7761889.PNG"> Step 7 |<img alt="Step 8" src="https://user-images.githubusercontent.com/83958525/117808764-e7d23780-b27a-11eb-90b4-bb9859d45379.PNG"> Step 8 |<img alt="Step 9" src="https://user-images.githubusercontent.com/83958525/117808824-01737f00-b27b-11eb-8937-a473107a3fcd.PNG"> Step 9 |
 |<img alt="Step 10" src="https://user-images.githubusercontent.com/83958525/117809022-40a1d000-b27b-11eb-86bd-31b5e9669887.PNG"> Step 10 |<img alt="Step 11" src="https://user-images.githubusercontent.com/83958525/117809074-51524600-b27b-11eb-9b2f-82cab9a92f49.jpeg"> Step 11 | |
 
+<br>
 
 ## COVID-19 Vaccination Slot Booking Script
 
@@ -197,11 +224,11 @@ python src\covid-vaccine-slot-booking.py --token=YOUR-TOKEN-HERE
 - ```inputimeout``` : For creating an input with timeout.
 
 Install all dependencies by running:
-```
-pip install -r requirements.txt
-```
+```pip install -r requirements.txt```
 
-### Steps:
+<br>
+
+## Steps:
 1. Run script:
 	```python src\covid-vaccine-slot-booking.py```
 2. Select Beneficiaries. Read the important notes. You can select multiple beneficiaries by providing comma-separated index values such as ```1,2```:
@@ -332,20 +359,14 @@ pip install -r requirements.txt
 	```
 12. Before the next update, you'll have 10 seconds to provide a choice in the format ```centerIndex.slotIndex``` eg: The input```1.4``` will select the vaccination center in second row and its fourth slot.
 
-How to run on windows
+<br>
 
-### How to run on windows
+## How to run on windows
 
 1. **Step 1** - Download or clone this repo.
-
 2. **Step 2 -** Go to folder **tests** then **windows exe**.**zip**. Unzip the folder and Now run the program "**captcha_tests.exe**".  If you see a dialog box click on quit, and you will see a Captcha. If this is what happened you are all good to go. 
-
-   
-
 3. Now come back to main folder unzip "**windows exe.zip**"go to this "**windows exe**" folder 
-
    Now start the program "**covid-vaccine-slot-booking.exe**", you will not see any error.
-
 4. DO NOT DELETE ANY FOLDER OR FILE. 
 
 <br>
@@ -380,9 +401,9 @@ How to run on windows
 
    **Solution** : Follow these steps for Ubuntu
 
-   1. ```sudo apt-get install beep``` #insatll this once
+   1. ```sudo apt-get install beep``` #Install this once
    2. ```sudo modeprobe pcspkr``` #This will solve Device not found error 
-   3. Testing beep is simple just type ```beep``` in terminal this will beep a sound from speakers.
+   3. Testing beep is simple just type ```beep``` in terminal, this will produce a beep sound from your speakers.
 
 ### Problem 3
 
@@ -392,7 +413,7 @@ How to run on windows
 
 | | |
 |:-------------------------:|:-------------------------:|
-| <img src="https://user-images.githubusercontent.com/83712877/117325821-b5a58c00-aeae-11eb-8156-2ea585a77834.png" alt="image" width="300" /> <br> Using IFTTT: This number must match the number you enter while running the script. |<img src="hhttps://user-images.githubusercontent.com/3753228/117948585-e4988380-b32e-11eb-9837-9abdda21c23e.png" alt="image" width="300" /> <br> CowinOTPRetriever App: Make sure the switch is flipped on. |
+| <img src="https://user-images.githubusercontent.com/83712877/117325821-b5a58c00-aeae-11eb-8156-2ea585a77834.png" alt="image" width="300" /> <br> Using IFTTT: This number must match the number you enter while running the script. |<img src="https://user-images.githubusercontent.com/3753228/117948585-e4988380-b32e-11eb-9837-9abdda21c23e.png" alt="image" width="300" /> <br> CowinOTPRetriever App: Make sure the switch is flipped on. |
    
 
    
