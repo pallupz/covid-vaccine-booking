@@ -1140,4 +1140,3 @@ def generate_token_OTP_manual(mobile, request_header):
 
         except Exception as e:
             print(str(e))
-
