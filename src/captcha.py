@@ -22,4 +22,3 @@ def captcha_builder(resp):
     event, values = window.read()
     window.close()
     return values['inp']
-

@@ -657,19 +657,32 @@ def generate_token_OTP(mobile, request_header):
     while not valid_token:
         try:
             data = {"mobile": mobile,
-                    "secret": "U2FsdGVkX1+z/4Nr9nta+2DrVJSv7KS6VoQUSQ1ZXYDx/CJUkWxFYG6P3iM/VW+6jLQ9RDQVzp/RcZ8kbT41xw=="
+                    "secret": "U2FsdGVkX1+Co0Y47weon+N6VW49nH9oa8wv4KZBaBMt4vD7yhGuncYMK5R4Q6l7O9Nn/VFTmguVTEx+lFVLvw=="
             }
-            txnId = requests.post(url=OTP_PRO_URL, json=data, headers=request_header)
+            request_header={"accept": "application/json, text/plain, */*",
+                            "accept-encoding": "gzip, deflate, br",
+                            "accept-language": "en-GB,en-US;q=0.9,en;q=0.8",
+                            "content-length": "121",
+                            "content-type": "application/json",
+                            "origin": "https://selfregistration.cowin.gov.in",
+                            "referer": "https://selfregistration.cowin.gov.in/",
+                            "sec-fetch-dest": "empty",
+                            "sec-fetch-mode": "cors",
+                            "sec-fetch-site": "cross-site",
+                            "sec-gpc": "1",
+                            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36"}
+            txnId = requests.post(url=OTP_PRO_URL, json=data, headers=request_header, timeout=None)
 
             if txnId.status_code == 200:
                 print(f"Successfully requested OTP for mobile number {mobile} at {datetime.datetime.today()}..")
                 txnId = txnId.json()['txnId']
+
                 time.sleep(10.0)
                 fbresult = firebase.get('/sharath', None)
                 print(fbresult)
 
                 #OTP = input("Enter OTP (If this takes more than 2 minutes, press Enter to retry): ")
-                OTP = fbresult
+                OTP = fbresult                
                 if OTP:
                     data = {"otp": sha256(str(OTP).encode('utf-8')).hexdigest(), "txnId": txnId}
                     print(f"Validating OTP..")
@@ -706,4 +719,3 @@ def generate_token_OTP(mobile, request_header):
 
         except Exception as e:
             print(str(e))
-

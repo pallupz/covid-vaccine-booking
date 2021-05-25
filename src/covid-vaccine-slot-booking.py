@@ -14,14 +14,16 @@ def main():
     args = parser.parse_args()
 
     filename = 'vaccine-booking-details.json'
-    mobile = None
+    mobile = '9048611293'
 
     print('Running Script')
     beep(500, 150)
 
     try:
         base_request_header = {
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36 Edg/90.0.818.66',
+            'origin': 'https://selfregistration.cowin.gov.in',
+            'referer': 'https://selfregistration.cowin.gov.in/'
         }
 
         if args.token:
@@ -31,7 +33,7 @@ def main():
             if args.mobile:
                 mobile = args.mobile
             else:
-                mobile = input("Enter the registered mobile number: ")
+                mobile = '9048611293'
             token = generate_token_OTP(mobile, base_request_header)
 
         request_header = copy.deepcopy(base_request_header)
