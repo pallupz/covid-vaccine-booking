@@ -7,3 +7,4 @@ pysimplegui~=4.41.2
 Pillow~=8.2.0
 beautifulsoup4~=4.9.3
 pyjwt~=2.1.0
+pytest~=6.2.4

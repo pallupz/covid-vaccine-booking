@@ -416,4 +416,7 @@ Install all dependencies by running:
 | <img src="https://user-images.githubusercontent.com/83712877/117325821-b5a58c00-aeae-11eb-8156-2ea585a77834.png" alt="image" width="300" /> <br> Using IFTTT: This number must match the number you enter while running the script. |<img src="https://user-images.githubusercontent.com/3753228/117948585-e4988380-b32e-11eb-9837-9abdda21c23e.png" alt="image" width="300" /> <br> CowinOTPRetriever App: Make sure the switch is flipped on. |
    
 
-   
+## Running unit tests with `pytest`
+- Install `pytest` from `requirements.txt` if not already installed
+- Note that `src/conftest.py` is an empty config file [needed for pytest to run](https://stackoverflow.com/a/50610630/13866213)
+- Run `python3 -m pytest` from command line from the repo root to execute all tests in `src/tests`   

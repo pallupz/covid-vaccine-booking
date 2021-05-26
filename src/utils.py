@@ -5,6 +5,7 @@ from inputimeout import inputimeout, TimeoutOccurred
 import tabulate, copy, time, datetime, requests, sys, os, random
 from captcha import captcha_builder_manual, captcha_builder_auto
 import uuid
+import re
 
 BOOKING_URL = "https://cdn-api.co-vin.in/api/v2/appointment/schedule"
 BENEFICIARIES_URL = "https://cdn-api.co-vin.in/api/v2/appointment/beneficiaries"
@@ -1039,9 +1040,8 @@ def generate_token_OTP(mobile, request_header):
             print("OTP SMS is:" + response.text)
             print("OTP SMS len is:" + str(len(response.text)))
 
-            OTP = response.text
-            OTP = OTP.replace("Your OTP to register/access CoWIN is ", "")
-            OTP = OTP.replace(". It will be valid for 3 minutes. - CoWIN", "")
+            sms_regex = r"(?<!\d)\d{6}(?!\d)"
+            OTP = extract_from_regex(response.text, sms_regex)
             if not OTP:
                 time.sleep(5)
                 continue
@@ -1074,6 +1074,16 @@ def generate_token_OTP(mobile, request_header):
     print(f"Token Generated: {token}")
     return token
 
+
+def extract_from_regex(text, pattern):
+    """
+    This function extracts all particular string with help of regex pattern from given text
+    """
+    matches = re.findall(pattern, text, re.MULTILINE)
+    if len(matches) > 0:
+        return matches[0]
+    else:
+        return None
 
 def generate_token_OTP_manual(mobile, request_header):
     """
