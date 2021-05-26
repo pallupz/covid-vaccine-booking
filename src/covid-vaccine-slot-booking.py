@@ -28,6 +28,7 @@ def main():
 
         if args.token:
             token = args.token
+
         else:
             mobile = ''
             if args.mobile:
@@ -112,4 +113,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

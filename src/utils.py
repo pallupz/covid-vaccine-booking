@@ -158,9 +158,9 @@ def collect_user_details(request_header):
     print("\n================================= Location Info =================================\n")
     # get search method to use
     search_option = input(
-        """Search by Pincode? Or by State/District? \nEnter 1 for Pincode or 2 for State/District. (Default 2) : """)
+        """Search by Pincode? Or by State/District? \nEnter 1 for Pincode or 2 for State/District or 3 for Multiple states /District. (Default 2) : """)
 
-    if not search_option or int(search_option) not in [1, 2]:
+    if not search_option or int(search_option) not in [1, 2, 3]:
         search_option = 2
     else:
         search_option = int(search_option)
@@ -168,6 +168,9 @@ def collect_user_details(request_header):
     if search_option == 2:
         # Collect vaccination center preferance
         location_dtls = get_districts(request_header)
+    elif search_option == 3:
+        # Collect vaccination center preferance
+        location_dtls = get_multi_districts(request_header)
 
     else:
         # Collect vaccination center preferance
@@ -394,7 +397,7 @@ def check_and_book(request_header, beneficiary_dtls, location_dtls, search_optio
         else:
             pass
 
-        if search_option == 2:
+        if search_option in (2, 3) :
             options = check_calendar_by_district(request_header, vaccine_type, location_dtls, start_date,
                                                  minimum_slots, min_age_booking, fee_type, dose)
         else:
@@ -567,6 +570,22 @@ def get_districts(request_header):
         print(states.text)
         os.system("pause")
         sys.exit(1)
+
+
+def get_multi_districts(request_header):
+
+    district_list = list()
+    while 1:
+        district_list += get_districts(request_header)
+        add_district = input("Do you want to add more district? (yes) Default no: ")
+        add_district = add_district if add_district else "no"
+
+        if add_district is None or add_district.lower() == "no":
+            break
+
+    print(f'Final Selected districts list: ')
+    display_table(district_list)
+    return district_list
 
 
 def get_beneficiaries(request_header):
