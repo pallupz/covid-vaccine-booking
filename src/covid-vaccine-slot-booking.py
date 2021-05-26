@@ -71,8 +71,9 @@ def main():
                 print("\n================================= Info =================================\n")
                 display_info_dict(collected_details)
 
-                file_acceptable = input("\nProceed with above info? (y/n Default n): ")
-                file_acceptable = file_acceptable if file_acceptable else 'n'
+                file_acceptable = input("\nProceed with above info? (y/n Default y): ")
+                file_acceptable = file_acceptable if file_acceptable else 'y'
+
                 if file_acceptable != 'y':
                     collected_details = collect_user_details(request_header)
                     save_user_info(filename, collected_details)
