@@ -656,11 +656,14 @@ def check_and_book(
             display_table(cleaned_options_for_display)
             slots_available = True
         else:
-            for i in range(refresh_freq, 0, -1):
-                msg = f"No viable options. Next update in {i} seconds.."
-                print(msg, end="\r", flush=True)
-                sys.stdout.flush()
-                time.sleep(1)
+            try:
+                for i in range(refresh_freq, 0, -1):
+                    msg = f"No viable options. Next update in {i} seconds... (Press Ctrl + C to refresh immediately. Press Ctrl + C multiple times to exit.)"
+                    print(msg, end="\r", flush=True)
+                    sys.stdout.flush()
+                    time.sleep(1)
+            except KeyboardInterrupt:
+                print("OK. Refreshing...")
             slots_available = False
 
     except TimeoutOccurred:
