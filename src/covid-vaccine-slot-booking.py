@@ -11,7 +11,7 @@ from utils import generate_token_OTP, generate_token_OTP_manual, check_and_book,
 
 def is_token_valid(token):
     payload = jwt.decode(token, options={"verify_signature": False})
-    remaining_seconds = payload['exp'] - int(time.time())
+    remaining_seconds = payload['iat'] + 600 - int(time.time())
     if remaining_seconds <= 1*30: # 30 secs early before expiry for clock issues
         return False
     if remaining_seconds <= 60:
