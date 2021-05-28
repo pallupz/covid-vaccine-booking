@@ -5,6 +5,7 @@ from inputimeout import inputimeout, TimeoutOccurred
 import tabulate, copy, time, datetime, requests, sys, os, random
 from captcha import captcha_builder_manual, captcha_builder_auto
 import uuid
+from ratelimit import handle_rate_limited
 
 BOOKING_URL = "https://cdn-api.co-vin.in/api/v2/appointment/schedule"
 BENEFICIARIES_URL = "https://cdn-api.co-vin.in/api/v2/appointment/beneficiaries"
@@ -366,7 +367,11 @@ def check_calendar_by_district(
                 headers=request_header,
             )
 
-            if resp.status_code == 401:
+            if resp.status_code == 403 or resp.status_code == 429:
+                handle_rate_limited()
+                return False
+
+            elif resp.status_code == 401:
                 print("TOKEN INVALID")
                 return False
 
@@ -432,7 +437,11 @@ def check_calendar_by_pincode(
                 base_url.format(location["pincode"], start_date), headers=request_header
             )
 
-            if resp.status_code == 401:
+            if resp.status_code == 403 or resp.status_code == 429:
+                handle_rate_limited()
+                return False
+
+            elif resp.status_code == 401:
                 print("TOKEN INVALID")
                 return False
 
@@ -503,7 +512,11 @@ def book_appointment(request_header, details, mobile, generate_captcha_pref):
             print(f"Booking Response Code: {resp.status_code}")
             print(f"Booking Response : {resp.text}")
 
-            if resp.status_code == 401:
+            if resp.status_code == 403 or resp.status_code == 429:
+                handle_rate_limited()
+                pass
+
+            elif resp.status_code == 401:
                 print("TOKEN INVALID")
                 return 0
 
@@ -1023,6 +1036,8 @@ def clear_bucket_and_send_OTP(storage_url, mobile, request_header):
     else:
         print("Unable to Create OTP")
         print(txnId.text)
+        if txnId.status_code == 403 or txnId.status_code == 429:
+            handle_rate_limited()
         time.sleep(5)  # Saftey net againt rate limit
         txnId = None
 
@@ -1133,6 +1148,8 @@ def generate_token_OTP_manual(mobile, request_header):
             else:
                 print('Unable to Generate OTP')
                 print(txnId.status_code, txnId.text)
+                if txnId.status_code == 403 or txnId.status_code == 429:
+                    handle_rate_limited()
 
                 retry = input(f"Retry with {mobile} ? (y/n Default y): ")
                 retry = retry if retry else 'y'
