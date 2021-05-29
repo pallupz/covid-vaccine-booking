@@ -14,6 +14,8 @@ OTP_PRO_URL = 'https://cdn-api.co-vin.in/api/v2/auth/generateMobileOTP'
 
 WARNING_BEEP_DURATION = (1000, 2000)
 
+SLOT_DETAILS_STR = "1,2,3,4 "
+INTERNAL_RETRIES = 3
 
 try:
     import winsound
@@ -189,6 +191,9 @@ def collect_user_details(request_header):
     refresh_freq = input('How often do you want to refresh the calendar (in seconds)? Default 15. Minimum 5. : ')
     refresh_freq = int(refresh_freq) if refresh_freq and int(refresh_freq) >= 5 else 15
 
+    # Set Preferance for slot
+    slot_preferances = input(f'\nProvide Preferance for slot booking ? {SLOT_DETAILS_STR} ?\nEnter comma separated index numbers Default (any): ')
+
     # Get search start date
     start_date = input(
         '\nSearch for next seven day starting from when?\nUse 1 for today, 2 for tomorrow, or provide a date in the format DD-MM-YYYY. Default 2: ')
@@ -217,6 +222,7 @@ def collect_user_details(request_header):
         'search_option': search_option,
         'minimum_slots': minimum_slots,
         'refresh_freq': refresh_freq,
+        'slot_preferances': slot_preferances,
         'auto_book': auto_book,
         'start_date': start_date,
         'vaccine_type': vaccine_type,
@@ -324,6 +330,34 @@ def generate_captcha(request_header):
         return captcha_builder(resp.json())
 
 
+def block_choice(request_header, choice, beneficiary_dtls, options):
+    if choice == '.':
+        return True
+    else:
+        try:
+            choice_arr = choice.split('.')
+
+            choice_arr = [int(item) for item in choice_arr]
+            print(f'\n============> Got Choice: Center #{choice_arr[0]}, Slot #{choice_arr[1]}')
+
+            option_item = options[choice_arr[0] - 1]
+            new_req = {
+                'beneficiaries': [beneficiary['bref_id'] for beneficiary in beneficiary_dtls],
+                'dose': 2 if [beneficiary['status'] for beneficiary in beneficiary_dtls][0] == 'Partially Vaccinated' else 1,
+                'center_id' : option_item['center_id'],
+                'session_id': option_item['session_id'],
+                'slot'      : option_item['slots'][choice_arr[1] - 1]
+            }
+
+            print(f'Booking with info: {new_req}')
+            return book_appointment(request_header, new_req)
+
+        except IndexError:
+            print("============> Invalid Option!")
+            os.system("pause")
+            pass
+
+
 def book_appointment(request_header, details):
     """
     This function
@@ -345,7 +379,7 @@ def book_appointment(request_header, details):
 
             if resp.status_code == 401:
                 print('TOKEN INVALID')
-                return False
+                return resp.status_code
 
             elif resp.status_code == 200:
                 beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
@@ -361,9 +395,13 @@ def book_appointment(request_header, details):
                 print(f'Response: {resp.status_code} : {resp.text}')
                 pass
 
+            elif resp.status_code == 409: # This vaccination center is completely booked for the selected date.
+                print(f'Response: {resp.status_code} : {resp.text}')
+                return resp.status_code
+
             else:
                 print(f'Response: {resp.status_code} : {resp.text}')
-                return True
+                return resp.status_code
 
     except Exception as e:
         print(str(e))
@@ -384,6 +422,7 @@ def check_and_book(request_header, beneficiary_dtls, location_dtls, search_optio
 
         minimum_slots = kwargs['min_slots']
         refresh_freq = kwargs['ref_freq']
+        slot_preferances = kwargs['slot_preferances']
         auto_book = kwargs['auto_book']
         start_date = kwargs['start_date']
         vaccine_type = kwargs['vaccine_type']
@@ -412,25 +451,56 @@ def check_and_book(request_header, beneficiary_dtls, location_dtls, search_optio
                                         k['name'].lower(),
                                         datetime.datetime.strptime(k['date'], "%d-%m-%Y"))
                          )
+        cleaned_options_for_display = []
+        for item in copy.deepcopy(options):
+            item.pop('session_id', None)
+            item.pop('center_id', None)
+            cleaned_options_for_display.append(item)
+
+        # Display all the available options
+        if len(cleaned_options_for_display) > 0:
+            display_table(cleaned_options_for_display)
 
         tmp_options = copy.deepcopy(options)
         if len(tmp_options) > 0:
-            cleaned_options_for_display = []
-            for item in tmp_options:
-                item.pop('session_id', None)
-                item.pop('center_id', None)
-                cleaned_options_for_display.append(item)
-
-            display_table(cleaned_options_for_display)
             if auto_book == 'yes-please':
-                print("AUTO-BOOKING IS ENABLED. PROCEEDING WITH FIRST CENTRE, DATE, and RANDOM SLOT.")
-                option = options[0]
-                random_slot = random.randint(1, len(option['slots']))
-                choice = f'1.{random_slot}'
+                print("AUTO-BOOKING IS ENABLED. PROCEEDING WITH FIRST CENTRE, DATE, and PREFERRED SLOT.")
+
+                # Looping over all the avaialble options
+                for index, each_option in enumerate(options):
+                    option = each_option
+                    if slot_preferances is not None and len(slot_preferances) > 0:
+                        random_slot = get_availble_prefered_slot(slot_preferances, option['slots'])
+
+                    if random_slot is None:
+                        random_slot = random.randint(1, len(option['slots']))
+
+                    choice = f'{index+1}.{random_slot}'
+
+                    try:
+                        for retry_item in range(0, INTERNAL_RETRIES):
+                            book_resp = block_choice(request_header, choice=choice, beneficiary_dtls=beneficiary_dtls, options=options)
+                            if book_resp is not None:
+                                if book_resp == 409:
+                                    print("***Already Full*** moving to another available Center")
+                                    break
+                                elif book_resp == 401:
+                                    return False
+
+                    except IndexError:
+                        print("============> Invalid Option!")
+                        os.system("pause")
+
             else:
                 choice = inputimeout(
                     prompt='----------> Wait 20 seconds for updated options OR \n----------> Enter a choice e.g: 1.4 for (1st center 4th slot): ',
                     timeout=20)
+
+                try:
+                    block_choice(request_header, choice=choice, beneficiary_dtls=beneficiary_dtls, options=options)
+                except IndexError:
+                    print("============> Invalid Option!")
+                    os.system("pause")
 
         else:
             try:
@@ -447,30 +517,14 @@ def check_and_book(request_header, beneficiary_dtls, location_dtls, search_optio
         time.sleep(1)
         return True
 
-    else:
-        if choice == '.':
-            return True
-        else:
-            try:
-                choice = choice.split('.')
-                choice = [int(item) for item in choice]
-                print(f'============> Got Choice: Center #{choice[0]}, Slot #{choice[1]}')
 
-                new_req = {
-                    'beneficiaries': [beneficiary['bref_id'] for beneficiary in beneficiary_dtls],
-                    'dose': 2 if [beneficiary['status'] for beneficiary in beneficiary_dtls][0] == 'Partially Vaccinated' else 1,
-                    'center_id' : options[choice[0] - 1]['center_id'],
-                    'session_id': options[choice[0] - 1]['session_id'],
-                    'slot'      : options[choice[0] - 1]['slots'][choice[1] - 1]
-                }
+def get_availble_prefered_slot(slot_preferances, slots_options):
 
-                print(f'Booking with info: {new_req}')
-                return book_appointment(request_header, new_req)
+    for slot_item in slot_preferances.split(","):
+        if int(slot_item) >= len(slots_options):
+            return slot_item
 
-            except IndexError:
-                print("============> Invalid Option!")
-                os.system("pause")
-                pass
+    return None
 
 
 def get_vaccine_preference():

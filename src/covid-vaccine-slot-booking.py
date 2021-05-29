@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import copy
+# from traceback import print_exc
 from types import SimpleNamespace
 import requests, sys, argparse, os, datetime
 from utils import generate_token_OTP, check_and_book, beep, BENEFICIARIES_URL, WARNING_BEEP_DURATION, \
@@ -81,6 +82,7 @@ def main():
                                          ref_freq=info.refresh_freq,
                                          auto_book=info.auto_book,
                                          start_date=info.start_date,
+                                         slot_preferances=info.slot_preferances,
                                          vaccine_type=info.vaccine_type,
                                          fee_type=info.fee_type)
 
@@ -106,6 +108,7 @@ def main():
                     os.system("pause")
 
     except Exception as e:
+        # print(print_exc())
         print(str(e))
         print('Exiting Script')
         os.system("pause")
