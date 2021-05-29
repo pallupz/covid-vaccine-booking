@@ -12,7 +12,7 @@
 **Instructions to follow on your laptop and phone below. To fetch OTP automatically, Step 2 is compulsory**
 
 ### 1. On your laptop
-1. Make sure [Python 3.8+](https://python.org) is installed.
+1. Make sure [Python 3.8+](https://python.org) is installed. *Note: If you are using Windows, follow [How to run on windows](#how-to-run-on-windows) and you may not require Python to be installed*
 2. Clone this repo: ```git clone https://github.com/bombardier-gif/covid-vaccine-booking.git``` or download zip file and extract
 3. Install the requirements:
 	- ```pip install -r requirements.txt``` on Windows
@@ -210,9 +210,15 @@ This very basic CLI based script can be used to automate covid vaccination slot 
 - And finally, I know code quality probably isn't great. Suggestions are welcome.
 
 
-### Usage:
+### Usage: 
 
 For the anyone not familiar with Python and using Windows, using the ```covid-vaccine-slot-booking.exe``` executable file would be the easiest way. [Download it from here](https://github.com/bombardier-gif/covid-vaccine-booking/releases/latest). It might trigger an anti-virus alert. That's because I used ```pyinstaller``` to package the python code and it needs a bit more effort to avoid such alerts.
+
+OR
+
+If you have no idea how to install Python in Windows, then either `git clone` the repository or [Download the source here](https://github.com/bombardier-gif/covid-vaccine-booking/archive/refs/heads/main.zip). Then you can double click on `windows.bat` which will automatically take care of the dependencies and start the program. 
+
+*Note: It might take a little bit more time to run for first time becuase it extracts the python runtime and installs dependencies, but from the next time onwards, it'll be instant*
 
 OR
 
@@ -375,6 +381,11 @@ Install all dependencies by running:
 
 ## How to run on windows
 
+### Quick Start
+1. *Step 1* - Download the Repository
+2. *Step 2* - Run `windows.bat` to install all dependencies & start this script
+
+### Advanced
 1. **Step 1** - [Download the source or exe](https://github.com/bombardier-gif/covid-vaccine-booking/releases/latest).
 2. **Step 2 -** Go to folder **tests** then **windows exe**.**zip**. Unzip the folder and Now run the program "**captcha_tests.exe**".  If you see a dialog box click on quit, and you will see a Captcha. If this is what happened you are all good to go. 
 3. Now come back to main folder unzip "**windows exe.zip**"go to this "**windows exe**" folder 
