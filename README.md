@@ -137,7 +137,7 @@ Steps to get your own KVDB bucket:
 
 <br>
 
-### Option 2: CoWIN OTP Retriever (Presently not working because KVDB bucket key which hardcoded in the app has expired. Will be updated soon.)
+### Option 2: CoWIN OTP Retriever (Presently not working because KVDB bucket key which is hardcoded in the app has expired. Will be updated soon.)
 1. Install the [CoWinOTPRetriever Android app](./CoWinOtpRetreiver.apk?raw=true) by enabling installation from unknown sources.
 2. Follow this guide to install apps from unknown sources: https://www.verizon.com/support/knowledge-base-222186/
 3. Allow the app to run in background so that the app does not stop even if you multi-task or leave the phone idle. (Note that, there still might be some phone model specific settings and optimizations which could stop the app from running in background. Check point number 8)
