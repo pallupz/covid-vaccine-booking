@@ -45,10 +45,11 @@ def main():
             filename = filename + mobile + ".json"
             otp_pref = input("\nDo you want to enter OTP manually, instead of auto-read? \nRemember selecting n would require some setup described in README (y/n Default n): ")
             otp_pref = otp_pref if otp_pref else "n"
+            kvdb_bucket = input("Please enter your kvdb bucket key: ")
             while token is None:
                 if otp_pref=="n":
                     try:
-                        token = generate_token_OTP(mobile, base_request_header)
+                        token = generate_token_OTP(mobile, base_request_header, kvdb_bucket)
                     except Exception as e:
                         print(str(e))
                         print('OTP Retrying in 5 seconds')
@@ -135,7 +136,7 @@ def main():
                     while token is None:
                         if otp_pref=="n":
                             try:
-                                token = generate_token_OTP(mobile, base_request_header)
+                                token = generate_token_OTP(mobile, base_request_header, kvdb_bucket)
                             except Exception as e:
                                 print(str(e))
                                 print('OTP Retrying in 5 seconds')
