@@ -45,7 +45,10 @@ def main():
             filename = filename + mobile + ".json"
             otp_pref = input("\nDo you want to enter OTP manually, instead of auto-read? \nRemember selecting n would require some setup described in README (y/n Default n): ")
             otp_pref = otp_pref if otp_pref else "n"
-            kvdb_bucket = input("Please enter your kvdb bucket key: ")
+            kvdb_bucket = input("If you have your personal kvdb bucket, please enter it here. Else just press enter: ")
+            if not kvdb_bucket:
+                kvdb_bucket = "8o67Wac93Ha4NTMvQ3f6Me"
+            print("### Note ###\nPlease make sure the configured URL on your phone is: " + "https://kvdb.io/" + kvdb_bucket + "/" + mobile)
             while token is None:
                 if otp_pref=="n":
                     try:
