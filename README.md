@@ -83,7 +83,7 @@
 <br>
 
 ## KVDB setup
-Regardless of Android or iOS, you will need a KVDB bucket configured to act as a key value store for your OTP messages coming from the IFTTT app or CoWIN OTP Retriever.
+Regardless of Android or iOS, you will need a KVDB bucket configured to act as a key value store for your OTP messages coming from the IFTTT app or CoWIN OTP Retriever. If you don't use your personal kvdb bucket, the script will use a public bucket which will be shared with other users and might not be reliable. You will need to update your personal key every 14 days or buy a pro account on kvdb.
 Steps to get your own KVDB bucket:
 
 1. Go to https://kvdb.io/
@@ -137,12 +137,12 @@ Steps to get your own KVDB bucket:
 
 <br>
 
-### Option 2: CoWIN OTP Retriever (Presently not working because KVDB bucket key which is hardcoded in the app has expired. Will be updated soon.)
+### Option 2: CoWIN OTP Retriever
 1. Install the [CoWinOTPRetriever Android app](./CoWinOtpRetreiver.apk?raw=true) by enabling installation from unknown sources.
 2. Follow this guide to install apps from unknown sources: https://www.verizon.com/support/knowledge-base-222186/
 3. Allow the app to run in background so that the app does not stop even if you multi-task or leave the phone idle. (Note that, there still might be some phone model specific settings and optimizations which could stop the app from running in background. Check point number 8)
 4. Grant sms access to allow the app to read CoWIN OTP sms.
-5. Enter 10 digit mobile number registered on the CoWIN portal.
+5. Enter 10 digit mobile number registered on the CoWIN portal. Also enter your personal KVDB bucket value.
 6. Switch ON the OTP Listener.
 7. If the OTP is successfully sent to the key value store, you will see the status as shown below.
 8. Ensure that the battery saver mode, and all other optimizations are removed. The app should always run (This is the key for quick response). 
