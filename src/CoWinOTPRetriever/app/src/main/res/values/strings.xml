@@ -13,7 +13,14 @@
     <string name="otp_send_success">Successfully sent CoWIN OTP: %1$s</string>
     <string name="send_otp_fail_message">Sending OTP failed with reason: %1$s. Retry attempt #%2$d..</string>
     <string name="otp_received_toast">Sending OTP to %1$s from CoWIN: %2$s</string>
-    <string name="generic_server_down">KVDB server is down</string>
-    <string name="no_internet">No internet connection</string>
-    <string name="generic_error">An unknown error occurred</string>
+    <string name="error_01">Server is not connected to the internet</string>
+    <string name="error_02">Your device is not connected to the internet</string>
+    <string name="error_03">Bad request due to malformed URL</string>
+    <string name="error_04">Parse Error (because of invalid json or xml)</string>
+    <string name="error_05">Out of Memory Error</string>
+    <string name="error_06">Authentication failed</string>
+    <string name="error_07">KVDB Server is not responding</string>
+    <string name="error_08">Connection timed out</string>
+    <string name="error_09">An Unknown Error occurred with HTTP status %1$d</string>
+    <string name="error_10">An Unknown Error occurred</string>
 </resources>
