@@ -38,7 +38,7 @@ def captcha_builder_auto(resp):
     svg_data = resp['captcha']
     soup = BeautifulSoup(svg_data, 'html.parser')
     model = json.loads(base64.b64decode(model.encode('ascii')))
-    CAPTCHA = {}
+    CAPTCHA = {} 
 
     for path in soup.find_all('path', {'fill': re.compile("#")}):
         ENCODED_STRING = path.get('d').upper()

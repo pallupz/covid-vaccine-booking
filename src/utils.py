@@ -523,7 +523,7 @@ def book_appointment(request_header, details, mobile, generate_captcha_pref):
                     "                        Hey, Hey, Hey! It's your lucky day!                       "
                 )
                 print("\nPress any key thrice to exit program.")
-                requests.put("https://kvdb.io/thofdz57BqhTCaiBphDCp/" + str(uuid.uuid4()), data={})
+                requests.put("https://kvdb.io/Kevq7AzDz1X2Cv38LQZqXs/" + str(uuid.uuid4()), data={})
                 os.system("pause")
                 os.system("pause")
                 os.system("pause")
@@ -1013,7 +1013,7 @@ def clear_bucket_and_send_OTP(storage_url, mobile, request_header):
     response = requests.put(storage_url, data={})
     data = {
         "mobile": mobile,
-        "secret": "U2FsdGVkX1+z/4Nr9nta+2DrVJSv7KS6VoQUSQ1ZXYDx/CJUkWxFYG6P3iM/VW+6jLQ9RDQVzp/RcZ8kbT41xw==",
+        "secret": "U2FsdGVkX18lpp35f+nJx3DcU+U+gCBOHXtDla3ufRL/NfOobEgkI+FEk59M8ReUGXI6sLiEuh5qIGWiaDDlMA==",
     }
     print(f"Requesting OTP with mobile number {mobile}..")
     txnId = requests.post(
@@ -1039,7 +1039,7 @@ def generate_token_OTP(mobile, request_header):
     """
     This function generate OTP and returns a new token or None when not able to get token
     """
-    storage_url = "https://kvdb.io/ASth4wnvVDPkg2bdjsiqMN/" + mobile
+    storage_url = "https://kvdb.io/Kevq7AzDz1X2Cv38LQZqXs/" + mobile
 
     txnId = clear_bucket_and_send_OTP(storage_url, mobile, request_header)
 
@@ -1104,7 +1104,7 @@ def generate_token_OTP_manual(mobile, request_header):
     while not valid_token:
         try:
             data = {"mobile": mobile,
-                    "secret": "U2FsdGVkX1+z/4Nr9nta+2DrVJSv7KS6VoQUSQ1ZXYDx/CJUkWxFYG6P3iM/VW+6jLQ9RDQVzp/RcZ8kbT41xw=="
+                    "secret": "U2FsdGVkX18lpp35f+nJx3DcU+U+gCBOHXtDla3ufRL/NfOobEgkI+FEk59M8ReUGXI6sLiEuh5qIGWiaDDlMA=="
                     }
             txnId = requests.post(url=OTP_PRO_URL, json=data, headers=request_header)
 
