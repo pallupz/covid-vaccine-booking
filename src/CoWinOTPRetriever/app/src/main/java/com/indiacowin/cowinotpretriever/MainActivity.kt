@@ -229,9 +229,9 @@ class MainActivity : AppCompatActivity() {
                 mStatusTextView.text = getString(R.string.otp_send_success, trimmedResponse)
             },
             { response ->
-                mStatusTextView.text = getString(R.string.send_otp_fail_message,
-                    VolleyErrorHelper.getMessage(response, this), retryCounter + 1)
-                Log.d("OTPDebug", "Sending OTP failed with error ${VolleyErrorHelper.getMessage(response, this)}")
+                val errorMessage = VolleyErrorHelper.getMessage(response, this)
+                mStatusTextView.text = getString(R.string.send_otp_fail_message, errorMessage, retryCounter + 1)
+                Log.d("OTPDebug", "Sending OTP failed with error $errorMessage")
                 // Retry every 10 seconds for 3 minutes (18 times) or until new OTP is received
                 if(retryCounter < 18 && otp == mCurrentOTP) {
                     Log.d("OTPDebug", "Re-sending OTP SMS : retryCounter value is $retryCounter. Retrying in 10 seconds..")

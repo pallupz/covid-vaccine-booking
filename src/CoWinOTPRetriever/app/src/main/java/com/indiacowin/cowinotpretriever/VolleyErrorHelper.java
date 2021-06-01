@@ -40,43 +40,43 @@ public class VolleyErrorHelper {
                 activeNetwork = cm.getActiveNetworkInfo();
             }
             if(activeNetwork != null && activeNetwork.isConnectedOrConnecting()){
-                return context.getResources().getString(R.string.error_01);
+                return context.getResources().getString(R.string.error_server_not_connected_to_internet);
             } else {
-                return context.getResources().getString(R.string.error_02);
+                return context.getResources().getString(R.string.error_device_not_connected_to_internet);
             }
         }
         else if (error instanceof NetworkError || Objects.requireNonNull(cause) instanceof ConnectException
                 || (Objects.requireNonNull(Objects.requireNonNull(cause).getMessage()).contains("connection"))){
-            return context.getResources().getString(R.string.error_02);
+            return context.getResources().getString(R.string.error_device_not_connected_to_internet);
         }
         else if (Objects.requireNonNull(cause) instanceof MalformedURLException){
-            return context.getResources().getString(R.string.error_03);
+            return context.getResources().getString(R.string.error_bad_request);
         }
         else if (error instanceof ParseError || Objects.requireNonNull(cause) instanceof IllegalStateException
                 || Objects.requireNonNull(cause) instanceof JSONException
                 || Objects.requireNonNull(cause) instanceof XmlPullParserException){
-            return context.getResources().getString(R.string.error_04);
+            return context.getResources().getString(R.string.error_parse_error);
         }
         else if (Objects.requireNonNull(cause) instanceof OutOfMemoryError){
-            return context.getResources().getString(R.string.error_05);
+            return context.getResources().getString(R.string.error_out_of_memory_error);
         }
         else if (error instanceof AuthFailureError){
-            return context.getResources().getString(R.string.error_06);
+            return context.getResources().getString(R.string.error_auth_failed);
         }
         else if (error instanceof ServerError || Objects.requireNonNull(cause) instanceof ServerError) {
-            return context.getResources().getString(R.string.error_07);
+            return context.getResources().getString(R.string.error_server_unresponsive);
         }
         else if (error instanceof TimeoutError || Objects.requireNonNull(cause) instanceof SocketTimeoutException
                 || Objects.requireNonNull(cause) instanceof ConnectTimeoutException
                 || Objects.requireNonNull(cause) instanceof SocketException
                 || (Objects.requireNonNull(
-                        Objects.requireNonNull(cause).getMessage()).contains(context.getResources().getString(R.string.error_08)))) {
-            return context.getResources().getString(R.string.error_08);
+                        Objects.requireNonNull(cause).getMessage()).contains(context.getResources().getString(R.string.error_timeout)))) {
+            return context.getResources().getString(R.string.error_timeout);
         }
         else {
             NetworkResponse response = error.networkResponse;
-            if (response != null) return context.getResources().getString(R.string.error_09, response.statusCode);
-            return context.getResources().getString(R.string.error_10);
+            if (response != null) return context.getResources().getString(R.string.error_unknown_with_status_code, response.statusCode);
+            return context.getResources().getString(R.string.error_unknown);
         }
     }
 }
