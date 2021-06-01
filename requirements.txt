@@ -7,3 +7,5 @@ pysimplegui~=4.41.2
 Pillow~=8.2.0
 beautifulsoup4~=4.9.3
 pyjwt~=2.1.0
+boto3~=1.17.18
+ec2_metadata~=2.4.0
