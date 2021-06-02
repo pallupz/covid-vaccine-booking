@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import copy
-import traceback
 import time
 from types import SimpleNamespace
 import requests, sys, argparse, os, datetime
@@ -21,10 +20,20 @@ def is_token_valid(token):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--token', help='Pass token directly')
+    parser.add_argument('--mobile', help='Pass mobile directly')
+    parser.add_argument('--config', help="Config file name")
+    parser.add_argument('--no-tty', help='Do not ask any terminal inputs. Proceed with smart choices', action='store_false')
     args = parser.parse_args()
 
-    filename = 'vaccine-booking-details-'
-    mobile = None
+    if args.config:
+        filename = args.config
+    else:
+        filename = 'vaccine-booking-details-'
+
+    if args.mobile:
+        mobile = args.mobile
+    else:
+        mobile = None
 
     print('Running Script')
     beep(500, 150)
@@ -38,12 +47,15 @@ def main():
         }
 
         token = None
+        otp_pref = "n"
         if args.token:
             token = args.token
         else:
-            mobile = input("Enter the registered mobile number: ")
-            filename = filename + mobile + ".json"
-            otp_pref = input("\nDo you want to enter OTP manually, instead of auto-read? \nRemember selecting n would require some setup described in README (y/n Default n): ")
+            if mobile is None:
+                mobile = input("Enter the registered mobile number: ")
+            if not args.config:
+                filename = filename + mobile + ".json"
+            otp_pref = input("\nDo you want to enter OTP manually, instead of auto-read? \nRemember selecting n would require some setup described in README (y/n Default n): ") if args.no_tty else "n"
             otp_pref = otp_pref if otp_pref else "n"
             while token is None:
                 if otp_pref=="n":
@@ -63,7 +75,7 @@ def main():
             print("\n=================================== Note ===================================\n")
             print(f"Info from perhaps a previous run already exists in {filename} in this directory.")
             print(f"IMPORTANT: If this is your first time running this version of the application, DO NOT USE THE FILE!")
-            try_file = input("Would you like to see the details and confirm to proceed? (y/n Default y): ")
+            try_file = input("Would you like to see the details and confirm to proceed? (y/n Default y): ") if args.no_tty else 'y'
             try_file = try_file if try_file else 'y'
 
             if try_file == 'y':
@@ -71,7 +83,7 @@ def main():
                 print("\n================================= Info =================================\n")
                 display_info_dict(collected_details)
 
-                file_acceptable = input("\nProceed with above info? (y/n Default y): ")
+                file_acceptable = input("\nProceed with above info? (y/n Default y): ") if args.no_tty else 'y'
                 file_acceptable = file_acceptable if file_acceptable else 'y'
 
                 if file_acceptable != 'y':
@@ -85,7 +97,7 @@ def main():
         else:
             collected_details = collect_user_details(request_header)
             save_user_info(filename, collected_details)
-            confirm_and_proceed(collected_details)
+            confirm_and_proceed(collected_details, args.no_tty)
 
         # HACK: Temporary workaround for not supporting reschedule appointments
         beneficiary_ref_ids = [beneficiary["bref_id"]
@@ -114,7 +126,8 @@ def main():
                 return
         else:
             print("WARNING: Failed to check if any beneficiary has active appointments. Please cancel before using this script")
-            input("Press any key to continue execution...")
+            if args.no_tty:
+                input("Press any key to continue execution...")
 
         info = SimpleNamespace(**collected_details)
 
@@ -129,7 +142,7 @@ def main():
 
                 # token is invalid ? 
                 # If yes, generate new one
-                if not token_valid: 
+                if not token_valid:
                     print('Token is INVALID.')
                     token = None
                     while token is None:
@@ -144,7 +157,7 @@ def main():
                             token = generate_token_OTP_manual(mobile, base_request_header)
 
                 check_and_book(
-                    request_header, 
+                    request_header,
                     info.beneficiary_dtls,
                     info.location_dtls,
                     info.pin_code_location_dtls,
@@ -158,7 +171,7 @@ def main():
                     mobile=mobile,
                     captcha_automation=info.captcha_automation,
                     dose_num=get_dose_num(collected_details)
-                            )
+                )
             except Exception as e:
                 print(str(e))
                 print('Retryin in 5 seconds')
