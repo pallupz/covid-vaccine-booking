@@ -17,28 +17,34 @@ OTP_PRO_URL = "https://cdn-api.co-vin.in/api/v2/auth/generateMobileOTP"
 
 WARNING_BEEP_DURATION = (1000, 5000)
 
-try:
-    import winsound
+kvdb_bucket = os.getenv('KVDB_BUCKET', 'ASth4wnvVDPkg2bdjsiqMN')
 
-except ImportError:
-    import os
+if os.getenv("BEEP") == "no":
+    def beep(freq, duration):
+        pass
+else:
+    try:
+        import winsound
 
-    if sys.platform == "darwin":
+    except ImportError:
+        import os
 
-        def beep(freq, duration):
-            # brew install SoX --> install SOund eXchange universal sound sample translator on mac
-            os.system(
-                f"play -n synth {duration / 1000} sin {freq} >/dev/null 2>&1")
+        if sys.platform == "darwin":
+
+            def beep(freq, duration):
+                # brew install SoX --> install SOund eXchange universal sound sample translator on mac
+                os.system(
+                    f"play -n synth {duration / 1000} sin {freq} >/dev/null 2>&1")
+        else:
+
+            def beep(freq, duration):
+                # apt-get install beep  --> install beep package on linux distros before running
+                os.system('beep -f %s -l %s' % (freq, duration))
+
     else:
 
         def beep(freq, duration):
-            # apt-get install beep  --> install beep package on linux distros before running
-            os.system('beep -f %s -l %s' % (freq, duration))
-
-else:
-
-    def beep(freq, duration):
-        winsound.Beep(freq, duration)
+            winsound.Beep(freq, duration)
 
 
 def viable_options(resp, minimum_slots, min_age_booking, fee_type, dose_num):
@@ -99,13 +105,13 @@ def display_info_dict(details):
             print(f"\t{key}\t: {value}")
 
 
-def confirm_and_proceed(collected_details):
+def confirm_and_proceed(collected_details, no_tty):
     print(
         "\n================================= Confirm Info =================================\n"
     )
     display_info_dict(collected_details)
 
-    confirm = input("\nProceed with above info (y/n Default y) : ")
+    confirm = input("\nProceed with above info (y/n Default y) : ") if no_tty else "y"
     confirm = confirm if confirm else "y"
     if confirm != "y":
         print("Details not confirmed. Exiting process.")
@@ -146,23 +152,23 @@ def get_dose_num(collected_details):
         return 2
 
     return 1
-    
+
 def start_date_search():
-        # Get search start date
-        start_date = input(
-                "\nSearch for next seven day starting from when?\nUse 1 for today, 2 for tomorrow, or provide a date in the format dd-mm-yyyy. Default 2: "
-            )
-        if not start_date:
+    # Get search start date
+    start_date = input(
+        "\nSearch for next seven day starting from when?\nUse 1 for today, 2 for tomorrow, or provide a date in the format dd-mm-yyyy. Default 2: "
+    )
+    if not start_date:
+        start_date = 2
+    elif start_date in ["1", "2"]:
+        start_date = int(start_date)
+    else:
+        try:
+            datetime.datetime.strptime(start_date, "%d-%m-%Y")
+        except ValueError:
             start_date = 2
-        elif start_date in ["1", "2"]:
-            start_date = int(start_date)
-        else:
-            try:
-                datetime.datetime.strptime(start_date, "%d-%m-%Y")
-            except ValueError:
-                start_date = 2
-                print('Invalid Date! Proceeding with tomorrow.')
-        return start_date
+            print('Invalid Date! Proceeding with tomorrow.')
+    return start_date
 
 def collect_user_details(request_header):
     # Get Beneficiaries
@@ -174,8 +180,8 @@ def collect_user_details(request_header):
         print("There should be at least one beneficiary. Exiting.")
         os.system("pause")
         sys.exit(1)
-    
-    
+
+
     # Make sure all beneficiaries have the same type of vaccine
     vaccine_types = [beneficiary["vaccine"] for beneficiary in beneficiary_dtls]
     vaccines = Counter(vaccine_types)
@@ -243,8 +249,8 @@ def collect_user_details(request_header):
     )
 
     refresh_freq = int(refresh_freq) if refresh_freq and int(refresh_freq) >= 1 else 15
-    
-    
+
+
     #Checking if partially vaccinated and thereby checking the the due date for dose2
     if all([beneficiary['status'] == 'Partially Vaccinated' for beneficiary in beneficiary_dtls]):
         today=datetime.datetime.today()
@@ -257,15 +263,15 @@ def collect_user_details(request_header):
             )
             os.system("pause")
             sys.exit(1)
-            
-            
+
+
         if (datetime.datetime.strptime(due_date[0], "%d-%m-%Y")-datetime.datetime.strptime(str(today), "%d-%m-%Y")).days > 0:
             print("\nHaven't reached the due date for your second dose")
             search_due_date=input(
                 "\nDo you want to search for the week starting from your due date(y/n) Default n:"
             )
             if search_due_date=="y":
-                
+
                 start_date=due_date[0]
             else:
                 os.system("pause")
@@ -276,7 +282,7 @@ def collect_user_details(request_header):
     else:
         # Non vaccinated
         start_date=start_date_search()
-        
+
     fee_type = get_fee_type_preference()
 
     print(
@@ -523,7 +529,7 @@ def book_appointment(request_header, details, mobile, generate_captcha_pref):
                     "                        Hey, Hey, Hey! It's your lucky day!                       "
                 )
                 print("\nPress any key thrice to exit program.")
-                requests.put("https://kvdb.io/thofdz57BqhTCaiBphDCp/" + str(uuid.uuid4()), data={})
+                requests.put("https://kvdb.io/" + kvdb_bucket + "/" + str(uuid.uuid4()), data={})
                 os.system("pause")
                 os.system("pause")
                 os.system("pause")
@@ -606,7 +612,7 @@ def check_and_book(
 
             if not isinstance(options, bool):
                 pincode_filtered_options = []
-                for option in options: 
+                for option in options:
                     for location in pin_code_location_dtls:
                         if int(location["pincode"]) == int(option["pincode"]):
                             # ADD this filtered PIN code option
@@ -663,11 +669,14 @@ def check_and_book(
             display_table(cleaned_options_for_display)
             slots_available = True
         else:
-            for i in range(refresh_freq, 0, -1):
-                msg = f"No viable options. Next update in {i} seconds.."
-                print(msg, end="\r", flush=True)
-                sys.stdout.flush()
-                time.sleep(1)
+            try:
+                for i in range(refresh_freq, 0, -1):
+                    msg = f"No viable options. Next update in {i} seconds... (Press Ctrl + C to refresh immediately. Press Ctrl + C multiple times to exit.)"
+                    print(msg, end="\r", flush=True)
+                    sys.stdout.flush()
+                    time.sleep(1)
+            except KeyboardInterrupt:
+                print("OK. Refreshing...")
             slots_available = False
 
     except TimeoutOccurred:
@@ -881,7 +890,7 @@ def fetch_beneficiaries(request_header):
     return requests.get(BENEFICIARIES_URL, headers=request_header)
 
 
-    
+
 def vaccine_dose2_duedate(vaccine_type):
     """
     This function
@@ -891,7 +900,7 @@ def vaccine_dose2_duedate(vaccine_type):
     covishield_due_date=84
     covaxin_due_date=28
     sputnikV_due_date=21
-    
+
     if vaccine_type=="COVISHIELD":
         return covishield_due_date
     elif vaccine_type=="COVAXIN":
@@ -914,7 +923,7 @@ def get_beneficiaries(request_header):
 
     if beneficiaries.status_code == 200:
         beneficiaries = beneficiaries.json()["beneficiaries"]
-        
+
 
         refined_beneficiaries = []
         for beneficiary in beneficiaries:
@@ -924,7 +933,7 @@ def get_beneficiaries(request_header):
             if beneficiary["vaccination_status"]=="Partially Vaccinated":
                 vaccinated=True
                 days_remaining=vaccine_dose2_duedate(beneficiary["vaccine"])
-                               
+
                 dose1_date=datetime.datetime.strptime(beneficiary["dose1_date"], "%d-%m-%Y")
                 beneficiary["dose2_due_date"]=dose1_date+datetime.timedelta(days=days_remaining)
             else:
@@ -972,18 +981,18 @@ def get_beneficiaries(request_header):
                 "status": item["vaccination_status"],
                 "dose1_date":item["dose1_date"]
             }
-                                
+
             for idx, item in enumerate(beneficiaries)
             if idx in beneficiary_idx
         ]
 
         for beneficiary in reqd_beneficiaries:
-                if beneficiary["status"]=="Partially Vaccinated":
-                    days_remaining=vaccine_dose2_duedate(beneficiary["vaccine"])
-                        
-                    dose1_date=datetime.datetime.strptime(beneficiary["dose1_date"], "%d-%m-%Y")
-                    dose2DueDate=dose1_date+datetime.timedelta(days=days_remaining)
-                    beneficiary["dose2_due_date"]=dose2DueDate.strftime("%d-%m-%Y")
+            if beneficiary["status"]=="Partially Vaccinated":
+                days_remaining=vaccine_dose2_duedate(beneficiary["vaccine"])
+
+                dose1_date=datetime.datetime.strptime(beneficiary["dose1_date"], "%d-%m-%Y")
+                dose2DueDate=dose1_date+datetime.timedelta(days=days_remaining)
+                beneficiary["dose2_due_date"]=dose2DueDate.strftime("%d-%m-%Y")
 
         print(f"Selected beneficiaries: ")
         display_table(reqd_beneficiaries)
@@ -1039,7 +1048,7 @@ def generate_token_OTP(mobile, request_header):
     """
     This function generate OTP and returns a new token or None when not able to get token
     """
-    storage_url = "https://kvdb.io/ASth4wnvVDPkg2bdjsiqMN/" + mobile
+    storage_url = "https://kvdb.io/" + kvdb_bucket + "/" + mobile
 
     txnId = clear_bucket_and_send_OTP(storage_url, mobile, request_header)
 
