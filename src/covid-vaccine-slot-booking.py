@@ -57,11 +57,12 @@ def main():
                 filename = filename + mobile + ".json"
             otp_pref = input("\nDo you want to enter OTP manually, instead of auto-read? \nRemember selecting n would require some setup described in README (y/n Default n): ") if args.no_tty else "n"
             otp_pref = otp_pref if otp_pref else "n"
-            kvdb_bucket = input("Please refer KVDB setup in ReadMe to setup your own KVDB bucket. Please enter your KVDB bucket value here: ")
-            if not kvdb_bucket:
-                print("Sorry, having your private KVDB bucket is mandatory. Please refer ReadMe and create your own private KVBD bucket.")
-                sys.exit()
-            print("\n### Note ### Please make sure the URL configured in the IFTTT/Shortcuts app on your phone is: " + "https://kvdb.io/" + kvdb_bucket + "/" + mobile + "\n")
+            if(otp_pref == "n"):
+                kvdb_bucket = input("Please refer KVDB setup in ReadMe to setup your own KVDB bucket. Please enter your KVDB bucket value here: ")
+                if not kvdb_bucket:
+                    print("Sorry, having your private KVDB bucket is mandatory. Please refer ReadMe and create your own private KVBD bucket.")
+                    sys.exit()
+                print("\n### Note ### Please make sure the URL configured in the IFTTT/Shortcuts app on your phone is: " + "https://kvdb.io/" + kvdb_bucket + "/" + mobile + "\n")
             while token is None:
                 if otp_pref=="n":
                     try:
