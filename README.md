@@ -84,6 +84,16 @@
 
 <br>
 
+## KVDB setup
+Regardless of Android or iOS, you will need a KVDB bucket configured to act as a key value store for your OTP messages coming from the IFTTT app or CoWIN OTP Retriever. You will need to update your personal key every 14 days or buy a pro account on kvdb.
+Steps to get your own KVDB bucket:
+
+1. Go to https://kvdb.io/
+2. Click on Get started now
+3. Enter your email and click on Create bucket
+4. You will get a bucket key. It is just a random sequence of characters eg. ASth4wnvVDPkg2bdjsiqMN
+5. Keep this key saved somewhere in your notes. We will need it.
+
 ## Setup Guide for Android
 
 ### Option 1: IFTTT
@@ -93,7 +103,7 @@
 3. If this..... click on Android SMS trigger
 4. Select "New SMS received matches search" and use CoWIN as the search key
 5. Then... Choose a service named Webhooks and then select make a web request
-6. Paste the url:  https://kvdb.io/ASth4wnvVDPkg2bdjsiqMN/99XXXXXXXX replace 99XXXXXXXX with your phone number
+6. Paste the url: https://kvdb.io/<kvdb_bucket>/99XXXXXXXX replace 99XXXXXXXX with your phone number and <kvdb_bucket> with your own key that you got in the previous step of KVDB setup.
 7. Method is PUT
 8. Content Type PlainText
 9. Body: Add ingredient and select Text
@@ -134,7 +144,7 @@
 2. Follow this guide to install apps from unknown sources: https://www.verizon.com/support/knowledge-base-222186/
 3. Allow the app to run in background so that the app does not stop even if you multi-task or leave the phone idle. (Note that, there still might be some phone model specific settings and optimizations which could stop the app from running in background. Check point number 8)
 4. Grant sms access to allow the app to read CoWIN OTP sms.
-5. Enter 10 digit mobile number registered on the CoWIN portal.
+5. Enter 10 digit mobile number registered on the CoWIN portal. Also enter your personal KVDB bucket value.
 6. Switch ON the OTP Listener.
 7. If the OTP is successfully sent to the key value store, you will see the status as shown below.
 8. Ensure that the battery saver mode, and all other optimizations are removed. The app should always run (This is the key for quick response). 
@@ -160,7 +170,7 @@
 3. Select the `Message` option
 4. Put `CoWIN` in the Message Contains option & leave everything blank. Tap on Next button
 5. Tap on `Add action` and search for the option `Set Variable`. Give the variable name `text` and input as `Shortcut Input`
-6. Then add another action and select `URL` and paste the url: https://kvdb.io/ASth4wnvVDPkg2bdjsiqMN/99XXXXXXXX replace 99XXXXXXXX with your phone number
+6. Then add another action and select `URL` and paste the url: https://kvdb.io/<kvdb_bucket>/99XXXXXXXX replace 99XXXXXXXX with your phone number and <kvdb_bucket> with your bucket value from the KVDB setup step
 7. Then add another action and select `Get Contents of Url`. Click on show more. Change the method to `PUT`. Request Body to `File` and in the file row tap on `Choose Variable` and select `text` which we defined in Step 6.
 8. Click Next and save this automation.
 9. Clone this repository
