@@ -388,6 +388,7 @@ docker run --rm \
   docker.pkg.github.com/bombardier-gif/covid-vaccine-booking/cowin:latest [--config /configs/<file_name.json>] [--mobile <your_registered_mobile>] [--no-tty]
 ```
 3. (Optional Pro-Tip) After your first run, replace `-it` with `-d` to run as daemon.
+4. For Docker on AWS, add `--network="host"` in docker run command. AWS Metadata service won't work without this.
 
 <br>
 

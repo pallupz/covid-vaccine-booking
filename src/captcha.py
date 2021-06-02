@@ -1,8 +1,4 @@
-from svglib.svglib import svg2rlg
-from reportlab.graphics import renderPM
-import PySimpleGUI as sg
 import re
-from PIL import Image
 from bs4 import BeautifulSoup
 import json
 import base64
@@ -10,6 +6,10 @@ import os
 import sys
 
 def captcha_builder_manual(resp):
+    from svglib.svglib import svg2rlg
+    from reportlab.graphics import renderPM
+    import PySimpleGUI as sg
+    from PIL import Image
     with open('captcha.svg', 'w') as f:
         f.write(re.sub('(<path d=)(.*?)(fill="none"/>)', '', resp['captcha']))
 

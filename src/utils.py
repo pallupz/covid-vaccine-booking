@@ -390,6 +390,7 @@ def check_calendar_by_district(
 
             else:
                 print(resp.status_code)
+                print(resp.headers)
                 print(resp.text)
 
         # beep only when needed
@@ -461,6 +462,7 @@ def check_calendar_by_pincode(
 
             else:
                 print(resp.status_code)
+                print(resp.headers)
                 print(resp.text)
 
         for location in location_dtls:
