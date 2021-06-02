@@ -3,6 +3,7 @@ from hashlib import sha256
 from inputimeout import inputimeout, TimeoutOccurred
 import tabulate, copy, time, datetime, requests, sys, os, random
 from captcha import captcha_builder
+from captcha import decode_captcha
 
 BOOKING_URL = "https://cdn-api.co-vin.in/api/v2/appointment/schedule"
 BENEFICIARIES_URL = "https://cdn-api.co-vin.in/api/v2/appointment/beneficiaries"
@@ -312,12 +313,14 @@ def check_calendar_by_pincode(request_header, vaccine_type, location_dtls, start
         beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
 
 
-def generate_captcha(request_header):
+def generate_captcha(request_header,byUser):
     print('================================= GETTING CAPTCHA ==================================================')
     resp = requests.post(CAPTCHA_URL, headers=request_header)
     print(f'Captcha Response Code: {resp.status_code}')
+    if resp.status_code == 200 and byUser == False:
+        return decode_captcha(resp.json()['captcha'])
 
-    if resp.status_code == 200:
+    elif resp.status_code == 200 and byUser == True:
         return captcha_builder(resp.json())
 
 
@@ -330,8 +333,10 @@ def book_appointment(request_header, details):
     """
     try:
         valid_captcha = True
+        byUser = False
         while valid_captcha:
-            captcha = generate_captcha(request_header)
+
+            captcha = generate_captcha(request_header,byUser)
             details['captcha'] = captcha
 
             print('================================= ATTEMPTING BOOKING ==================================================')
@@ -356,6 +361,11 @@ def book_appointment(request_header, details):
 
             elif resp.status_code == 400:
                 print(f'Response: {resp.status_code} : {resp.text}')
+                if not byUser:
+                    print("Decoded captcha was wrong..... Try typing manually")
+                    byUser = True
+
+
                 pass
 
             else:
