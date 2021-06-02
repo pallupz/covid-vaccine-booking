@@ -85,7 +85,7 @@
 <br>
 
 ## KVDB setup
-Regardless of Android or iOS, you will need a KVDB bucket configured to act as a key value store for your OTP messages coming from the IFTTT app or CoWIN OTP Retriever. If you don't use your personal kvdb bucket, the script will use a public bucket which will be shared with other users and might not be reliable. You will need to update your personal key every 14 days or buy a pro account on kvdb.
+Regardless of Android or iOS, you will need a KVDB bucket configured to act as a key value store for your OTP messages coming from the IFTTT app or CoWIN OTP Retriever. You will need to update your personal key every 14 days or buy a pro account on kvdb.
 Steps to get your own KVDB bucket:
 
 1. Go to https://kvdb.io/
