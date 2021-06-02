@@ -3,7 +3,7 @@
     <style name="Theme.CoWinOTPRetriever" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/oxford_blue</item>
-        <item name="colorPrimaryVariant">@color/bismark</item>
+        <item name="colorPrimaryVariant">@color/atomic</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/yellow</item>
