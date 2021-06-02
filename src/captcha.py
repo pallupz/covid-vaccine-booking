@@ -35,6 +35,11 @@ def decode_captcha(svg_data):
     for char in CAPTCHA:
         CAPTCHA_STRING += str(char[1])
 
+    # For test if decoded captcha is invalid
+    #CAPTCHA_STRING = 'LOREM'
+
+    print("Captcha = "+CAPTCHA_STRING)
+
     return CAPTCHA_STRING
 
 
