@@ -20,7 +20,8 @@
 4. Run the script:
 	- ```python src\covid-vaccine-slot-booking.py``` on Windows
 	- ```python3 src/covid-vaccine-slot-booking.py``` on Linux or Mac
-5. Follow the steps. For more detailed guide: [Steps](#steps)
+5. Alternatively follow [these](#using-docker) steps to run this script using docker
+6. Follow the steps. For more detailed guide: [Steps](#steps)
 
 ### 2. On your Phone (Required for fetching OTP automatically)
 1. **Android Phone**: Follow either [Option 1: IFTTT app](#option-1-ifttt) or [Option 2: CoWIN OTP Retriever app](#option-2-cowin-otp-retriever)
@@ -45,6 +46,7 @@
     - [Third-Party Package Dependency](#third-party-package-dependency)
     - [Steps](#steps)
     - [How to run on windows](#how-to-run-on-windows)
+    - [Using Docker](#using-docker)
   - [Troubleshooting common problems](#troubleshooting-common-problems)
 
 
@@ -368,6 +370,21 @@ Install all dependencies by running:
 3. Now come back to main folder unzip "**windows exe.zip**"go to this "**windows exe**" folder 
    Now start the program "**covid-vaccine-slot-booking.exe**", you will not see any error.
 4. DO NOT DELETE ANY FOLDER OR FILE. 
+
+<br>
+
+## Using docker
+
+You can also run this script using docker. It's useful in case you don't want to
+install all required dependencies manually (python etc.). Follow these steps:
+
+1. Make sure [docker](https://docs.docker.com/get-docker/) is installed on your system.
+2. Make sure file 'docker.sh' is executable:
+	```chmod +x docker.sh```
+3. Now build our docker image and run it:
+	```./docker.sh```
+
+**Noe** : Currently this docker image is only tested on MacOS and Linux.
 
 <br>
 
