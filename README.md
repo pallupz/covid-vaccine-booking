@@ -373,20 +373,27 @@ Install all dependencies by running:
 
 <br>
 
-## Using docker
+## Using Docker
 
 You can also run this script using docker. It's useful in case you don't want to
 install all required dependencies manually (python etc.). Follow these steps:
 
 1. Make sure [docker](https://docs.docker.com/get-docker/) is installed on your system.
-2. Make sure file 'docker.sh' is executable:
-	```chmod +x docker.sh```
-3. Now build our docker image and run it:
-	```./docker.sh```
-
-**Noe** : Currently this docker image is only tested on MacOS and Linux.
+2. Run with following command
+```bash
+docker run --rm \
+  -v $(pwd)/configs:/configs \ # Stores the configs in your current directory. Windows users please change this path or use powershell.
+  -e "TZ=Asia/Kolkata" \ # Work with IST Timezone
+  -it \ # interactive
+  docker.pkg.github.com/bombardier-gif/covid-vaccine-booking/cowin:latest [--config /configs/<file_name.json>] [--mobile <your_registered_mobile>] [--no-tty]
+```
+3. (Optional Pro-Tip) After your first run, replace `-it` with `-d` to run as daemon.
 
 <br>
+
+## Using on AWS
+
+Refer [here](docs/AWS.md).
 
 ## Troubleshooting common problems
 

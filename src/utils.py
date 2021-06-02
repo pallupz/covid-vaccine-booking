@@ -389,7 +389,8 @@ def check_calendar_by_district(
                     )
 
             else:
-                pass
+                print(resp.status_code)
+                print(resp.text)
 
         # beep only when needed
         if beep_required:
@@ -459,7 +460,8 @@ def check_calendar_by_pincode(
                     )
 
             else:
-                pass
+                print(resp.status_code)
+                print(resp.text)
 
         for location in location_dtls:
             if int(location["pincode"]) in [option["pincode"] for option in options]:
