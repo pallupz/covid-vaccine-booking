@@ -17,8 +17,6 @@ OTP_PRO_URL = "https://cdn-api.co-vin.in/api/v2/auth/generateMobileOTP"
 
 WARNING_BEEP_DURATION = (1000, 5000)
 
-kvdb_bucket = os.getenv('KVDB_BUCKET', 'ASth4wnvVDPkg2bdjsiqMN')
-
 if os.getenv("BEEP") == "no":
     def beep(freq, duration):
         pass

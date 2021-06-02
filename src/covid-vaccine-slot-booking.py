@@ -3,10 +3,13 @@
 import copy
 import time
 from types import SimpleNamespace
-import requests, sys, argparse, os, datetime
+import sys, argparse, os
 import jwt
 from utils import generate_token_OTP, generate_token_OTP_manual, check_and_book, beep, BENEFICIARIES_URL, WARNING_BEEP_DURATION, \
     display_info_dict, save_user_info, collect_user_details, get_saved_user_info, confirm_and_proceed, get_dose_num, display_table, fetch_beneficiaries
+
+KVDB_BUCKET = os.getenv('KVDB_BUCKET')
+
 
 def is_token_valid(token):
     payload = jwt.decode(token, options={"verify_signature": False})
@@ -48,6 +51,7 @@ def main():
 
         token = None
         otp_pref = "n"
+        kvdb_bucket = KVDB_BUCKET
         if args.token:
             token = args.token
         else:
@@ -57,7 +61,7 @@ def main():
                 filename = filename + mobile + ".json"
             otp_pref = input("\nDo you want to enter OTP manually, instead of auto-read? \nRemember selecting n would require some setup described in README (y/n Default n): ") if args.no_tty else "n"
             otp_pref = otp_pref if otp_pref else "n"
-            kvdb_bucket = input("Please refer KVDB setup in ReadMe to setup your own KVDB bucket. Please enter your KVDB bucket value here: ")
+            kvdb_bucket = input("Please refer KVDB setup in ReadMe to setup your own KVDB bucket. Please enter your KVDB bucket value here: ") if args.no_tty and kvdb_bucket is None else kvdb_bucket
             if not kvdb_bucket:
                 print("Sorry, having your private KVDB bucket is mandatory. Please refer ReadMe and create your own private KVBD bucket.")
                 sys.exit()
