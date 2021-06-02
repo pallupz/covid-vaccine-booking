@@ -20,7 +20,7 @@
 4. Run the script:
 	- ```python src\covid-vaccine-slot-booking.py``` on Windows
 	- ```python3 src/covid-vaccine-slot-booking.py``` on Linux or Mac
-5. Alternatively follow [these](#docker) steps to run this script using docker
+5. Alternatively follow [these](#using-docker) steps to run this script using docker
 6. Follow the steps. For more detailed guide: [Steps](#steps)
 
 ### 2. On your Phone (Required for fetching OTP automatically)
@@ -46,7 +46,7 @@
     - [Third-Party Package Dependency](#third-party-package-dependency)
     - [Steps](#steps)
     - [How to run on windows](#how-to-run-on-windows)
-    - [Using Docker](#docker)
+    - [Using Docker](#using-docker)
   - [Troubleshooting common problems](#troubleshooting-common-problems)
 
 
