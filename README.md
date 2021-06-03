@@ -43,6 +43,9 @@ MacOS:
 ```
 brew install sox
 ```
+Install Tkinter in Python
+brew install python-tk@3.9
+```
 
 Finally, run the script file as shown below:
 ```
