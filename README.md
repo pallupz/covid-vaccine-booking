@@ -382,8 +382,12 @@ Install all dependencies by running:
 ## How to run on windows
 
 ### Quick Start
-1. *Step 1* - Download the Repository
-2. *Step 2* - Run `windows.bat` to install all dependencies & start this script
+1. *Step 1* - `git clone` or [Download](https://github.com/bombardier-gif/covid-vaccine-booking/releases/latest) the Repository
+2. *Step 2* - Double click to run `windows.bat` to install all dependencies & start this script
+3. *Step 3* - If you're running this script for the very first time. It will extract the Python dependencies and run the script
+
+<img width="400" alt="windowsinstaller" src="https://user-images.githubusercontent.com/81071/120713795-05906680-c4e0-11eb-88e9-5b38b6fa256a.png">
+
 
 ### Advanced
 1. **Step 1** - [Download the source or exe](https://github.com/bombardier-gif/covid-vaccine-booking/releases/latest).
