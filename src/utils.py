@@ -329,6 +329,18 @@ def filter_centers_by_age(resp, min_age_booking):
 
     return resp
 
+def filter_centers_by_vaccine(resp, vaccine_type):
+    if vaccine_type:
+        if "centers" in resp:
+            for center in list(resp["centers"]):
+                for session in list(center["sessions"]):
+                    if session['vaccine'] != vaccine_type:
+                        center["sessions"].remove(session)
+                        if (len(center["sessions"]) == 0):
+                            resp["centers"].remove(center)
+
+    return resp
+
 
 def check_calendar_by_district(
         request_header,
@@ -355,9 +367,6 @@ def check_calendar_by_district(
         today = datetime.datetime.today()
         base_url = CALENDAR_URL_DISTRICT
 
-        if vaccine_type:
-            base_url += f"&vaccine={vaccine_type}"
-
         options = []
         for location in location_dtls:
             resp = requests.get(
@@ -377,6 +386,8 @@ def check_calendar_by_district(
                 resp = resp.json()
 
                 resp = filter_centers_by_age(resp, min_age_booking)
+
+                resp = filter_centers_by_vaccine(resp, vaccine_type)
 
                 if "centers" in resp:
                     print(
@@ -426,9 +437,6 @@ def check_calendar_by_pincode(
         today = datetime.datetime.today()
         base_url = CALENDAR_URL_PINCODE
 
-        if vaccine_type:
-            base_url += f"&vaccine={vaccine_type}"
-
         options = []
         for location in location_dtls:
             resp = requests.get(
@@ -447,6 +455,8 @@ def check_calendar_by_pincode(
                 resp = resp.json()
 
                 resp = filter_centers_by_age(resp, min_age_booking)
+
+                resp = filter_centers_by_vaccine(resp, vaccine_type)
 
                 if "centers" in resp:
                     print(
