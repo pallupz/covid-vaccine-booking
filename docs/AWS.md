@@ -37,9 +37,10 @@ As the EIP of the Instance will keep changing, you should not connect using the 
 1. **Private IP**: You can connect to another instance in same subnet and from there you can connect to the private IP of this instance.
    Steps:
    1. Boot another instance (lets call this secondary instance.)
-   2. SSH Add keys of primary instance. Command: `ssh-add <path-to-key-file-of-primary-instance` 
-   3. Connect to secondary instance. Command: `ssh -A -i <path-to-key-file-of-secondary-instance> <user>@<public-ip-of-secondary-instance`
-   4. Connect to primary instance. Command: `ssh <user>@<private-ip-of-primary-instance>`
+   2. Start ssh-agent. Command: `ssh-agent -s`
+   3. SSH Add keys of primary instance. Command: `ssh-add <path-to-key-file-of-primary-instance` 
+   4. Connect to secondary instance. Command: `ssh -A -i <path-to-key-file-of-secondary-instance> <user>@<public-ip-of-secondary-instance`
+   5. Connect to primary instance. Command: `ssh <user>@<private-ip-of-primary-instance>`
 2. **Public IP**: You can assign one more ENI & EIP to this instance and connect on it. For understanding charges of this, please [refer here](https://aws.amazon.com/premiumsupport/knowledge-center/elastic-ip-charges/).
    Steps:
    1. Assign ENI. [reference here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/MultipleIP.html#ManageMultipleIP)
