@@ -313,7 +313,7 @@ def collect_user_details(request_header):
     return collected_details
 
 
-def filter_centers_by_age(resp, min_age_booking):
+def filter_centers_by_age_vaccine(resp, min_age_booking, vaccine_type):
     if min_age_booking >= 45:
         center_age_filter = 45
     else:
@@ -322,7 +322,7 @@ def filter_centers_by_age(resp, min_age_booking):
     if "centers" in resp:
         for center in list(resp["centers"]):
             for session in list(center["sessions"]):
-                if session['min_age_limit'] != center_age_filter:
+                if session['min_age_limit'] != center_age_filter or (vaccine_type and session['vaccine'] != vaccine_type):
                     center["sessions"].remove(session)
                     if (len(center["sessions"]) == 0):
                         resp["centers"].remove(center)
@@ -355,9 +355,6 @@ def check_calendar_by_district(
         today = datetime.datetime.today()
         base_url = CALENDAR_URL_DISTRICT
 
-        if vaccine_type:
-            base_url += f"&vaccine={vaccine_type}"
-
         options = []
         for location in location_dtls:
             resp = requests.get(
@@ -376,7 +373,7 @@ def check_calendar_by_district(
             elif resp.status_code == 200:
                 resp = resp.json()
 
-                resp = filter_centers_by_age(resp, min_age_booking)
+                resp = filter_centers_by_age_vaccine(resp, min_age_booking, vaccine_type)
 
                 if "centers" in resp:
                     print(
@@ -426,9 +423,6 @@ def check_calendar_by_pincode(
         today = datetime.datetime.today()
         base_url = CALENDAR_URL_PINCODE
 
-        if vaccine_type:
-            base_url += f"&vaccine={vaccine_type}"
-
         options = []
         for location in location_dtls:
             resp = requests.get(
@@ -446,7 +440,7 @@ def check_calendar_by_pincode(
             elif resp.status_code == 200:
                 resp = resp.json()
 
-                resp = filter_centers_by_age(resp, min_age_booking)
+                resp = filter_centers_by_age_vaccine(resp, min_age_booking, vaccine_type)
 
                 if "centers" in resp:
                     print(
