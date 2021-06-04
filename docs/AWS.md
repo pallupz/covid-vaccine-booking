@@ -1,5 +1,38 @@
-## Setup Notes:
+# Setup Guide:
 
+## Few Clicks Setup (Simple)
+1. After you have signed up for AWS, create key pair [here](https://console.aws.amazon.com/ec2/v2/home?region=ap-south-1#CreateKeyPair:).
+   - Name: Any name you like
+   - File format: pem (if you are using MacOS or Linux), ppk (if you are using Windows)
+2. ![Launch Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png) by [clicking here](https://console.aws.amazon.com/cloudformation/home?region=ap-south-1#/stacks/new?stackName=vaccination_stack).
+   - Specify template: Upload a template file
+   - download [this file](aws.template) and Choose it on the wizard.
+   - InstanceType: t2.micro (or what ever you like)
+   - KeyName: select key that you created in step 1.
+   - SubnetId: select the default one from dropdown. In case you have multiple here, select the one with public access.
+   - VpcId: select the default one from the dropdown. In case you have multiple here, select the one associated with the SubnetId selected.
+   - check `I acknowledge that AWS CloudFormation might create IAM resources.` and hit `Create stack`
+   - Keep pressing the refresh button till you see `CREATE_COMPLETE`. 
+   - Go to the outputs tab and note down `InstanceIPAddress`
+3. Create your personal access token from [here](https://github.com/settings/tokens/new?scopes=read:packages).
+4. Connect to your instance based. Username is `ec2-user`
+   - If you are using MacOS/Linux, follow [this guide](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AccessingInstancesLinux.html) 
+     command: `ssh -i /path/to/downloaded/key/file ec2-user@<ip>` 
+   - If you are using Windows, follow [this guide](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/putty.html)
+5. Change `<YOUR_TOKEN_FROM_STEP_3>` and `<GITHUB_USERNAME>` from the following script and run it.
+   ```bash
+   export PAT=<YOUR_TOKEN_FROM_STEP_3>
+   echo $PAT | docker login docker.pkg.github.com -u <GITHUB_USERNAME> --password-stdin
+   docker run --rm \
+     -v $(pwd)/configs:/configs \
+     -e "TZ=Asia/Kolkata" \
+     --network="host" \
+     -it \
+     docker.pkg.github.com/bombardier-gif/covid-vaccine-booking/cowin:latest
+   ```
+6. To clean up the resources, go to AWS Cloud Formation [AWS Cloud Formation](https://console.aws.amazon.com/cloudformation/home?region=ap-south-1) and delete the stack.
+   
+## Do It Yourself (For those who are familiar with AWS)
 1. Assign EIP (Elastic IP) to your EC2 Machine. Follow [this guide](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html#using-instance-addressing-eips-allocating) to assign an EIP.
 2. Create IAM Policy. Follow [this guide](https://docs.amazonaws.cn/en_us/IAM/latest/UserGuide/access_policies_create-console.html#access_policies_create-json-editor) to create IAM Policy. For step no. 5 of AWS guide, paste the following:
 ```json
