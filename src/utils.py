@@ -149,7 +149,7 @@ def get_saved_user_info(filename):
 def get_dose_num(collected_details):
     # If any person has vaccine detail populated, we imply that they'll be taking second dose
     # Note: Based on the assumption that everyone have the *EXACT SAME* vaccine status
-    if any(detail['vaccine']
+    if all(detail['status']== 'Partially Vaccinated'
            for detail in collected_details["beneficiary_dtls"]):
         return 2
 
