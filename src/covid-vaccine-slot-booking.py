@@ -5,7 +5,9 @@ import time
 from types import SimpleNamespace
 import sys, argparse, os
 import jwt
-from utils import generate_token_OTP, generate_token_OTP_manual, check_and_book, beep, BENEFICIARIES_URL, WARNING_BEEP_DURATION, \
+
+from ratelimit import disable_re_assignment_feature
+from utils import generate_token_OTP, generate_token_OTP_manual, check_and_book, beep, WARNING_BEEP_DURATION, \
     display_info_dict, save_user_info, collect_user_details, get_saved_user_info, confirm_and_proceed, get_dose_num, display_table, fetch_beneficiaries
 
 KVDB_BUCKET = os.getenv('KVDB_BUCKET')
@@ -140,6 +142,9 @@ def main():
                 input("Press any key to continue execution...")
 
         info = SimpleNamespace(**collected_details)
+
+        if info.find_option == 1:
+            disable_re_assignment_feature()
 
         while True: # infinite-loop
             # create new request_header

@@ -6,6 +6,13 @@ from ec2_metadata import ec2_metadata
 network_interface_id = None
 re_assignment_failed = False
 
+
+def disable_re_assignment_feature():
+    global re_assignment_failed
+    re_assignment_failed = True
+    print('INFO: Reassignment feature is disabled')
+
+
 def wait_for_new_ip(ip):
     reflected = False
     while not reflected:
