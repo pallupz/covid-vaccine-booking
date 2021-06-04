@@ -1,7 +1,7 @@
 ## Setup Notes:
 
 1. Assign EIP (Elastic IP) to your EC2 Machine. Follow [this guide](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html#using-instance-addressing-eips-allocating) to assign an EIP.
-2. Create IAM Policy. Follow [this guide](https://docs.amazonaws.cn/en_us/IAM/latest/UserGuide/access_policies_create-console.html#access_policies_create-json-editor) to create IAM Policy. For step no. 5 of this guide, paste the following:
+2. Create IAM Policy. Follow [this guide](https://docs.amazonaws.cn/en_us/IAM/latest/UserGuide/access_policies_create-console.html#access_policies_create-json-editor) to create IAM Policy. For step no. 5 of AWS guide, paste the following:
 ```json
 {
     "Version": "2012-10-17",
