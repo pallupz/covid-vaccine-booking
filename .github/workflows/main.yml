@@ -62,6 +62,12 @@ jobs:
           file: CoWinOtpRetreiver.apk
           tag: ${{ github.ref }}
 
+  docker-build:
+    runs-on: ubuntu-latest
+    name: Build and push to docker
+    steps:
+      - uses: actions/checkout@v2
+
       - name: Run Docker
         env:
           TAG_NAME: ${{ github.ref }}
@@ -72,6 +78,6 @@ jobs:
           echo $GIT_PASSWORD | docker login -u $GIT_USERNAME --password-stdin https://docker.pkg.github.com
           docker build --no-cache -t cowin:latest -f Dockerfile .
           docker tag cowin:latest docker.pkg.github.com/bombardier-gif/covid-vaccine-booking/cowin:$version
-          docker tag cowin:latest /docker.pkg.github.com/bombardier-gif/covid-vaccine-booking/cowin:latest
+          docker tag cowin:latest docker.pkg.github.com/bombardier-gif/covid-vaccine-booking/cowin:latest
           docker push docker.pkg.github.com/bombardier-gif/covid-vaccine-booking/cowin:$version
           docker push docker.pkg.github.com/bombardier-gif/covid-vaccine-booking/cowin:latest
