@@ -1,12 +1,19 @@
-FROM python:3.9.5
+FROM python:3.9-slim
 
-RUN apt-get update && apt-get install -y beep
+ENV APP_HOME /app
+ENV BEEP "no"
+ENV AWS_DEFAULT_REGION "ap-south-1"
 
-WORKDIR /usr/src/app
+RUN apt-get update && \
+    apt-get install -y beep && \
+    apt-get clean --quiet && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-COPY requirements.txt ./
-RUN pip3 install --no-cache-dir -r requirements.txt
+WORKDIR $APP_HOME
+COPY ./requirements.txt ./requirements.txt
 
-COPY src src/
+RUN pip install -r requirements.txt
 
-CMD [ "python3", "src/covid-vaccine-slot-booking.py" ]
+COPY ./src/ /app/
+
+ENTRYPOINT ["/app/covid-vaccine-slot-booking.py"]
