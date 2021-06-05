@@ -13,7 +13,7 @@
 
 ### 1. On your laptop
 1. Make sure [Python 3.8+](https://python.org) is installed. *Note: If you are using Windows, follow [How to run on windows](#how-to-run-on-windows) and you may not require Python to be installed*
-2. Clone this repo: ```git clone https://github.com/bombardier-gif/covid-vaccine-booking.git``` or download zip file and extract
+2. Clone this repo: ```git clone https://github.com/ithihasmadala/covid-vaccine-booking.git``` or download zip file and extract
 3. Install the requirements:
 	- ```pip install -r requirements.txt``` on Windows
 	- ```pip3 install -r requirements.txt``` on Linux or Mac
@@ -24,7 +24,7 @@
 6. Follow the steps. For more detailed guide: [Steps](#steps)
 
 ### 2. On your Phone (Required for fetching OTP automatically)
-1. **Android Phone**: Follow either [Option 1: IFTTT app](#option-1-ifttt) or [Option 2: CoWIN OTP Retriever app](#option-2-cowin-otp-retriever).
+1. **Android Phone**: Follow either [Option 1: IFTTT app](#option-1-ifttt) or [Option 2: CoWIN OTP Retriever app](#option-2-cowin-otp-retriever) and use the Bucket Key: ```Kevq7AzDz1X2Cv38LQZqXs```.
 2. **iPhone**: Follow [Using Shortcuts app](#using-shortcuts-app)
 
 <br>
