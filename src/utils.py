@@ -254,8 +254,8 @@ def collect_user_details(request_header):
     refresh_freq = int(refresh_freq) if refresh_freq and int(refresh_freq) >= 1 else 15
 
     find_option = input(
-        "\nEnter 1 to search for seven days (default, rate limits are too high with this search) "
-        "or 2 for single date search: "
+        "\nEnter 1 to search for seven days (rate limits are too high with this search) "
+        "or 2 for single date search (default) : "
     )
 
     if not find_option or int(find_option) not in [1, 2]:
