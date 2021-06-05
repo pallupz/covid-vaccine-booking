@@ -12,7 +12,7 @@
 **Instructions to follow on your laptop and phone below. To fetch OTP automatically, Step 2 is compulsory**
 
 ### 1. On your laptop
-1. Make sure [Python 3.8+](https://python.org) is installed.
+1. Make sure [Python 3.8+](https://python.org) is installed. *Note: If you are using Windows, follow [How to run on windows](#how-to-run-on-windows) and you may not require Python to be installed*
 2. Clone this repo: ```git clone https://github.com/bombardier-gif/covid-vaccine-booking.git``` or download zip file and extract
 3. Install the requirements:
 	- ```pip install -r requirements.txt``` on Windows
@@ -20,7 +20,8 @@
 4. Run the script:
 	- ```python src\covid-vaccine-slot-booking.py``` on Windows
 	- ```python3 src/covid-vaccine-slot-booking.py``` on Linux or Mac
-5. Follow the steps. For more detailed guide: [Steps](#steps)
+5. Alternatively follow [these](#using-docker) steps to run this script using docker
+6. Follow the steps. For more detailed guide: [Steps](#steps)
 
 ### 2. On your Phone (Required for fetching OTP automatically)
 1. **Android Phone**: Follow either [Option 1: IFTTT app](#option-1-ifttt) or [Option 2: CoWIN OTP Retriever app](#option-2-cowin-otp-retriever)
@@ -45,6 +46,7 @@
     - [Third-Party Package Dependency](#third-party-package-dependency)
     - [Steps](#steps)
     - [How to run on windows](#how-to-run-on-windows)
+    - [Using Docker](#using-docker)
   - [Troubleshooting common problems](#troubleshooting-common-problems)
 
 
@@ -82,6 +84,16 @@
 
 <br>
 
+## KVDB setup
+Regardless of Android or iOS, you will need a KVDB bucket configured to act as a key value store for your OTP messages coming from the IFTTT app or CoWIN OTP Retriever. You will need to update your personal key every 14 days or buy a pro account on kvdb.
+Steps to get your own KVDB bucket:
+
+1. Go to https://kvdb.io/
+2. Click on Get started now
+3. Enter your email and click on Create bucket
+4. You will get a bucket key. It is just a random sequence of characters eg. ASth4wnvVDPkg2bdjsiqMN
+5. Keep this key saved somewhere in your notes. We will need it.
+
 ## Setup Guide for Android
 
 ### Option 1: IFTTT
@@ -91,7 +103,7 @@
 3. If this..... click on Android SMS trigger
 4. Select "New SMS received matches search" and use CoWIN as the search key
 5. Then... Choose a service named Webhooks and then select make a web request
-6. Paste the url:  https://kvdb.io/ASth4wnvVDPkg2bdjsiqMN/99XXXXXXXX replace 99XXXXXXXX with your phone number
+6. Paste the url: https://kvdb.io/<kvdb_bucket>/99XXXXXXXX replace 99XXXXXXXX with your phone number and <kvdb_bucket> with your own key that you got in the previous step of KVDB setup.
 7. Method is PUT
 8. Content Type PlainText
 9. Body: Add ingredient and select Text
@@ -132,7 +144,7 @@
 2. Follow this guide to install apps from unknown sources: https://www.verizon.com/support/knowledge-base-222186/
 3. Allow the app to run in background so that the app does not stop even if you multi-task or leave the phone idle. (Note that, there still might be some phone model specific settings and optimizations which could stop the app from running in background. Check point number 8)
 4. Grant sms access to allow the app to read CoWIN OTP sms.
-5. Enter 10 digit mobile number registered on the CoWIN portal.
+5. Enter 10 digit mobile number registered on the CoWIN portal. Also enter your personal KVDB bucket value.
 6. Switch ON the OTP Listener.
 7. If the OTP is successfully sent to the key value store, you will see the status as shown below.
 8. Ensure that the battery saver mode, and all other optimizations are removed. The app should always run (This is the key for quick response). 
@@ -158,7 +170,7 @@
 3. Select the `Message` option
 4. Put `CoWIN` in the Message Contains option & leave everything blank. Tap on Next button
 5. Tap on `Add action` and search for the option `Set Variable`. Give the variable name `text` and input as `Shortcut Input`
-6. Then add another action and select `URL` and paste the url: https://kvdb.io/ASth4wnvVDPkg2bdjsiqMN/99XXXXXXXX replace 99XXXXXXXX with your phone number
+6. Then add another action and select `URL` and paste the url: https://kvdb.io/<kvdb_bucket>/99XXXXXXXX replace 99XXXXXXXX with your phone number and <kvdb_bucket> with your bucket value from the KVDB setup step
 7. Then add another action and select `Get Contents of Url`. Click on show more. Change the method to `PUT`. Request Body to `File` and in the file row tap on `Choose Variable` and select `text` which we defined in Step 6.
 8. Click Next and save this automation.
 9. Clone this repository
@@ -198,9 +210,15 @@ This very basic CLI based script can be used to automate covid vaccination slot 
 - And finally, I know code quality probably isn't great. Suggestions are welcome.
 
 
-### Usage:
+### Usage: 
 
 For the anyone not familiar with Python and using Windows, using the ```covid-vaccine-slot-booking.exe``` executable file would be the easiest way. [Download it from here](https://github.com/bombardier-gif/covid-vaccine-booking/releases/latest). It might trigger an anti-virus alert. That's because I used ```pyinstaller``` to package the python code and it needs a bit more effort to avoid such alerts.
+
+OR
+
+If you have no idea how to install Python in Windows, then either `git clone` the repository or [Download the source here](https://github.com/bombardier-gif/covid-vaccine-booking/archive/refs/heads/main.zip). Then you can double click on `windows.bat` which will automatically take care of the dependencies and start the program. 
+
+*Note: It might take a little bit more time to run for first time becuase it extracts the python runtime and installs dependencies, but from the next time onwards, it'll be instant*
 
 OR
 
@@ -363,6 +381,15 @@ Install all dependencies by running:
 
 ## How to run on windows
 
+### Quick Start
+1. *Step 1* - `git clone` or [Download](https://github.com/bombardier-gif/covid-vaccine-booking/releases/latest) the Repository
+2. *Step 2* - Double click to run `windows.bat` to install all dependencies & start this script
+3. *Step 3* - If you're running this script for the very first time. It will extract the Python dependencies and run the script
+
+<img width="400" alt="windowsinstaller" src="https://user-images.githubusercontent.com/81071/120713795-05906680-c4e0-11eb-88e9-5b38b6fa256a.png">
+
+
+### Advanced
 1. **Step 1** - [Download the source or exe](https://github.com/bombardier-gif/covid-vaccine-booking/releases/latest).
 2. **Step 2 -** Go to folder **tests** then **windows exe**.**zip**. Unzip the folder and Now run the program "**captcha_tests.exe**".  If you see a dialog box click on quit, and you will see a Captcha. If this is what happened you are all good to go. 
 3. Now come back to main folder unzip "**windows exe.zip**"go to this "**windows exe**" folder 
@@ -370,6 +397,29 @@ Install all dependencies by running:
 4. DO NOT DELETE ANY FOLDER OR FILE. 
 
 <br>
+
+## Using Docker
+
+You can also run this script using docker. It's useful in case you don't want to
+install all required dependencies manually (python etc.). Follow these steps:
+
+1. Make sure [docker](https://docs.docker.com/get-docker/) is installed on your system.
+2. Run with following command
+```bash
+docker run --rm \
+  -v $(pwd)/configs:/configs \ # Stores the configs in your current directory. Windows users please change this path or use powershell.
+  -e "TZ=Asia/Kolkata" \ # Work with IST Timezone
+  -it \ # interactive
+  docker.pkg.github.com/bombardier-gif/covid-vaccine-booking/cowin:latest [--config /configs/<file_name.json>] [--mobile <your_registered_mobile>] [--no-tty]
+```
+3. (Optional Pro-Tip) After your first run, replace `-it` with `-d` to run as daemon.
+4. For Docker on AWS, add `--network="host"` in docker run command. AWS Metadata service won't work without this.
+
+<br>
+
+## Using on AWS
+
+Refer [here](docs/AWS.md).
 
 ## Troubleshooting common problems
 
