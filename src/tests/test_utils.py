@@ -10,3 +10,4 @@ def test_regex_extraction():
     text = "This text has no valid OTP 34"
     output = extract_from_regex(text, pattern)
     assert None == output
+    
