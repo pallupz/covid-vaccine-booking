@@ -4,41 +4,46 @@ from collections import Counter
 from inputimeout import inputimeout, TimeoutOccurred
 import tabulate, copy, time, datetime, requests, sys, os, random
 from captcha import captcha_builder_manual, captcha_builder_auto
-import uuid
 from ratelimit import handle_rate_limited
 
 BOOKING_URL = "https://cdn-api.co-vin.in/api/v2/appointment/schedule"
 BENEFICIARIES_URL = "https://cdn-api.co-vin.in/api/v2/appointment/beneficiaries"
 CALENDAR_URL_DISTRICT = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByDistrict?district_id={0}&date={1}"
 CALENDAR_URL_PINCODE = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByPin?pincode={0}&date={1}"
+FIND_URL_DISTRICT = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/findByDistrict?district_id={0}&date={1}"
+FIND_URL_PINCODE = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/findByPin?pincode={0}&date={1}"
 CAPTCHA_URL = "https://cdn-api.co-vin.in/api/v2/auth/getRecaptcha"
 OTP_PUBLIC_URL = "https://cdn-api.co-vin.in/api/v2/auth/public/generateOTP"
 OTP_PRO_URL = "https://cdn-api.co-vin.in/api/v2/auth/generateMobileOTP"
 
 WARNING_BEEP_DURATION = (1000, 5000)
 
-try:
-    import winsound
+if os.getenv("BEEP") == "no":
+    def beep(freq, duration):
+        pass
+else:
+    try:
+        import winsound
 
-except ImportError:
-    import os
+    except ImportError:
+        import os
 
-    if sys.platform == "darwin":
+        if sys.platform == "darwin":
 
-        def beep(freq, duration):
-            # brew install SoX --> install SOund eXchange universal sound sample translator on mac
-            os.system(
-                f"play -n synth {duration / 1000} sin {freq} >/dev/null 2>&1")
+            def beep(freq, duration):
+                # brew install SoX --> install SOund eXchange universal sound sample translator on mac
+                os.system(
+                    f"play -n synth {duration / 1000} sin {freq} >/dev/null 2>&1")
+        else:
+
+            def beep(freq, duration):
+                # apt-get install beep  --> install beep package on linux distros before running
+                os.system('beep -f %s -l %s' % (freq, duration))
+
     else:
 
         def beep(freq, duration):
-            # apt-get install beep  --> install beep package on linux distros before running
-            os.system('beep -f %s -l %s' % (freq, duration))
-
-else:
-
-    def beep(freq, duration):
-        winsound.Beep(freq, duration)
+            winsound.Beep(freq, duration)
 
 
 def viable_options(resp, minimum_slots, min_age_booking, fee_type, dose_num):
@@ -99,13 +104,13 @@ def display_info_dict(details):
             print(f"\t{key}\t: {value}")
 
 
-def confirm_and_proceed(collected_details):
+def confirm_and_proceed(collected_details, no_tty):
     print(
         "\n================================= Confirm Info =================================\n"
     )
     display_info_dict(collected_details)
 
-    confirm = input("\nProceed with above info (y/n Default y) : ")
+    confirm = input("\nProceed with above info (y/n Default y) : ") if no_tty else "y"
     confirm = confirm if confirm else "y"
     if confirm != "y":
         print("Details not confirmed. Exiting process.")
@@ -135,34 +140,37 @@ def get_saved_user_info(filename):
     # for backward compatible logic
     if data["search_option"] !=3 and "pin_code_location_dtls" not in data:
         data["pin_code_location_dtls"] = []
+
+    if "find_option" not in data:
+        data['find_option'] = 1
     return data
 
 
 def get_dose_num(collected_details):
     # If any person has vaccine detail populated, we imply that they'll be taking second dose
     # Note: Based on the assumption that everyone have the *EXACT SAME* vaccine status
-    if any(detail['vaccine']
+    if all(detail['status']== 'Partially Vaccinated'
            for detail in collected_details["beneficiary_dtls"]):
         return 2
 
     return 1
-    
+
 def start_date_search():
-        # Get search start date
-        start_date = input(
-                "\nSearch for next seven day starting from when?\nUse 1 for today, 2 for tomorrow, or provide a date in the format dd-mm-yyyy. Default 2: "
-            )
-        if not start_date:
+    # Get search start date
+    start_date = input(
+        "\nSearch from when?\nUse 1 for today, 2 for tomorrow, or provide a date in the format dd-mm-yyyy. Default 2: "
+    )
+    if not start_date:
+        start_date = 2
+    elif start_date in ["1", "2"]:
+        start_date = int(start_date)
+    else:
+        try:
+            datetime.datetime.strptime(start_date, "%d-%m-%Y")
+        except ValueError:
             start_date = 2
-        elif start_date in ["1", "2"]:
-            start_date = int(start_date)
-        else:
-            try:
-                datetime.datetime.strptime(start_date, "%d-%m-%Y")
-            except ValueError:
-                start_date = 2
-                print('Invalid Date! Proceeding with tomorrow.')
-        return start_date
+            print('Invalid Date! Proceeding with tomorrow.')
+    return start_date
 
 def collect_user_details(request_header):
     # Get Beneficiaries
@@ -174,8 +182,8 @@ def collect_user_details(request_header):
         print("There should be at least one beneficiary. Exiting.")
         os.system("pause")
         sys.exit(1)
-    
-    
+
+
     # Make sure all beneficiaries have the same type of vaccine
     vaccine_types = [beneficiary["vaccine"] for beneficiary in beneficiary_dtls]
     vaccines = Counter(vaccine_types)
@@ -199,6 +207,7 @@ def collect_user_details(request_header):
     print(
         "\n================================= Location Info =================================\n"
     )
+
     # get search method to use
     search_option = input(
         """Search by Pincode? Or by State/District Or Smart search State/District for selected Pincodes ? \nEnter 1 for Pincode or 2 for State/District or 3 for State/District filter by Pincodes (Optimized for rate-limit) (Default 2): """
@@ -239,12 +248,21 @@ def collect_user_details(request_header):
 
     # Get refresh frequency
     refresh_freq = input(
-        "How often do you want to refresh the calendar (in seconds)? Default 10. Minimum 5. (You might be blocked if the value is too low, in that case please try after a while with a lower frequency) : "
+        "How often do you want to refresh (in seconds)? Default 10. Minimum 5. (You might be blocked if the value is too low, in that case please try after a while with a lower frequency) : "
     )
 
     refresh_freq = int(refresh_freq) if refresh_freq and int(refresh_freq) >= 1 else 15
-    
-    
+
+    find_option = input(
+        "\nEnter 1 to search for seven days (default, rate limits are too high with this search) "
+        "or 2 for single date search: "
+    )
+
+    if not find_option or int(find_option) not in [1, 2]:
+        find_option = 2
+    else:
+        find_option = int(find_option)
+
     #Checking if partially vaccinated and thereby checking the the due date for dose2
     if all([beneficiary['status'] == 'Partially Vaccinated' for beneficiary in beneficiary_dtls]):
         today=datetime.datetime.today()
@@ -257,15 +275,15 @@ def collect_user_details(request_header):
             )
             os.system("pause")
             sys.exit(1)
-            
-            
+
+
         if (datetime.datetime.strptime(due_date[0], "%d-%m-%Y")-datetime.datetime.strptime(str(today), "%d-%m-%Y")).days > 0:
             print("\nHaven't reached the due date for your second dose")
             search_due_date=input(
                 "\nDo you want to search for the week starting from your due date(y/n) Default n:"
             )
             if search_due_date=="y":
-                
+
                 start_date=due_date[0]
             else:
                 os.system("pause")
@@ -276,37 +294,67 @@ def collect_user_details(request_header):
     else:
         # Non vaccinated
         start_date=start_date_search()
-        
+
     fee_type = get_fee_type_preference()
 
-    print(
-        "\n=========== CAUTION! =========== CAUTION! CAUTION! =============== CAUTION! =======\n"
-    )
-    print(
-        "===== BE CAREFUL WITH THIS OPTION! AUTO-BOOKING WILL BOOK THE FIRST AVAILABLE CENTRE, DATE, AND A RANDOM SLOT! ====="
-    )
-    auto_book = "yes-please"
+    # print(
+    #     "\n=========== CAUTION! =========== CAUTION! CAUTION! =============== CAUTION! =======\n"
+    # )
+    # print(
+    #     "===== BE CAREFUL WITH THIS OPTION! AUTO-BOOKING WILL BOOK THE FIRST AVAILABLE CENTRE, DATE, AND A RANDOM SLOT! ====="
+    # )
+    # auto_book = "yes-please"
 
-    print("\n================================= Captcha Automation =================================\n")
-
-    captcha_automation = input("Do you want to automate captcha autofill? (y/n) Default y: ")
-    captcha_automation = "y" if not captcha_automation else captcha_automation
+    # print("\n================================= Captcha Automation =================================\n")
+    #
+    # captcha_automation = input("Do you want to automate captcha autofill? (y/n) Default y: ")
+    # captcha_automation = "y" if not captcha_automation else captcha_automation
 
     collected_details = {
         "beneficiary_dtls": beneficiary_dtls,
         "location_dtls": location_dtls,
         "pin_code_location_dtls": pin_code_location_dtls,
+        "find_option": find_option,
         "search_option": search_option,
         "minimum_slots": minimum_slots,
         "refresh_freq": refresh_freq,
-        "auto_book": auto_book,
+        # "auto_book": auto_book,
         "start_date": start_date,
         "vaccine_type": vaccine_type,
         "fee_type": fee_type,
-        'captcha_automation': captcha_automation,
+        # 'captcha_automation': captcha_automation,
     }
 
     return collected_details
+
+
+def correct_schema(sessions):
+    centers = {}
+    if "sessions" in sessions and len(sessions["sessions"]) > 0:
+        for session in sessions["sessions"]:
+            center_id = session["center_id"]
+            if center_id not in centers:
+                centers[center_id] = copy.deepcopy(session)
+                del centers[center_id]["session_id"]
+                del centers[center_id]["date"]
+                del centers[center_id]["available_capacity"]
+                del centers[center_id]["available_capacity_dose1"]
+                del centers[center_id]["available_capacity_dose2"]
+                del centers[center_id]["min_age_limit"]
+                del centers[center_id]["vaccine"]
+                del centers[center_id]["slots"]
+                centers[center_id]["sessions"] = []
+            centers[center_id]["sessions"].append({
+                'session_id': session['session_id'],
+                'date': session["date"],
+                'available_capacity': session["available_capacity"],
+                'available_capacity_dose1': session["available_capacity_dose1"],
+                'available_capacity_dose2': session["available_capacity_dose2"],
+                'min_age_limit': session["min_age_limit"],
+                'vaccine': session["vaccine"],
+                'slots': session["slots"]
+            })
+    return {'centers': list(centers.values())}
 
 
 def filter_centers_by_age(resp, min_age_booking):
@@ -326,7 +374,8 @@ def filter_centers_by_age(resp, min_age_booking):
     return resp
 
 
-def check_calendar_by_district(
+def check_by_district(
+        find_option,
         request_header,
         vaccine_type,
         location_dtls,
@@ -349,7 +398,7 @@ def check_calendar_by_district(
             "==================================================================================="
         )
         today = datetime.datetime.today()
-        base_url = CALENDAR_URL_DISTRICT
+        base_url = CALENDAR_URL_DISTRICT if find_option == 1 else FIND_URL_DISTRICT
 
         if vaccine_type:
             base_url += f"&vaccine={vaccine_type}"
@@ -372,6 +421,9 @@ def check_calendar_by_district(
             elif resp.status_code == 200:
                 resp = resp.json()
 
+                if find_option == 2:
+                    resp = correct_schema(resp)
+
                 resp = filter_centers_by_age(resp, min_age_booking)
 
                 if "centers" in resp:
@@ -383,7 +435,9 @@ def check_calendar_by_district(
                     )
 
             else:
-                pass
+                print(resp.status_code)
+                print(resp.headers)
+                print(resp.text)
 
         # beep only when needed
         if beep_required:
@@ -398,7 +452,8 @@ def check_calendar_by_district(
         beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
 
 
-def check_calendar_by_pincode(
+def check_by_pincode(
+        find_option,
         request_header,
         vaccine_type,
         location_dtls,
@@ -420,7 +475,7 @@ def check_calendar_by_pincode(
             "==================================================================================="
         )
         today = datetime.datetime.today()
-        base_url = CALENDAR_URL_PINCODE
+        base_url = CALENDAR_URL_PINCODE if find_option == 1 else FIND_URL_PINCODE
 
         if vaccine_type:
             base_url += f"&vaccine={vaccine_type}"
@@ -442,6 +497,9 @@ def check_calendar_by_pincode(
             elif resp.status_code == 200:
                 resp = resp.json()
 
+                if find_option == 2:
+                    resp = correct_schema(resp)
+
                 resp = filter_centers_by_age(resp, min_age_booking)
 
                 if "centers" in resp:
@@ -453,7 +511,9 @@ def check_calendar_by_pincode(
                     )
 
             else:
-                pass
+                print(resp.status_code)
+                print(resp.headers)
+                print(resp.text)
 
         for location in location_dtls:
             if int(location["pincode"]) in [option["pincode"] for option in options]:
@@ -480,7 +540,7 @@ def generate_captcha(request_header, captcha_automation):
         return captcha_builder_auto(resp.json())
 
 
-def book_appointment(request_header, details, mobile, generate_captcha_pref):
+def book_appointment(request_header, details, mobile, generate_captcha_pref='n'):
     """
     This function
         1. Takes details in json format
@@ -489,19 +549,16 @@ def book_appointment(request_header, details, mobile, generate_captcha_pref):
            a) 0 - when token is expired
            b) 1 - when token is OK but unable to book due to selected center is completely booked
            c) 2 - when token is OK but unable to book due to any other reason
-
     """
     try:
         valid_captcha = True
         while valid_captcha:
-            captcha = generate_captcha(request_header, generate_captcha_pref)
-            # os.system('say "Slot Spotted."')
-            details["captcha"] = captcha
+            # captcha = generate_captcha(request_header, generate_captcha_pref)
+            # details["captcha"] = captcha
 
             print(
                 "================================= ATTEMPTING BOOKING =================================================="
             )
-
             resp = requests.post(BOOKING_URL, headers=request_header, json=details)
             print(f"Booking Response Code: {resp.status_code}")
             print(f"Booking Response : {resp.text}")
@@ -523,7 +580,6 @@ def book_appointment(request_header, details, mobile, generate_captcha_pref):
                     "                        Hey, Hey, Hey! It's your lucky day!                       "
                 )
                 print("\nPress any key thrice to exit program.")
-                requests.put("https://kvdb.io/Kevq7AzDz1X2Cv38LQZqXs/" + str(uuid.uuid4()), data={})
                 os.system("pause")
                 os.system("pause")
                 os.system("pause")
@@ -558,7 +614,7 @@ def book_appointment(request_header, details, mobile, generate_captcha_pref):
 
 
 def check_and_book(
-        request_header, beneficiary_dtls, location_dtls, pin_code_location_dtls, search_option, **kwargs
+        request_header, beneficiary_dtls, location_dtls, pin_code_location_dtls, find_option, search_option, **kwargs
 ):
     """
     This function
@@ -574,12 +630,12 @@ def check_and_book(
 
         minimum_slots = kwargs["min_slots"]
         refresh_freq = kwargs["ref_freq"]
-        auto_book = kwargs["auto_book"]
+        # auto_book = kwargs["auto_book"]
         start_date = kwargs["start_date"]
         vaccine_type = kwargs["vaccine_type"]
         fee_type = kwargs["fee_type"]
         mobile = kwargs["mobile"]
-        captcha_automation = kwargs['captcha_automation']
+        # captcha_automation = kwargs['captcha_automation']
         dose_num = kwargs['dose_num']
 
         if isinstance(start_date, int) and start_date == 2:
@@ -592,7 +648,8 @@ def check_and_book(
             pass
 
         if search_option == 3:
-            options = check_calendar_by_district(
+            options = check_by_district(
+                find_option,
                 request_header,
                 vaccine_type,
                 location_dtls,
@@ -606,7 +663,7 @@ def check_and_book(
 
             if not isinstance(options, bool):
                 pincode_filtered_options = []
-                for option in options: 
+                for option in options:
                     for location in pin_code_location_dtls:
                         if int(location["pincode"]) == int(option["pincode"]):
                             # ADD this filtered PIN code option
@@ -616,7 +673,8 @@ def check_and_book(
                 options = pincode_filtered_options
 
         elif search_option == 2:
-            options = check_calendar_by_district(
+            options = check_by_district(
+                find_option,
                 request_header,
                 vaccine_type,
                 location_dtls,
@@ -628,7 +686,8 @@ def check_and_book(
                 beep_required=True
             )
         else:
-            options = check_calendar_by_pincode(
+            options = check_by_pincode(
+                find_option,
                 request_header,
                 vaccine_type,
                 location_dtls,
@@ -663,11 +722,14 @@ def check_and_book(
             display_table(cleaned_options_for_display)
             slots_available = True
         else:
-            for i in range(refresh_freq, 0, -1):
-                msg = f"No viable options. Next update in {i} seconds.."
-                print(msg, end="\r", flush=True)
-                sys.stdout.flush()
-                time.sleep(1)
+            try:
+                for i in range(refresh_freq, 0, -1):
+                    msg = f"No viable options. Next update in {i} seconds... (Press Ctrl + C to refresh immediately. Press Ctrl + C multiple times to exit.)"
+                    print(msg, end="\r", flush=True)
+                    sys.stdout.flush()
+                    time.sleep(1)
+            except KeyboardInterrupt:
+                print("OK. Refreshing...")
             slots_available = False
 
     except TimeoutOccurred:
@@ -707,7 +769,7 @@ def check_and_book(
             start_epoch = int(time.time())
 
             # if captcha automation is enabled then have less duration for stale information of centers & slots.
-            MAX_ALLOWED_DURATION_OF_STALE_INFORMATION_IN_SECS = 1*60 if captcha_automation == 'n' else 2*60
+            MAX_ALLOWED_DURATION_OF_STALE_INFORMATION_IN_SECS = 1*60 # if captcha_automation == 'n' else 2*60
 
             # Now try to look into all options unless it is not authentication related issue
             for i in range(0, len(options)):
@@ -744,7 +806,8 @@ def check_and_book(
                             "slot": selected_slot,
                         }
                         print(f"Booking with info: {new_req}")
-                        booking_status = book_appointment(request_header, new_req, mobile, captcha_automation)
+                        booking_status = book_appointment(request_header, new_req, mobile)
+                        # booking_status = book_appointment(request_header, new_req, mobile, captcha_automation)
                         # is token error ? If yes then break the loop by returning immediately
                         if booking_status == 0:
                             return False
@@ -881,7 +944,7 @@ def fetch_beneficiaries(request_header):
     return requests.get(BENEFICIARIES_URL, headers=request_header)
 
 
-    
+
 def vaccine_dose2_duedate(vaccine_type):
     """
     This function
@@ -891,7 +954,7 @@ def vaccine_dose2_duedate(vaccine_type):
     covishield_due_date=84
     covaxin_due_date=28
     sputnikV_due_date=21
-    
+
     if vaccine_type=="COVISHIELD":
         return covishield_due_date
     elif vaccine_type=="COVAXIN":
@@ -914,7 +977,7 @@ def get_beneficiaries(request_header):
 
     if beneficiaries.status_code == 200:
         beneficiaries = beneficiaries.json()["beneficiaries"]
-        
+
 
         refined_beneficiaries = []
         for beneficiary in beneficiaries:
@@ -924,7 +987,7 @@ def get_beneficiaries(request_header):
             if beneficiary["vaccination_status"]=="Partially Vaccinated":
                 vaccinated=True
                 days_remaining=vaccine_dose2_duedate(beneficiary["vaccine"])
-                               
+
                 dose1_date=datetime.datetime.strptime(beneficiary["dose1_date"], "%d-%m-%Y")
                 beneficiary["dose2_due_date"]=dose1_date+datetime.timedelta(days=days_remaining)
             else:
@@ -972,18 +1035,18 @@ def get_beneficiaries(request_header):
                 "status": item["vaccination_status"],
                 "dose1_date":item["dose1_date"]
             }
-                                
+
             for idx, item in enumerate(beneficiaries)
             if idx in beneficiary_idx
         ]
 
         for beneficiary in reqd_beneficiaries:
-                if beneficiary["status"]=="Partially Vaccinated":
-                    days_remaining=vaccine_dose2_duedate(beneficiary["vaccine"])
-                        
-                    dose1_date=datetime.datetime.strptime(beneficiary["dose1_date"], "%d-%m-%Y")
-                    dose2DueDate=dose1_date+datetime.timedelta(days=days_remaining)
-                    beneficiary["dose2_due_date"]=dose2DueDate.strftime("%d-%m-%Y")
+            if beneficiary["status"]=="Partially Vaccinated":
+                days_remaining=vaccine_dose2_duedate(beneficiary["vaccine"])
+
+                dose1_date=datetime.datetime.strptime(beneficiary["dose1_date"], "%d-%m-%Y")
+                dose2DueDate=dose1_date+datetime.timedelta(days=days_remaining)
+                beneficiary["dose2_due_date"]=dose2DueDate.strftime("%d-%m-%Y")
 
         print(f"Selected beneficiaries: ")
         display_table(reqd_beneficiaries)
@@ -1013,7 +1076,7 @@ def clear_bucket_and_send_OTP(storage_url, mobile, request_header):
     response = requests.put(storage_url, data={})
     data = {
         "mobile": mobile,
-        "secret": "U2FsdGVkX18lpp35f+nJx3DcU+U+gCBOHXtDla3ufRL/NfOobEgkI+FEk59M8ReUGXI6sLiEuh5qIGWiaDDlMA==",
+        "secret": "U2FsdGVkX1+z/4Nr9nta+2DrVJSv7KS6VoQUSQ1ZXYDx/CJUkWxFYG6P3iM/VW+6jLQ9RDQVzp/RcZ8kbT41xw==",
     }
     print(f"Requesting OTP with mobile number {mobile}..")
     txnId = requests.post(
@@ -1035,11 +1098,11 @@ def clear_bucket_and_send_OTP(storage_url, mobile, request_header):
     return txnId
 
 
-def generate_token_OTP(mobile, request_header):
+def generate_token_OTP(mobile, request_header, kvdb_bucket):
     """
     This function generate OTP and returns a new token or None when not able to get token
     """
-    storage_url = "https://kvdb.io/Kevq7AzDz1X2Cv38LQZqXs/" + mobile
+    storage_url = "https://kvdb.io/" + kvdb_bucket + "/" + mobile
 
     txnId = clear_bucket_and_send_OTP(storage_url, mobile, request_header)
 
@@ -1104,7 +1167,7 @@ def generate_token_OTP_manual(mobile, request_header):
     while not valid_token:
         try:
             data = {"mobile": mobile,
-                    "secret": "U2FsdGVkX18lpp35f+nJx3DcU+U+gCBOHXtDla3ufRL/NfOobEgkI+FEk59M8ReUGXI6sLiEuh5qIGWiaDDlMA=="
+                    "secret": "U2FsdGVkX1+z/4Nr9nta+2DrVJSv7KS6VoQUSQ1ZXYDx/CJUkWxFYG6P3iM/VW+6jLQ9RDQVzp/RcZ8kbT41xw=="
                     }
             txnId = requests.post(url=OTP_PRO_URL, json=data, headers=request_header)
 
