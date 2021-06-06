@@ -4,7 +4,6 @@ from collections import Counter
 from inputimeout import inputimeout, TimeoutOccurred
 import tabulate, copy, time, datetime, requests, sys, os, random
 from captcha import captcha_builder_manual, captcha_builder_auto
-import uuid
 import re
 from ratelimit import handle_rate_limited
 
@@ -17,6 +16,7 @@ FIND_URL_PINCODE = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/findBy
 CAPTCHA_URL = "https://cdn-api.co-vin.in/api/v2/auth/getRecaptcha"
 OTP_PUBLIC_URL = "https://cdn-api.co-vin.in/api/v2/auth/public/generateOTP"
 OTP_PRO_URL = "https://cdn-api.co-vin.in/api/v2/auth/generateMobileOTP"
+SMS_REGEX = r"(?<!\d)\d{6}(?!\d)"
 
 WARNING_BEEP_DURATION = (1000, 5000)
 
@@ -1119,9 +1119,7 @@ def generate_token_OTP(mobile, request_header, kvdb_bucket):
         if response.status_code == 200:
             print("OTP SMS is:" + response.text)
             print("OTP SMS len is:" + str(len(response.text)))
-
-            sms_regex = r"(?<!\d)\d{6}(?!\d)"
-            OTP = extract_from_regex(response.text, sms_regex)
+            OTP = extract_from_regex(response.text, SMS_REGEX)
             if not OTP:
                 time.sleep(5)
                 continue
