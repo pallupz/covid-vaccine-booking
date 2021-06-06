@@ -26,6 +26,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--token', help='Pass token directly')
     parser.add_argument('--mobile', help='Pass mobile directly')
+    parser.add_argument('--kvdb-bucket', help='Pass kvdb.io bucket directly')
     parser.add_argument('--config', help="Config file name")
     parser.add_argument('--no-tty', help='Do not ask any terminal inputs. Proceed with smart choices', action='store_false')
     args = parser.parse_args()
@@ -39,6 +40,11 @@ def main():
         mobile = args.mobile
     else:
         mobile = None
+        
+    if args.kvdb_bucket:
+        kvdb_bucket = args.kvdb-bucket
+    else:
+        kvdb_bucket = KVDB_BUCKET
 
     print('Running Script')
     beep(500, 150)
@@ -53,7 +59,6 @@ def main():
 
         token = None
         otp_pref = "n"
-        kvdb_bucket = KVDB_BUCKET
         if args.token:
             token = args.token
         else:
@@ -61,14 +66,15 @@ def main():
                 mobile = input("Enter the registered mobile number: ")
             if not args.config:
                 filename = filename + mobile + ".json"
-            otp_pref = input("\nDo you want to enter OTP manually, instead of auto-read? \nRemember selecting n would require some setup described in README (y/n Default n): ") if args.no_tty else "n"
-            otp_pref = otp_pref if otp_pref else "n"
-            if(otp_pref == "n"):
-                kvdb_bucket = input("Please refer KVDB setup in ReadMe to setup your own KVDB bucket. Please enter your KVDB bucket value here: ") if args.no_tty and kvdb_bucket is None else kvdb_bucket
-                if not kvdb_bucket:
-                    print("Sorry, having your private KVDB bucket is mandatory. Please refer ReadMe and create your own private KVBD bucket.")
-                    sys.exit()
-                print("\n### Note ### Please make sure the URL configured in the IFTTT/Shortcuts app on your phone is: " + "https://kvdb.io/" + kvdb_bucket + "/" + mobile + "\n")
+            if not kvdb_bucket: 
+                otp_pref = input("\nDo you want to enter OTP manually, instead of auto-read? \nRemember selecting n would require some setup described in README (y/n Default n): ") if args.no_tty else "n"
+                otp_pref = otp_pref if otp_pref else "n"
+                if(otp_pref == "n"):
+                    kvdb_bucket = input("Please refer KVDB setup in ReadMe to setup your own KVDB bucket. Please enter your KVDB bucket value here: ") if args.no_tty and kvdb_bucket is None else kvdb_bucket
+                    if not kvdb_bucket:
+                        print("Sorry, having your private KVDB bucket is mandatory. Please refer ReadMe and create your own private KVBD bucket.")
+                        sys.exit()
+                    print("\n### Note ### Please make sure the URL configured in the IFTTT/Shortcuts app on your phone is: " + "https://kvdb.io/" + kvdb_bucket + "/" + mobile + "\n")
             while token is None:
                 if otp_pref=="n":
                     try:
