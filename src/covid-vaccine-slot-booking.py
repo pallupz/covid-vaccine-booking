@@ -74,7 +74,8 @@ def main():
                     if not kvdb_bucket:
                         print("Sorry, having your private KVDB bucket is mandatory. Please refer ReadMe and create your own private KVBD bucket.")
                         sys.exit()
-                    print("\n### Note ### Please make sure the URL configured in the IFTTT/Shortcuts app on your phone is: " + "https://kvdb.io/" + kvdb_bucket + "/" + mobile + "\n")
+            if kvdb_bucket:
+                print("\n### Note ### Please make sure the URL configured in the IFTTT/Shortcuts app on your phone is: " + "https://kvdb.io/" + kvdb_bucket + "/" + mobile + "\n")
             while token is None:
                 if otp_pref=="n":
                     try:
