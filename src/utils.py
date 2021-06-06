@@ -4,6 +4,7 @@ import json
 import os
 import os.path
 import random
+import re
 import sys
 import time
 from collections import Counter
@@ -11,10 +12,10 @@ from hashlib import sha256
 
 import requests
 import tabulate
-from inputimeout import TimeoutOccurred, inputimeout
-
 from captcha import captcha_builder_auto, captcha_builder_manual
+from inputimeout import TimeoutOccurred, inputimeout
 from ratelimit import handle_rate_limited
+
 
 BOOKING_URL = "https://cdn-api.co-vin.in/api/v2/appointment/schedule"
 BENEFICIARIES_URL = "https://cdn-api.co-vin.in/api/v2/appointment/beneficiaries"
@@ -28,6 +29,8 @@ OTP_PRO_URL = "https://cdn-api.co-vin.in/api/v2/auth/generateMobileOTP"
 APPOINTMENT_SLIP_URL = (
     "https://cdn-api.co-vin.in/api/v2/appointment/appointmentslip/download"
 )
+
+SMS_REGEX = r"(?<!\d)\d{6}(?!\d)"
 
 WARNING_BEEP_DURATION = (1000, 5000)
 
@@ -1207,10 +1210,7 @@ def generate_token_OTP(mobile, request_header, kvdb_bucket):
         if response.status_code == 200:
             print("OTP SMS is:" + response.text)
             print("OTP SMS len is:" + str(len(response.text)))
-
-            OTP = response.text
-            OTP = OTP.replace("Your OTP to register/access CoWIN is ", "")
-            OTP = OTP.replace(". It will be valid for 3 minutes. - CoWIN", "")
+            OTP = extract_from_regex(response.text, SMS_REGEX)
             if not OTP:
                 time.sleep(5)
                 continue
@@ -1243,6 +1243,16 @@ def generate_token_OTP(mobile, request_header, kvdb_bucket):
     print(f"Token Generated: {token}")
     return token
 
+
+def extract_from_regex(text, pattern):
+    """
+    This function extracts all particular string with help of regex pattern from given text
+    """
+    matches = re.findall(pattern, text, re.MULTILINE)
+    if len(matches) > 0:
+        return matches[0]
+    else:
+        return None
 
 def generate_token_OTP_manual(mobile, request_header):
     """
