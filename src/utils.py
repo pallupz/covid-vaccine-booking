@@ -4,6 +4,7 @@ from collections import Counter
 from inputimeout import inputimeout, TimeoutOccurred
 import tabulate, copy, time, datetime, requests, sys, os, random
 from captcha import captcha_builder_manual, captcha_builder_auto
+import re
 from ratelimit import handle_rate_limited
 
 BOOKING_URL = "https://cdn-api.co-vin.in/api/v2/appointment/schedule"
@@ -15,6 +16,7 @@ FIND_URL_PINCODE = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/findBy
 CAPTCHA_URL = "https://cdn-api.co-vin.in/api/v2/auth/getRecaptcha"
 OTP_PUBLIC_URL = "https://cdn-api.co-vin.in/api/v2/auth/public/generateOTP"
 OTP_PRO_URL = "https://cdn-api.co-vin.in/api/v2/auth/generateMobileOTP"
+SMS_REGEX = r"(?<!\d)\d{6}(?!\d)"
 
 WARNING_BEEP_DURATION = (1000, 5000)
 
@@ -155,14 +157,18 @@ def get_dose_num(collected_details):
 
     return 1
 
-def start_date_search():
+def start_date_search(find_option):
     # Get search start date
+    print('\nSearch from when?')
     start_date = input(
-        "\nSearch from when?\nUse 1 for today, 2 for tomorrow, or provide a date in the format dd-mm-yyyy. Default 2: "
+        "\nUse 1 for today, 2 for tomorrow, or provide a date in the format dd-mm-yyyy. Default 2: "
+    ) if find_option == 1 else input(
+        "\nUse 1 for today, 2 for tomorrow, 3 for today and tomorrow, or provide a date in the format dd-mm-yyyy. "
+        "Default 2: "
     )
     if not start_date:
         start_date = 2
-    elif start_date in ["1", "2"]:
+    elif start_date in ["1", "2", "3"]:
         start_date = int(start_date)
     else:
         try:
@@ -254,8 +260,8 @@ def collect_user_details(request_header):
     refresh_freq = int(refresh_freq) if refresh_freq and int(refresh_freq) >= 1 else 15
 
     find_option = input(
-        "\nEnter 1 to search for seven days (default, rate limits are too high with this search) "
-        "or 2 for single date search: "
+        "\nEnter 1 to search for seven days (rate limits are too high with this search) "
+        "or 2 for single date search (default) : "
     )
 
     if not find_option or int(find_option) not in [1, 2]:
@@ -289,11 +295,11 @@ def collect_user_details(request_header):
                 os.system("pause")
                 sys.exit(1)
         else:
-            start_date=start_date_search()
+            start_date= start_date_search(find_option)
 
     else:
         # Non vaccinated
-        start_date=start_date_search()
+        start_date= start_date_search(find_option)
 
     fee_type = get_fee_type_preference()
 
@@ -428,7 +434,7 @@ def check_by_district(
 
                 if "centers" in resp:
                     print(
-                        f"Centers available in {location['district_name']} from {start_date} as of {today.strftime('%Y-%m-%d %H:%M:%S')}: {len(resp['centers'])}"
+                        f"Centers available in {location['district_name']} {'from' if find_option == 1 else 'for'} {start_date} as of {today.strftime('%Y-%m-%d %H:%M:%S')}: {len(resp['centers'])} "
                     )
                     options += viable_options(
                         resp, minimum_slots, min_age_booking, fee_type, dose_num
@@ -504,7 +510,7 @@ def check_by_pincode(
 
                 if "centers" in resp:
                     print(
-                        f"Centers available in {location['pincode']} from {start_date} as of {today.strftime('%Y-%m-%d %H:%M:%S')}: {len(resp['centers'])}"
+                        f"Centers available in {location['pincode']} {'from' if find_option == 1 else 'for'} {start_date} as of {today.strftime('%Y-%m-%d %H:%M:%S')}: {len(resp['centers'])}"
                     )
                     options += viable_options(
                         resp, minimum_slots, min_age_booking, fee_type, dose_num
@@ -631,75 +637,30 @@ def check_and_book(
         minimum_slots = kwargs["min_slots"]
         refresh_freq = kwargs["ref_freq"]
         # auto_book = kwargs["auto_book"]
-        start_date = kwargs["start_date"]
+        start_dates = []
+        input_start_date = kwargs["start_date"]
         vaccine_type = kwargs["vaccine_type"]
         fee_type = kwargs["fee_type"]
         mobile = kwargs["mobile"]
         # captcha_automation = kwargs['captcha_automation']
         dose_num = kwargs['dose_num']
 
-        if isinstance(start_date, int) and start_date == 2:
-            start_date = (
+        if isinstance(input_start_date, int) and input_start_date in [1, 3]:
+            start_dates.append(datetime.datetime.today().strftime("%d-%m-%Y"))
+        if isinstance(input_start_date, int) and input_start_date in [2, 3]:
+            start_dates.append((
                     datetime.datetime.today() + datetime.timedelta(days=1)
-            ).strftime("%d-%m-%Y")
-        elif isinstance(start_date, int) and start_date == 1:
-            start_date = datetime.datetime.today().strftime("%d-%m-%Y")
-        else:
-            pass
+            ).strftime("%d-%m-%Y"))
+        if not isinstance(input_start_date, int):
+            start_dates.append(input_start_date)
 
-        if search_option == 3:
-            options = check_by_district(
-                find_option,
-                request_header,
-                vaccine_type,
-                location_dtls,
-                start_date,
-                minimum_slots,
-                min_age_booking,
-                fee_type,
-                dose_num,
-                beep_required=False
-            )
-
-            if not isinstance(options, bool):
-                pincode_filtered_options = []
-                for option in options:
-                    for location in pin_code_location_dtls:
-                        if int(location["pincode"]) == int(option["pincode"]):
-                            # ADD this filtered PIN code option
-                            pincode_filtered_options.append(option)
-                            for _ in range(2):
-                                beep(location["alert_freq"], 150)
-                options = pincode_filtered_options
-
-        elif search_option == 2:
-            options = check_by_district(
-                find_option,
-                request_header,
-                vaccine_type,
-                location_dtls,
-                start_date,
-                minimum_slots,
-                min_age_booking,
-                fee_type,
-                dose_num,
-                beep_required=True
-            )
-        else:
-            options = check_by_pincode(
-                find_option,
-                request_header,
-                vaccine_type,
-                location_dtls,
-                start_date,
-                minimum_slots,
-                min_age_booking,
-                fee_type,
-                dose_num
-            )
-
-        if isinstance(options, bool):
-            return False
+        options = []
+        for start_date in start_dates:
+            options_for_date = get_options_for_date(dose_num, fee_type, find_option, location_dtls, min_age_booking, minimum_slots,
+                                       pin_code_location_dtls, request_header, search_option, start_date, vaccine_type)
+            if isinstance(options_for_date, bool):
+                return False
+            options.extend(options_for_date)
 
         options = sorted(
             options,
@@ -824,6 +785,63 @@ def check_and_book(
 
             # tried all slots of all centers but still not able to book then look for current status of centers
             return True
+
+
+def get_options_for_date(dose_num, fee_type, find_option, location_dtls, min_age_booking, minimum_slots,
+                         pin_code_location_dtls, request_header, search_option, start_date, vaccine_type):
+    if search_option == 3:
+        options = check_by_district(
+            find_option,
+            request_header,
+            vaccine_type,
+            location_dtls,
+            start_date,
+            minimum_slots,
+            min_age_booking,
+            fee_type,
+            dose_num,
+            beep_required=False
+        )
+
+        if not isinstance(options, bool):
+            pincode_filtered_options = []
+            for option in options:
+                for location in pin_code_location_dtls:
+                    if int(location["pincode"]) == int(option["pincode"]):
+                        # ADD this filtered PIN code option
+                        pincode_filtered_options.append(option)
+                        for _ in range(2):
+                            beep(location["alert_freq"], 150)
+            options = pincode_filtered_options
+
+    elif search_option == 2:
+        options = check_by_district(
+            find_option,
+            request_header,
+            vaccine_type,
+            location_dtls,
+            start_date,
+            minimum_slots,
+            min_age_booking,
+            fee_type,
+            dose_num,
+            beep_required=True
+        )
+    else:
+        options = check_by_pincode(
+            find_option,
+            request_header,
+            vaccine_type,
+            location_dtls,
+            start_date,
+            minimum_slots,
+            min_age_booking,
+            fee_type,
+            dose_num
+        )
+    return options
+
+
 def get_vaccine_preference():
     print(
         "It seems you're trying to find a slot for your first dose. Do you have a vaccine preference?"
@@ -1116,10 +1134,7 @@ def generate_token_OTP(mobile, request_header, kvdb_bucket):
         if response.status_code == 200:
             print("OTP SMS is:" + response.text)
             print("OTP SMS len is:" + str(len(response.text)))
-
-            OTP = response.text
-            OTP = OTP.replace("Your OTP to register/access CoWIN is ", "")
-            OTP = OTP.replace(". It will be valid for 3 minutes. - CoWIN", "")
+            OTP = extract_from_regex(response.text, SMS_REGEX)
             if not OTP:
                 time.sleep(5)
                 continue
@@ -1152,6 +1167,16 @@ def generate_token_OTP(mobile, request_header, kvdb_bucket):
     print(f"Token Generated: {token}")
     return token
 
+
+def extract_from_regex(text, pattern):
+    """
+    This function extracts all particular string with help of regex pattern from given text
+    """
+    matches = re.findall(pattern, text, re.MULTILINE)
+    if len(matches) > 0:
+        return matches[0]
+    else:
+        return None
 
 def generate_token_OTP_manual(mobile, request_header):
     """
