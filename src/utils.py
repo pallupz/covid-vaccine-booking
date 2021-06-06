@@ -620,11 +620,12 @@ def book_appointment(request_header, details, mobile, generate_captcha_pref="n")
                     )
                     appslip = requests.get(appSlipBase, headers=request_header)
                     with open(
-                        f"{resp.json()['appointment_confirmation_no']}.pdf", "wb"
+                        f"{mobile}_{resp.json()['appointment_confirmation_no']}.pdf",
+                        "wb",
                     ) as appSlipPdf:
                         appSlipPdf.write(appslip.content)
                     if os.path.exists(
-                        f"{resp.json()['appointment_confirmation_no']}.pdf"
+                        f"{mobile}_{resp.json()['appointment_confirmation_no']}.pdf"
                     ):
                         print(
                             "\nDownload Successful. Check the Current Working Directory for the Appointment Slip."
