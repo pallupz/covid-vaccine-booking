@@ -42,7 +42,7 @@ def main():
         mobile = None
         
     if args.kvdb_bucket:
-        kvdb_bucket = args.kvdb-bucket
+        kvdb_bucket = args.kvdb_bucket
     else:
         kvdb_bucket = KVDB_BUCKET
 
