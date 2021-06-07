@@ -15,8 +15,8 @@
 3. Phone Setup
 	1. Android
 	   1. [CoWIN OTP Retriever](https://github.com/bombardier-gif/covid-vaccine-booking/wiki/CoWIN-OTP-Retriever) (Recommended)
-	   2. [IFTTT](https://github.com/bombardier-gif/covid-vaccine-booking/wiki/CoWIN-OTP-Retriever/IFTTT)
-	2. [iPhone](https://github.com/bombardier-gif/covid-vaccine-booking/wiki/CoWIN-OTP-Retriever/Shortcuts)
+	   2. [IFTTT](https://github.com/bombardier-gif/covid-vaccine-booking/wiki/IFTTT)
+	2. [iPhone](https://github.com/bombardier-gif/covid-vaccine-booking/wiki/Shortcuts)
 	
 ### Usage
 
