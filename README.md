@@ -195,6 +195,7 @@ This very basic CLI based script can be used to automate covid vaccination slot 
 	---------->  Enter a choice e.g: 1.4 for (1st center 4th slot): 1.3
 	```
 12. Before the next update, you'll have 10 seconds to provide a choice in the format ```centerIndex.slotIndex``` eg: The input```1.4``` will select the vaccination center in second row and its fourth slot.
+13. After successful slot booking, the appointment slip will be downloaded in your current working directory in the format `mobile_appointmentno`.
 
 <br>
 
