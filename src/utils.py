@@ -1,3 +1,35 @@
+Skip to content
+Search or jump to…
+
+Pull requests
+Issues
+Marketplace
+Explore
+ 
+@TanMaySee 
+pallupz
+/
+covid-vaccine-booking
+35
+615563
+Code
+Issues
+46
+Pull requests
+8
+Discussions
+Actions
+Security
+Insights
+covid-vaccine-booking/src/utils.py /
+@pallupz
+pallupz Update utils.py
+Latest commit 1712fc6 5 days ago
+ History
+ 5 contributors
+@pallupz@catch-n-release@vishalv26@Superfrag@Daggy1234
+702 lines (569 sloc)  26.6 KB
+  
 import json
 from hashlib import sha256
 from inputimeout import inputimeout, TimeoutOccurred
@@ -41,18 +73,20 @@ def viable_options(resp, minimum_slots, min_age_booking, fee_type, dose):
                 if (availability >= minimum_slots) \
                         and (session['min_age_limit'] <= min_age_booking)\
                         and (center['fee_type'] in fee_type):
-                    out = {
-                        'name': center['name'],
-                        'district': center['district_name'],
-                        'pincode': center['pincode'],
-                        'center_id': center['center_id'],
-                        'available': availability,
-                        'date': session['date'],
-                        'slots': session['slots'],
-                        'session_id': session['session_id']
-                    }
-                    options.append(out)
-
+                    if session['min_age_limit'] == 18 and min_age_booking <= 44:
+                        out = {
+                            'name': center['name'],
+                            'district': center['district_name'],
+                            'pincode': center['pincode'],
+                            'center_id': center['center_id'],
+                            'available': availability,
+                            'date': session['date'],
+                            'slots': session['slots'],
+                            'session_id': session['session_id']
+                        }
+                        options.append(out)
+                    else:
+                        pass
                 else:
                     pass
     else:
@@ -699,4 +733,3 @@ def generate_token_OTP(mobile, request_header):
 
         except Exception as e:
             print(str(e))
-
