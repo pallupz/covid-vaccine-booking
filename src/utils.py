@@ -281,7 +281,7 @@ def collect_user_details(request_header):
 
     # Get refresh frequency
     refresh_freq = input(
-        "How often do you want to refresh (in seconds)? Default 10. Minimum 5. (You might be blocked if the value is too low, in that case please try after a while with a lower frequency) : "
+        "How often do you want to refresh on average (in seconds)? Default 15. Minimum 5. (You might be blocked if the value is too low, in that case please try after a while with a lower frequency) : "
     )
 
     refresh_freq = int(refresh_freq) if refresh_freq and int(refresh_freq) >= 1 else 15
@@ -765,7 +765,7 @@ def check_and_book(
             slots_available = True
         else:
             try:
-                for i in range(refresh_freq, 0, -1):
+                for i in range(int(random.normalvariate(refresh_freq, 2)), 0, -1):
                     msg = f"No viable options. Next update in {i} seconds... (Press Ctrl + C to refresh immediately. Press Ctrl + C multiple times to exit.)"
                     print(msg, end="\r", flush=True)
                     sys.stdout.flush()
