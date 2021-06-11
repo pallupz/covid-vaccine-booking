@@ -18,6 +18,7 @@ from ratelimit import handle_rate_limited
 
 
 BOOKING_URL = "https://cdn-api.co-vin.in/api/v2/appointment/schedule"
+RESCHEDULE_URL = "https://cdn-api.co-vin.in/api/v2/appointment/reschedule"
 BENEFICIARIES_URL = "https://cdn-api.co-vin.in/api/v2/appointment/beneficiaries"
 CALENDAR_URL_DISTRICT = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByDistrict?district_id={0}&date={1}"
 CALENDAR_URL_PINCODE = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByPin?pincode={0}&date={1}"
@@ -62,7 +63,14 @@ else:
     else:
 
         def beep(freq, duration):
-            winsound.Beep(freq, duration)
+            try:
+                winsound.Beep(freq, duration)
+            except:
+                from playsound import playsound
+                if duration<200:
+                    playsound('beep-07.wav')
+                else:
+                    playsound('censor-beep-7.wav')
 
 
 def viable_options(resp, minimum_slots, min_age_booking, fee_type, dose_num):
@@ -604,19 +612,16 @@ def book_appointment(request_header, details, mobile, generate_captcha_pref="n")
             print(
                 "================================= ATTEMPTING BOOKING =================================================="
             )
-            resp = requests.post(BOOKING_URL, headers=request_header, json=details)
-            print(f"Booking Response Code: {resp.status_code}")
-            print(f"Booking Response : {resp.text}")
+            if len(details) == 5:
+                resp = requests.post(BOOKING_URL, headers=request_header, json=details)
+                print(f"Booking Response Code: {resp.status_code}")
+                print(f"Booking Response : {resp.text}")
+            else:
+                resp = requests.post(RESCHEDULE_URL, headers=request_header, json=details)
+                print(f"Booking Response Code: {resp.status_code}")
+                print(f"Booking Response : {resp.text}")
 
-            if resp.status_code == 403 or resp.status_code == 429:
-                handle_rate_limited()
-                pass
-
-            elif resp.status_code == 401:
-                print("TOKEN INVALID")
-                return 0
-
-            elif resp.status_code == 200:
+            if (resp.status_code==200) or (resp.status_code==204):
                 beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
                 print(
                     "##############    BOOKED!  ############################    BOOKED!  ##############"
@@ -653,6 +658,14 @@ def book_appointment(request_header, details, mobile, generate_captcha_pref="n")
                 os.system("pause")
                 os.system("pause")
                 sys.exit()
+            elif resp.status_code == 403 or resp.status_code == 429:
+                handle_rate_limited()
+                pass
+
+            elif resp.status_code == 401:
+                print("TOKEN INVALID")
+                return 0
+
 
             elif resp.status_code == 409:
                 print(f"Response: {resp.status_code} : {resp.text}")
@@ -676,6 +689,7 @@ def book_appointment(request_header, details, mobile, generate_captcha_pref="n")
             else:
                 print(f"Response: {resp.status_code} : {resp.text}")
                 return 2
+            
 
     except Exception as e:
         print(str(e))
@@ -712,7 +726,8 @@ def check_and_book(
         fee_type = kwargs["fee_type"]
         mobile = kwargs["mobile"]
         # captcha_automation = kwargs['captcha_automation']
-        dose_num = kwargs["dose_num"]
+        dose_num = kwargs['dose_num']
+        app_id = kwargs['app_id']
 
         if isinstance(input_start_date, int) and input_start_date in [1, 3]:
             start_dates.append(datetime.datetime.today().strftime("%d-%m-%Y"))
@@ -767,8 +782,10 @@ def check_and_book(
         else:
             try:
                 for i in range(refresh_freq, 0, -1):
+                    
                     msg = f"No viable options. Next update in {i} seconds... (Press Ctrl + C to refresh immediately. Press Ctrl + C multiple times to exit.)"
                     print(msg, end="\r", flush=True)
+                    # print(beneficiary_dtls,flush=True)
                     sys.stdout.flush()
                     time.sleep(1)
             except KeyboardInterrupt:
@@ -868,10 +885,22 @@ def check_and_book(
                             "session_id": option["session_id"],
                             "slot": selected_slot,
                         }
+
+                        res_req = {
+                            "appointment_id":app_id, 
+                            "session_id": option["session_id"],
+                            "slot": selected_slot
+                        }
                         print(f"Booking with info: {new_req}")
-                        booking_status = book_appointment(
+                        if app_id == "":
+                            booking_status = book_appointment(
                             request_header, new_req, mobile
-                        )
+                            )
+                        else:
+                            booking_status = book_appointment(
+                            request_header, new_req, mobile
+                            )
+
                         # booking_status = book_appointment(request_header, new_req, mobile, captcha_automation)
                         # is token error ? If yes then break the loop by returning immediately
                         if booking_status == 0:

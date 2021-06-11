@@ -82,6 +82,10 @@ def main():
         otp_pref = "n"
         if args.token:
             token = args.token
+            try:
+                filename = filename + mobile + ".json"
+            except:
+                print("Cannot use json")
         else:
             if mobile is None:
                 mobile = input("Enter the registered mobile number: ")
@@ -189,38 +193,28 @@ def main():
         ]
         beneficiary_dtls = fetch_beneficiaries(request_header)
         if beneficiary_dtls.status_code == 200:
-            beneficiary_dtls = [
-                beneficiary
-                for beneficiary in beneficiary_dtls.json()["beneficiaries"]
-                if beneficiary["beneficiary_reference_id"] in beneficiary_ref_ids
-            ]
-            active_appointments = []
+            beneficiary_dtls    = [beneficiary
+                                   for beneficiary in beneficiary_dtls.json()['beneficiaries']
+                                   if  beneficiary['beneficiary_reference_id'] in beneficiary_ref_ids]
+            # active_appointments = []
+            app_id = ""
             for beneficiary in beneficiary_dtls:
-                expected_appointments = (
-                    1
-                    if beneficiary["vaccination_status"] == "Partially Vaccinated"
-                    else 0
-                )
-                if len(beneficiary["appointments"]) > expected_appointments:
-                    data = beneficiary["appointments"][expected_appointments]
-                    beneficiary_data = {
-                        "name": data["name"],
-                        "state_name": data["state_name"],
-                        "dose": data["dose"],
-                        "date": data["date"],
-                        "slot": data["slot"],
-                    }
-                    active_appointments.append(
-                        {"beneficiary": beneficiary["name"], **beneficiary_data}
-                    )
+                expected_appointments = (1 if beneficiary['vaccination_status'] == "Partially Vaccinated" else 0)
+                if len(beneficiary['appointments']) > expected_appointments:
+                    app_id = beneficiary['appointments'][0]['appointment_id']
+                #     data             = beneficiary['appointments'][expected_appointments]
+                #     beneficiary_data = {'name': data['name'],
+                #                         'state_name': data['state_name'],
+                #                         'dose': data['dose'],
+                #                         'date': data['date'],
+                #                         'slot': data['slot']}
+                #     active_appointments.append({"beneficiary": beneficiary['name'], **beneficiary_data})
 
-            if active_appointments:
-                print(
-                    "The following appointments are active! Please cancel them manually first to continue"
-                )
-                display_table(active_appointments)
-                beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
-                return
+            # if active_appointments:
+            #     print("The following appointments are active! Turning on the rescheduling feature")
+            #     display_table(active_appointments)
+            #     beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
+            #     BOOKING_URL = RESCHEDULE_URL
         else:
             print(
                 "WARNING: Failed to check if any beneficiary has active appointments. Please cancel before using this script"
@@ -276,6 +270,7 @@ def main():
                     vaccine_type=info.vaccine_type,
                     fee_type=info.fee_type,
                     mobile=mobile,
+                    app_id=app_id,
                     # captcha_automation=info.captcha_automation,
                     dose_num=get_dose_num(collected_details),
                 )
