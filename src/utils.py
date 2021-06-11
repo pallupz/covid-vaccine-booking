@@ -904,7 +904,7 @@ def check_and_book(
                             )
                         else:
                             booking_status = book_appointment(
-                                request_header, new_req, mobile
+                                request_header, res_req, mobile
                             )
 
                         # booking_status = book_appointment(request_header, new_req, mobile, captcha_automation)
