@@ -62,7 +62,7 @@ def main():
         mobile = args.mobile
     else:
         mobile = None
-        
+
     if args.kvdb_bucket:
         kvdb_bucket = args.kvdb_bucket
     else:
@@ -82,6 +82,10 @@ def main():
         otp_pref = "n"
         if args.token:
             token = args.token
+            try:
+                filename = filename + mobile + ".json"
+            except:
+                print("Cannot use json")
         else:
             if mobile is None:
                 mobile = input("Enter the registered mobile number: ")
@@ -119,7 +123,6 @@ def main():
                     + "\n"
                 )
 
-
             while token is None:
                 if otp_pref == "n":
                     try:
@@ -131,7 +134,8 @@ def main():
                         print("OTP Retrying in 5 seconds")
                         time.sleep(5)
                 elif otp_pref == "y":
-                    token = generate_token_OTP_manual(mobile, base_request_header)
+                    token = generate_token_OTP_manual(
+                        mobile, base_request_header)
 
         request_header = copy.deepcopy(base_request_header)
         request_header["Authorization"] = f"Bearer {token}"
@@ -182,45 +186,47 @@ def main():
             save_user_info(filename, collected_details)
             confirm_and_proceed(collected_details, args.no_tty)
 
-        # HACK: Temporary workaround for not supporting reschedule appointments
         beneficiary_ref_ids = [
             beneficiary["bref_id"]
             for beneficiary in collected_details["beneficiary_dtls"]
         ]
         beneficiary_dtls = fetch_beneficiaries(request_header)
         if beneficiary_dtls.status_code == 200:
-            beneficiary_dtls = [
-                beneficiary
-                for beneficiary in beneficiary_dtls.json()["beneficiaries"]
-                if beneficiary["beneficiary_reference_id"] in beneficiary_ref_ids
-            ]
-            active_appointments = []
+            beneficiary_dtls = [beneficiary
+                                for beneficiary in beneficiary_dtls.json()['beneficiaries']
+                                if beneficiary['beneficiary_reference_id'] in beneficiary_ref_ids]
+            # active_appointments = []
+            app_id = ""
             for beneficiary in beneficiary_dtls:
                 expected_appointments = (
-                    1
-                    if beneficiary["vaccination_status"] == "Partially Vaccinated"
-                    else 0
-                )
-                if len(beneficiary["appointments"]) > expected_appointments:
-                    data = beneficiary["appointments"][expected_appointments]
-                    beneficiary_data = {
-                        "name": data["name"],
-                        "state_name": data["state_name"],
-                        "dose": data["dose"],
-                        "date": data["date"],
-                        "slot": data["slot"],
-                    }
-                    active_appointments.append(
-                        {"beneficiary": beneficiary["name"], **beneficiary_data}
-                    )
+                    1 if beneficiary['vaccination_status'] == "Partially Vaccinated" else 0)
+                if len(beneficiary['appointments']) > expected_appointments:
+                    app_id = beneficiary['appointments'][0]['appointment_id']
+                    print(
+                        "There appears to be an active appointment, the script will reschedule it")
+                    print("Press any key to continue...")
+                    os.system("pause")
+                    if len(beneficiary_dtls) > 1:
+                        print(
+                            "Select only one beneficiary or cancel the scheduled appointment in order to continue")
+                        beep(WARNING_BEEP_DURATION[0],
+                             WARNING_BEEP_DURATION[1])
+                        sys.exit()
 
-            if active_appointments:
-                print(
-                    "The following appointments are active! Please cancel them manually first to continue"
-                )
-                display_table(active_appointments)
-                beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
-                return
+                #     data             = beneficiary['appointments'][expected_appointments]
+                #     beneficiary_data = {'name': data['name'],
+                #                         'state_name': data['state_name'],
+                #                         'dose': data['dose'],
+                #                         'date': data['date'],
+                #                         'slot': data['slot']}
+                #     active_appointments.append({"beneficiary": beneficiary['name'], **beneficiary_data})
+
+            # if active_appointments:
+            #     print("The following appointments are active! Turning on the rescheduling feature")
+            #     display_table(active_appointments)
+            #     beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
+            #     BOOKING_URL = RESCHEDULE_URL
+
         else:
             print(
                 "WARNING: Failed to check if any beneficiary has active appointments. Please cancel before using this script"
@@ -276,6 +282,7 @@ def main():
                     vaccine_type=info.vaccine_type,
                     fee_type=info.fee_type,
                     mobile=mobile,
+                    app_id=app_id,
                     # captcha_automation=info.captcha_automation,
                     dose_num=get_dose_num(collected_details),
                 )

@@ -18,6 +18,7 @@ from ratelimit import handle_rate_limited
 
 
 BOOKING_URL = "https://cdn-api.co-vin.in/api/v2/appointment/schedule"
+RESCHEDULE_URL = "https://cdn-api.co-vin.in/api/v2/appointment/reschedule"
 BENEFICIARIES_URL = "https://cdn-api.co-vin.in/api/v2/appointment/beneficiaries"
 CALENDAR_URL_DISTRICT = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByDistrict?district_id={0}&date={1}"
 CALENDAR_URL_PINCODE = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByPin?pincode={0}&date={1}"
@@ -51,7 +52,8 @@ else:
 
             def beep(freq, duration):
                 # brew install SoX --> install SOund eXchange universal sound sample translator on mac
-                os.system(f"play -n synth {duration / 1000} sin {freq} >/dev/null 2>&1")
+                os.system(
+                    f"play -n synth {duration / 1000} sin {freq} >/dev/null 2>&1")
 
         else:
 
@@ -62,7 +64,14 @@ else:
     else:
 
         def beep(freq, duration):
-            winsound.Beep(freq, duration)
+            try:
+                winsound.Beep(freq, duration)
+            except:
+                from playsound import playsound
+                if duration < 200:
+                    playsound('beep-07.wav')
+                else:
+                    playsound('censor-beep-7.wav')
 
 
 def viable_options(resp, minimum_slots, min_age_booking, fee_type, dose_num):
@@ -132,7 +141,8 @@ def confirm_and_proceed(collected_details, no_tty):
     )
     display_info_dict(collected_details)
 
-    confirm = input("\nProceed with above info (y/n Default y) : ") if no_tty else "y"
+    confirm = input(
+        "\nProceed with above info (y/n Default y) : ") if no_tty else "y"
     confirm = confirm if confirm else "y"
     if confirm != "y":
         print("Details not confirmed. Exiting process.")
@@ -218,7 +228,8 @@ def collect_user_details(request_header):
         sys.exit(1)
 
     # Make sure all beneficiaries have the same type of vaccine
-    vaccine_types = [beneficiary["vaccine"] for beneficiary in beneficiary_dtls]
+    vaccine_types = [beneficiary["vaccine"]
+                     for beneficiary in beneficiary_dtls]
     vaccines = Counter(vaccine_types)
 
     if len(vaccines.keys()) != 1:
@@ -284,7 +295,8 @@ def collect_user_details(request_header):
         "How often do you want to refresh on average (in seconds)? Default 15. Minimum 5. (You might be blocked if the value is too low, in that case please try after a while with a lower frequency) : "
     )
 
-    refresh_freq = int(refresh_freq) if refresh_freq and int(refresh_freq) >= 1 else 15
+    refresh_freq = int(refresh_freq) if refresh_freq and int(
+        refresh_freq) >= 1 else 15
 
     find_option = input(
         "\nEnter 1 to search for seven days (rate limits are too high with this search) "
@@ -305,7 +317,8 @@ def collect_user_details(request_header):
     ):
         today = datetime.datetime.today()
         today = today.strftime("%d-%m-%Y")
-        due_date = [beneficiary["dose2_due_date"] for beneficiary in beneficiary_dtls]
+        due_date = [beneficiary["dose2_due_date"]
+                    for beneficiary in beneficiary_dtls]
         dates = Counter(due_date)
         if len(dates.keys()) != 1:
             print(
@@ -603,19 +616,18 @@ def book_appointment(request_header, details, mobile, generate_captcha_pref="n")
             print(
                 "================================= ATTEMPTING BOOKING =================================================="
             )
-            resp = requests.post(BOOKING_URL, headers=request_header, json=details)
-            print(f"Booking Response Code: {resp.status_code}")
-            print(f"Booking Response : {resp.text}")
+            if len(details) == 5:
+                resp = requests.post(
+                    BOOKING_URL, headers=request_header, json=details)
+                print(f"Booking Response Code: {resp.status_code}")
+                print(f"Booking Response : {resp.text}")
+            else:
+                resp = requests.post(
+                    RESCHEDULE_URL, headers=request_header, json=details)
+                print(f"Booking Response Code: {resp.status_code}")
+                print(f"Booking Response : {resp.text}")
 
-            if resp.status_code == 403 or resp.status_code == 429:
-                handle_rate_limited()
-                pass
-
-            elif resp.status_code == 401:
-                print("TOKEN INVALID")
-                return 0
-
-            elif resp.status_code == 200:
+            if (resp.status_code == 200) or (resp.status_code == 204):
                 beep(WARNING_BEEP_DURATION[0], WARNING_BEEP_DURATION[1])
                 print(
                     "##############    BOOKED!  ############################    BOOKED!  ##############"
@@ -652,6 +664,13 @@ def book_appointment(request_header, details, mobile, generate_captcha_pref="n")
                 os.system("pause")
                 os.system("pause")
                 sys.exit()
+            elif resp.status_code == 403 or resp.status_code == 429:
+                handle_rate_limited()
+                pass
+
+            elif resp.status_code == 401:
+                print("TOKEN INVALID")
+                return 0
 
             elif resp.status_code == 409:
                 print(f"Response: {resp.status_code} : {resp.text}")
@@ -711,7 +730,8 @@ def check_and_book(
         fee_type = kwargs["fee_type"]
         mobile = kwargs["mobile"]
         # captcha_automation = kwargs['captcha_automation']
-        dose_num = kwargs["dose_num"]
+        dose_num = kwargs['dose_num']
+        app_id = kwargs['app_id']
 
         if isinstance(input_start_date, int) and input_start_date in [1, 3]:
             start_dates.append(datetime.datetime.today().strftime("%d-%m-%Y"))
@@ -765,9 +785,12 @@ def check_and_book(
             slots_available = True
         else:
             try:
+
                 for i in range(int(random.normalvariate(refresh_freq, 2)), 0, -1):
+
                     msg = f"No viable options. Next update in {i} seconds... (Press Ctrl + C to refresh immediately. Press Ctrl + C multiple times to exit.)"
                     print(msg, end="\r", flush=True)
+                    # print(beneficiary_dtls,flush=True)
                     sys.stdout.flush()
                     time.sleep(1)
             except KeyboardInterrupt:
@@ -805,7 +828,8 @@ def check_and_book(
             BUCKET_SIZE = 50
             options = sorted(
                 options,
-                key=lambda k: (BUCKET_SIZE * int(k.get("available", 0) / BUCKET_SIZE))
+                key=lambda k: (
+                    BUCKET_SIZE * int(k.get("available", 0) / BUCKET_SIZE))
                 + random.randint(0, BUCKET_SIZE - 1),
                 reverse=True,
             )
@@ -867,10 +891,22 @@ def check_and_book(
                             "session_id": option["session_id"],
                             "slot": selected_slot,
                         }
+
+                        res_req = {
+                            "appointment_id": app_id,
+                            "session_id": option["session_id"],
+                            "slot": selected_slot
+                        }
                         print(f"Booking with info: {new_req}")
-                        booking_status = book_appointment(
-                            request_header, new_req, mobile
-                        )
+                        if app_id == "":
+                            booking_status = book_appointment(
+                                request_header, new_req, mobile
+                            )
+                        else:
+                            booking_status = book_appointment(
+                                request_header, res_req, mobile
+                            )
+
                         # booking_status = book_appointment(request_header, new_req, mobile, captcha_automation)
                         # is token error ? If yes then break the loop by returning immediately
                         if booking_status == 0:
@@ -964,7 +1000,8 @@ def get_vaccine_preference():
         "Enter 0 for No Preference, 1 for COVISHIELD, 2 for COVAXIN, or 3 for SPUTNIK V. Default 0 : "
     )
     preference = (
-        int(preference) if preference and int(preference) in [0, 1, 2, 3] else 0
+        int(preference) if preference and int(
+            preference) in [0, 1, 2, 3] else 0
     )
 
     if preference == 1:
@@ -982,7 +1019,8 @@ def get_fee_type_preference():
     preference = input(
         "Enter 0 for No Preference, 1 for Free Only, or 2 for Paid Only. Default 0 : "
     )
-    preference = int(preference) if preference and int(preference) in [0, 1, 2] else 0
+    preference = int(preference) if preference and int(
+        preference) in [0, 1, 2] else 0
 
     if preference == 1:
         return ["Free"]
@@ -994,7 +1032,8 @@ def get_fee_type_preference():
 
 def get_pincodes():
     locations = []
-    pincodes = input("Enter comma separated index numbers of pincodes to monitor: ")
+    pincodes = input(
+        "Enter comma separated index numbers of pincodes to monitor: ")
     for idx, pincode in enumerate(pincodes.split(",")):
         if not pincode or len(pincode) < 6:
             print(f"Ignoring invalid pincode: {pincode}")
@@ -1160,7 +1199,8 @@ def get_beneficiaries(request_header):
         reqd_beneficiaries = input(
             "Enter comma separated index numbers of beneficiaries to book for : "
         )
-        beneficiary_idx = [int(idx) - 1 for idx in reqd_beneficiaries.split(",")]
+        beneficiary_idx = [
+            int(idx) - 1 for idx in reqd_beneficiaries.split(",")]
         reqd_beneficiaries = [
             {
                 "bref_id": item["beneficiary_reference_id"],
@@ -1181,8 +1221,10 @@ def get_beneficiaries(request_header):
                 dose1_date = datetime.datetime.strptime(
                     beneficiary["dose1_date"], "%d-%m-%Y"
                 )
-                dose2DueDate = dose1_date + datetime.timedelta(days=days_remaining)
-                beneficiary["dose2_due_date"] = dose2DueDate.strftime("%d-%m-%Y")
+                dose2DueDate = dose1_date + \
+                    datetime.timedelta(days=days_remaining)
+                beneficiary["dose2_due_date"] = dose2DueDate.strftime(
+                    "%d-%m-%Y")
 
         print(f"Selected beneficiaries: ")
         display_table(reqd_beneficiaries)
@@ -1267,7 +1309,8 @@ def generate_token_OTP(mobile, request_header, kvdb_bucket):
 
     print("Parsed OTP:" + OTP)
 
-    data = {"otp": sha256(str(OTP.strip()).encode("utf-8")).hexdigest(), "txnId": txnId}
+    data = {"otp": sha256(str(OTP.strip()).encode(
+        "utf-8")).hexdigest(), "txnId": txnId}
     print(f"Validating OTP..")
 
     token = requests.post(
@@ -1314,7 +1357,8 @@ def generate_token_OTP_manual(mobile, request_header):
                 "mobile": mobile,
                 "secret": "U2FsdGVkX1+z/4Nr9nta+2DrVJSv7KS6VoQUSQ1ZXYDx/CJUkWxFYG6P3iM/VW+6jLQ9RDQVzp/RcZ8kbT41xw==",
             }
-            txnId = requests.post(url=OTP_PRO_URL, json=data, headers=request_header)
+            txnId = requests.post(
+                url=OTP_PRO_URL, json=data, headers=request_header)
 
             if txnId.status_code == 200:
                 print(
@@ -1347,7 +1391,8 @@ def generate_token_OTP_manual(mobile, request_header):
                         print("Unable to Validate OTP")
                         print(f"Response: {token.text}")
 
-                        retry = input(f"Retry with {mobile} ? (y/n Default y): ")
+                        retry = input(
+                            f"Retry with {mobile} ? (y/n Default y): ")
                         retry = retry if retry else "y"
                         if retry == "y":
                             pass
