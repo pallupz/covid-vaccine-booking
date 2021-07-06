@@ -10,3 +10,4 @@ pyjwt~=2.1.0
 pytest~=6.2.4
 boto3~=1.17.18
 ec2_metadata~=2.4.0
+playsound~=1.2.2
