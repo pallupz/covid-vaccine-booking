@@ -233,7 +233,7 @@ Regarding beep package - Device not found or beep not found
 **Solution** : Follow these steps for Ubuntu
 
 1.  `sudo apt-get install beep` #Install this once
-2.  `sudo modeprobe pcspkr` #This will solve Device not found error
+2.  `sudo modprobe pcspkr` #This will solve Device not found error
 3.  Testing beep is simple just type `beep` in terminal, this will produce a beep sound from your speakers.
 
 ### Problem 3
