@@ -41,18 +41,21 @@ def viable_options(resp, minimum_slots, min_age_booking, fee_type, dose):
                 if (availability >= minimum_slots) \
                         and (session['min_age_limit'] <= min_age_booking)\
                         and (center['fee_type'] in fee_type):
-                    out = {
-                        'name': center['name'],
-                        'district': center['district_name'],
-                        'pincode': center['pincode'],
-                        'center_id': center['center_id'],
-                        'available': availability,
-                        'date': session['date'],
-                        'slots': session['slots'],
-                        'session_id': session['session_id']
-                    }
-                    options.append(out)
-
+                    if session['min_age_limit'] != 18 or (session['min_age_limit'] == 18 and min_age_booking <= 44):
+                        out = {
+                            'name': center['name'],
+                            'district': center['district_name'],
+                            'pincode': center['pincode'],
+                            'center_id': center['center_id'],
+                            'available': availability,
+                            'date': session['date'],
+                            'slots': session['slots'],
+                            'session_id': session['session_id']
+                        }
+                        options.append(out)
+                    
+                    else:
+                        pass
                 else:
                     pass
     else:
