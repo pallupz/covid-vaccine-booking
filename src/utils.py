@@ -654,7 +654,7 @@ def generate_token_OTP(mobile, request_header):
     while not valid_token:
         try:
             data = {"mobile": mobile,
-                    "secret": "U2FsdGVkX1+z/4Nr9nta+2DrVJSv7KS6VoQUSQ1ZXYDx/CJUkWxFYG6P3iM/VW+6jLQ9RDQVzp/RcZ8kbT41xw=="
+                    "secret": "U2FsdGVkX18BvjOVPDcXyiu/QNIRsfFfKPBE7b1d6auwbUdw26//Bn/ppK69B6V64RC/R6+GaSA+oAyDR1Mrgw=="
             }
             txnId = requests.post(url=OTP_PRO_URL, json=data, headers=request_header)
 
