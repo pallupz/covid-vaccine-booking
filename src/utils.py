@@ -414,7 +414,7 @@ def correct_schema(sessions):
 
 def filter_centers_by_age(resp, min_age_booking):
     if min_age_booking >= 45:
-        center_age_filter = 45
+        center_age_filter = 18
     else:
         center_age_filter = 18
 
