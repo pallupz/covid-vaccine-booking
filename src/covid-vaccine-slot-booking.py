@@ -205,7 +205,7 @@ def main():
                     print(
                         "There appears to be an active appointment, the script will reschedule it")
                     print("Press any key to continue...")
-                    os.system("pause")
+                    input("Press any key to continue")
                     if len(beneficiary_dtls) > 1:
                         print(
                             "Select only one beneficiary or cancel the scheduled appointment in order to continue")
@@ -294,7 +294,7 @@ def main():
     except Exception as e:
         print(str(e))
         print("Exiting Script")
-        os.system("pause")
+        input("Press any key to continue")
 
 
 if __name__ == "__main__":
