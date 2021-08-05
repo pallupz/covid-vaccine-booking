@@ -146,7 +146,7 @@ def confirm_and_proceed(collected_details, no_tty):
     confirm = confirm if confirm else "y"
     if confirm != "y":
         print("Details not confirmed. Exiting process.")
-        os.system("pause")
+        input("Press any key to continue")
         sys.exit()
 
 
@@ -224,7 +224,7 @@ def collect_user_details(request_header):
 
     if len(beneficiary_dtls) == 0:
         print("There should be at least one beneficiary. Exiting.")
-        os.system("pause")
+        input("Press any key to continue")
         sys.exit(1)
 
     # Make sure all beneficiaries have the same type of vaccine
@@ -236,7 +236,7 @@ def collect_user_details(request_header):
         print(
             f"All beneficiaries in one attempt should have the same vaccine type. Found {len(vaccines.keys())}"
         )
-        os.system("pause")
+        input("Press any key to continue")
         sys.exit(1)
 
     vaccine_type = vaccine_types[
@@ -324,7 +324,7 @@ def collect_user_details(request_header):
             print(
                 f"All beneficiaries in one attempt should have the same due date. Found {len(dates.keys())}"
             )
-            os.system("pause")
+            input("Press any key to continue")
             sys.exit(1)
 
         if (
@@ -339,7 +339,7 @@ def collect_user_details(request_header):
 
                 start_date = due_date[0]
             else:
-                os.system("pause")
+                input("Press any key to continue")
                 sys.exit(1)
         else:
             start_date = start_date_search(find_option)
@@ -660,9 +660,9 @@ def book_appointment(request_header, details, mobile, generate_captcha_pref="n")
                     print(str(e))
 
                 print("\nPress any key thrice to exit program.")
-                os.system("pause")
-                os.system("pause")
-                os.system("pause")
+                input("Press any key to continue")
+                input("Press any key to continue")
+                input("Press any key to continue")
                 sys.exit()
             elif resp.status_code == 403 or resp.status_code == 429:
                 handle_rate_limited()
@@ -919,7 +919,7 @@ def check_and_book(
                             break
                     except IndexError:
                         print("============> Invalid Option!")
-                        os.system("pause")
+                        input("Press any key to continue")
                         pass
 
             # tried all slots of all centers but still not able to book then look for current status of centers
@@ -1102,14 +1102,14 @@ def get_districts(request_header):
             print("Unable to fetch districts")
             print(districts.status_code)
             print(districts.text)
-            os.system("pause")
+            input("Press any key to continue")
             sys.exit(1)
 
     else:
         print("Unable to fetch states")
         print(states.status_code)
         print(states.text)
-        os.system("pause")
+        input("Press any key to continue")
         sys.exit(1)
 
 
@@ -1234,7 +1234,7 @@ def get_beneficiaries(request_header):
         print("Unable to fetch beneficiaries")
         print(beneficiaries.status_code)
         print(beneficiaries.text)
-        os.system("pause")
+        input("Press any key to continue")
         return []
 
 
@@ -1347,7 +1347,7 @@ def generate_token_OTP_manual(mobile, request_header):
 
     if not mobile:
         print("Mobile number cannot be empty")
-        os.system("pause")
+        input("Press any key to continue")
         sys.exit()
 
     valid_token = False
