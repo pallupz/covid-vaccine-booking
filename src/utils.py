@@ -3,6 +3,7 @@ from hashlib import sha256
 from inputimeout import inputimeout, TimeoutOccurred
 import tabulate, copy, time, datetime, requests, sys, os, random
 from captcha import captcha_builder
+from blank_inputimeout import blank_inputimeout, BlankTimeoutOccurred
 
 BOOKING_URL = "https://cdn-api.co-vin.in/api/v2/appointment/schedule"
 BENEFICIARIES_URL = "https://cdn-api.co-vin.in/api/v2/appointment/beneficiaries"
@@ -183,8 +184,8 @@ def collect_user_details(request_header):
         minimum_slots = len(beneficiary_dtls)
 
     # Get refresh frequency
-    refresh_freq = input('How often do you want to refresh the calendar (in seconds)? Default 15. Minimum 5. : ')
-    refresh_freq = int(refresh_freq) if refresh_freq and int(refresh_freq) >= 5 else 15
+    refresh_freq = input('How often do you want to refresh the calendar (in seconds)? Default 15. Minimum 1. : ')
+    refresh_freq = int(refresh_freq) if refresh_freq and int(refresh_freq) >= 1 else 15
 
     # Get search start date
     start_date = input(
@@ -423,21 +424,32 @@ def check_and_book(request_header, beneficiary_dtls, location_dtls, search_optio
                 print("AUTO-BOOKING IS ENABLED. PROCEEDING WITH FIRST CENTRE, DATE, and RANDOM SLOT.")
                 option = options[0]
                 random_slot = random.randint(1, len(option['slots']))
-                choice = f'1.{random_slot}'
+                random_center = random.randint(1,len(options))
+                choice = f'{random_center}.{random_slot}'
+                # choice = f'1.{random_slot}'
             else:
                 choice = inputimeout(
-                    prompt='----------> Wait 20 seconds for updated options OR \n----------> Enter a choice e.g: 1.4 for (1st center 4th slot): ',
-                    timeout=20)
+                    prompt='----------> Wait 10 seconds for updated options OR \n----------> Enter a choice e.g: 1.4 for (1st center 4th slot): ',
+                    timeout=10)
 
         else:
-            try:
-                for i in range(refresh_freq, 0, -1):
-                    msg = f"No viable options. Next update in {i} seconds. OR press 'Ctrl + C' to refresh now."
-                    print(msg, end="\r", flush=True)
-                    sys.stdout.flush()
-                    time.sleep(1)
-            except KeyboardInterrupt:
-                pass
+            for i in range(refresh_freq, 0, -1):
+                msg = f"No viable options. Press enter to refresh immediately. Next update in {i} seconds.."
+                print(msg, end="\r", flush=True)
+                sys.stdout.flush()
+                try:
+                    blank_inputimeout(timeout=1)
+                    break
+                except BlankTimeoutOccurred:
+                    pass
+            # try:
+            #     for i in range(refresh_freq, 0, -1):
+            #         msg = f"No viable options. Next update in {i} seconds. OR press 'Ctrl + C' to refresh now."
+            #         print(msg, end="\r", flush=True)
+            #         sys.stdout.flush()
+            #         time.sleep(1)
+            # except KeyboardInterrupt:
+            #     pass
             choice = '.'
 
     except TimeoutOccurred:
