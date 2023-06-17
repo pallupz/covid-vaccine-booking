@@ -1,6 +1,6 @@
 # COVID-19 Vaccination Slot Booking Script
 ## Update:
-### **We are getting all kinds of attention now - which I do not want to handle. So there won't be any additional commits to this project. It has been put on indefinite hold.**
+### **First up, a big thank you to everyone for supporting this project and building upon it! I'm glad we were able to help a lot of people through this. However, recently we have been attracting some unwanted attention - which is getting harder to handle. So unfortunately there won't be any additional commits to this project. This has been put on indefinite hold.**
 
 
 
