@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+import time
 import copy
 from types import SimpleNamespace
 import requests, sys, argparse, os, datetime
@@ -94,7 +94,8 @@ def main():
                 print('Token is INVALID.')
                 token_valid = False
 
-                tryOTP = input('Try for a new Token? (y/n Default y): ')
+                tryOTP = 'y' #input('Try for a new Token? (y/n Default y): ')
+                time.sleep(8)
                 if tryOTP.lower() == 'y' or not tryOTP:
                     if not mobile:
                         mobile = input("Enter the registered mobile number: ")
